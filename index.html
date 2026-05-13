@@ -857,7 +857,7 @@ tr:hover td { background: var(--surface2); }
 // ════════════════════════════════════════════════════════
 //  CONFIGURATION — replace with your deployed Web App URL
 // ════════════════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdGooHlbi8UcKe-Cx6sa2_h15qGER6Ica2ATEAGD9Dy4X8clRxFPuvWfoPQZeem6jD5g/exec';
+const SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
 
 // ════════════════════════════════════════════════════════
 //  JIS KEYBOARD MAP
@@ -971,7 +971,15 @@ async function doLogin() {
     state.pastResults = resData.results || [];
 
     buildHomeScreen();
-    showScreen('home');
+
+    // If the session is a baseline, is open, and not yet completed,
+    // skip home and go straight to the typing test
+    const sess = state.session;
+    if (sess && sess.isBaseline && sess.status === 'open' && !sess.alreadyCompleted) {
+      startTest();
+    } else {
+      showScreen('home');
+    }
   } catch (err) {
     showError(errEl, 'Connection error. Please try again.');
     console.error(err);
