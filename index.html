@@ -646,7 +646,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.check</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v0.4</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v0.5</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -1574,6 +1574,8 @@ function buildResultsScreen() {
   const results = state.pastResults;
   const badge   = state.studentNumber + ' &nbsp;·&nbsp; ' + state.nameEng + ' &nbsp;·&nbsp; ' + state.className;
   document.getElementById('results-badge').innerHTML = badge;
+  // Small delay to ensure the canvas has its final rendered size before drawing
+  setTimeout(() => drawResultsChart(state.pastResults), 120);
 
   if (results.length === 0) {
     document.getElementById('history-content').innerHTML =
@@ -1639,8 +1641,6 @@ function buildResultsScreen() {
   tableHtml += '</tbody></table>';
   document.getElementById('history-content').innerHTML = tableHtml;
 
-  // Draw chart
-  drawResultsChart(results);
 }
 
 // ════════════════════════════════════════════════════════
