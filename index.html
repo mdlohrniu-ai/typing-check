@@ -1199,9 +1199,37 @@ function renderRow(rowEl, sample, charStates, typed, limit, showCursor) {
 
 function renderAll() {
   const sample = state.paragraphs[state.paraIndex].text;
+
+  // Target row: full paragraph, coloured by charStates, with cursor
   renderRow(document.getElementById('target-row'), sample, state.charStates, state.typed, sample.length, true);
-  // limit typed row strictly to how many characters have been typed
-  renderRow(document.getElementById('typed-row'),  sample, state.charStates, state.typed, state.typed.length, false);
+
+  // Typed row: only render exactly what has been typed, nothing more.
+  // Build it directly from state.typed so there is zero chance of
+  // accidentally showing pending (un-typed) characters.
+  const typedEl = document.getElementById('typed-row');
+  const typed   = state.typed;
+  if (typed.length === 0) { typedEl.innerHTML = ''; return; }
+
+  const tokens = buildTokens(sample);
+  let html = '';
+  for (const tok of tokens) {
+    if (tok.start >= typed.length) break;
+    if (tok.type === 'spaces') {
+      for (let ci = tok.start; ci < tok.end && ci < typed.length; ci++) {
+        const st = state.charStates[ci] || 'pending';
+        html += '<span class="ch ' + st + '">&nbsp;</span>';
+      }
+      if (tok.end <= typed.length) html += '<wbr>';
+    } else {
+      let wh = '';
+      for (let ci = tok.start; ci < tok.end && ci < typed.length; ci++) {
+        const st = state.charStates[ci] || 'pending';
+        wh += '<span class="ch ' + st + '">' + esc(sample[ci]) + '</span>';
+      }
+      if (wh) html += '<span class="word">' + wh + '</span>';
+    }
+  }
+  typedEl.innerHTML = html;
 }
 
 function loadParagraph() {
