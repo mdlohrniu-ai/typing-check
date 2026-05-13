@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typing Skills Check</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── Variables ─────────────────────────────────────── */
+:root {
+  --bg:             #0f1117;
+  --surface:        #1a1d27;
+  --surface2:       #222538;
+  --border:         #2e3150;
+  --text:           #e8eaf0;
+  --text-muted:     #5a5f7a;
+  --accent:         #5b7fff;
+  --accent-glow:    rgba(91,127,255,0.15);
+  --correct:        #3dd68c;
+  --correct-bg:     rgba(61,214,140,0.15);
+  --error:          #ff5c6c;
+  --error-bg:       rgba(255,92,108,0.18);
+  --corrected:      #f5c842;
+  --corrected-bg:   rgba(245,200,66,0.15);
+  --baseline-color: #c084fc;
+  --key-bg:         #23263a;
+  --key-border:     #353960;
+  --key-active:     #5b7fff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Screens ────────────────────────────────────────── */
+.screen {
+  display: none;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 16px 56px;
+  min-height: 100vh;
+}
+.screen.active { display: flex; }
+
+/* ── Shared header ─────────────────────────────────── */
+.top-bar {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 36px;
+}
+.logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+.student-badge {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.student-badge b { color: var(--text); }
+
+/* ── Shared components ─────────────────────────────── */
+.btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 10px 26px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(91,127,255,0.3);
+}
+.btn-primary:hover:not(:disabled) { background: #7494ff; transform: translateY(-1px); }
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.btn-secondary:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.btn-finish {
+  background: #1f5c3a;
+  color: #3dd68c;
+  border: 1px solid #2a7a4e;
+}
+.btn-finish:hover { background: #266e46; transform: translateY(-1px); }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+.card {
+  width: 100%;
+  max-width: 900px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+/* ── Loading / error ───────────────────────────────── */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,17,23,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  display: none;
+}
+.loading-overlay.show { display: flex; }
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error-box {
+  background: rgba(255,92,108,0.1);
+  border: 1px solid rgba(255,92,108,0.3);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 0.84rem;
+  color: var(--error);
+  margin-top: 16px;
+  display: none;
+}
+.error-box.show { display: block; }
+
+/* ══════════════════════════════════════════════════════
+   LOGIN SCREEN
+══════════════════════════════════════════════════════ */
+#screen-login {
+  justify-content: center;
+  padding-top: 0;
+}
+.login-box {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 44px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+.login-logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.login-title {
+  font-size: 1rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.login-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: block;
+}
+.login-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.login-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.login-input::placeholder { color: var(--text-muted); text-transform: none; letter-spacing: 0; }
+.login-btn {
+  width: 100%;
+  padding: 13px;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  margin-top: 4px;
+}
+
+/* ══════════════════════════════════════════════════════
+   HOME SCREEN
+══════════════════════════════════════════════════════ */
+.greeting {
+  width: 100%;
+  max-width: 700px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+.greeting h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.greeting p { font-size: 0.88rem; color: var(--text-muted); }
+.greeting .target-wpm { color: var(--accent); font-weight: 600; }
+
+.stats-strip {
+  width: 100%;
+  max-width: 700px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.strip-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  text-align: center;
+}
+.strip-label {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.strip-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.strip-value.wpm  { color: var(--accent); }
+.strip-value.acc  { color: var(--correct); }
+.strip-value.sess { color: var(--text); }
+
+.action-cards {
+  width: 100%;
+  max-width: 700px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.action-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.action-card:hover:not(.locked) {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 8px 24px rgba(91,127,255,0.12);
+  transform: translateY(-2px);
+}
+.action-card.results-card:hover {
+  border-color: var(--correct);
+  box-shadow: 0 0 0 1px var(--correct), 0 8px 24px rgba(61,214,140,0.1);
+}
+.action-card.locked { opacity: 0.45; cursor: not-allowed; }
+.card-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+.card-icon.blue  { background: rgba(91,127,255,0.15); }
+.card-icon.green { background: rgba(61,214,140,0.12); }
+.card-icon.grey  { background: rgba(90,95,122,0.15); }
+.card-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+}
+.card-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; flex: 1; }
+.card-arrow { font-size: 1rem; color: var(--text-muted); align-self: flex-end; transition: color 0.2s, transform 0.2s; }
+.action-card:hover:not(.locked) .card-arrow { color: var(--accent); transform: translateX(4px); }
+.action-card.results-card:hover .card-arrow { color: var(--correct); }
+.session-badge {
+  position: absolute;
+  top: 14px; right: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+.badge-open      { background: rgba(91,127,255,0.15);  color: var(--accent);  border: 1px solid rgba(91,127,255,0.3); }
+.badge-done      { background: rgba(61,214,140,0.10);  color: var(--correct); border: 1px solid rgba(61,214,140,0.2); }
+.badge-locked    { background: rgba(90,95,122,0.12);   color: var(--text-muted); border: 1px solid var(--border); }
+.lock-reason     { font-size: 0.7rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+/* ══════════════════════════════════════════════════════
+   TYPING TEST SCREEN
+══════════════════════════════════════════════════════ */
+.test-header {
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 20px;
+}
+.test-session-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.test-session-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.attempt-row {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.attempt-label { font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.attempt-pip { width: 10px; height: 10px; border-radius: 50%; background: var(--border); transition: background 0.3s; }
+.attempt-pip.done   { background: var(--correct); }
+.attempt-pip.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.best-badge {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--correct);
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--correct-bg);
+  border: 1px solid rgba(61,214,140,0.2);
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+
+/* Stats bar */
+.stats-bar { display: flex; border-bottom: 1px solid var(--border); }
+.stat { flex: 1; padding: 14px 20px; border-right: 1px solid var(--border); text-align: center; }
+.stat:last-child { border-right: none; }
+.stat-label { font-size: 0.62rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+.stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; color: var(--text); transition: color 0.3s; }
+.stat-value.good { color: var(--correct); }
+.stat-value.warn { color: var(--corrected); }
+.stat-value.bad  { color: var(--error); }
+.stat-unit { font-size: 0.62rem; color: var(--text-muted); margin-left: 2px; }
+
+/* Typing display */
+.typing-area { padding: 32px 36px 36px; }
+.para-label { font-size: 0.62rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; }
+#target-row, #typed-row {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.15rem;
+  line-height: 2.1;
+  letter-spacing: 0.02em;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  min-height: 2.5em;
+}
+#typed-row { margin-top: 2px; }
+.row-divider { border: none; border-top: 1px solid var(--border); margin: 8px 0 10px; }
+.word { display: inline; white-space: nowrap; }
+.ch { display: inline; position: relative; }
+.ch.pending   { color: var(--text-muted); }
+.ch.correct   { color: var(--correct);   background: var(--correct-bg);   border-radius: 2px; }
+.ch.error     { color: var(--error);     background: var(--error-bg);     border-radius: 2px; }
+.ch.corrected { color: var(--corrected); background: var(--corrected-bg); border-radius: 2px; }
+.ch.cursor::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 2px;
+  width: 100%; height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* Baseline info banner */
+.baseline-banner {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(192,132,252,0.08);
+  border: 1px solid rgba(192,132,252,0.25);
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 0.8rem;
+  color: var(--baseline-color);
+  margin-bottom: 18px;
+  display: none;
+}
+.baseline-banner.show { display: block; }
+
+/* Baseline paragraph counter */
+.para-counter {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.para-pip { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+.para-pip.done   { background: var(--baseline-color); }
+.para-pip.active { background: var(--baseline-color); box-shadow: 0 0 8px var(--baseline-color); }
+.para-counter-label { font-size: 0.7rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+/* Hidden capture textarea */
+#capture {
+  position: fixed;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px; height: 1px;
+  top: 0; left: 0;
+}
+
+/* Result panel */
+.result-panel {
+  width: 100%;
+  max-width: 900px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 32px;
+  display: none;
+  margin-top: 4px;
+}
+.result-panel.show { display: block; }
+.result-title { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 18px; }
+.result-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 22px; }
+.result-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+.ril { font-size: 0.62rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.riv { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 700; }
+.riv.pass { color: var(--correct); }
+.riv.fail { color: var(--error); }
+.riv.warn { color: var(--corrected); }
+.rip { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+.result-actions { display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 18px; }
+
+/* Baseline result */
+.baseline-result-panel {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(192,132,252,0.07);
+  border: 1px solid rgba(192,132,252,0.25);
+  border-radius: 16px;
+  padding: 28px 32px;
+  display: none;
+  margin-top: 4px;
+  text-align: center;
+}
+.baseline-result-panel.show { display: block; }
+.baseline-wpm {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--baseline-color);
+  margin: 16px 0 6px;
+}
+.baseline-wpm-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; }
+
+/* ── Keyboard ─────────────────────────────────────── */
+.keyboard-wrap {
+  width: 100%;
+  max-width: 900px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 22px 22px;
+  margin-bottom: 20px;
+}
+.keyboard-label { font-size: 0.62rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+.keyboard { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.key-row  { display: flex; gap: 4px; }
+.key {
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  border-bottom: 3px solid var(--key-border);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  cursor: default;
+  transition: all 0.08s;
+  user-select: none;
+}
+.key .sc { font-size: 0.5rem; opacity: 0.55; line-height: 1; }
+.key .mc { line-height: 1; }
+.w15  { min-width: 56px; }
+.w20  { min-width: 74px; }
+.wcap { min-width: 70px; }
+.went { min-width: 90px; }
+.wsl  { min-width: 88px; }
+.wsr  { min-width: 108px; }
+.wsp  { min-width: 280px; }
+.key.active    { background: var(--key-active); border-color: var(--key-active); border-bottom-color: #3a5acc; color: #fff; box-shadow: 0 0 12px rgba(91,127,255,0.4); transform: translateY(1px); }
+.key.sh-active { background: #6b3fa0; border-color: #9b7ec8; border-bottom-color: #4a2880; color: #fff; box-shadow: 0 0 12px rgba(107,63,160,0.4); }
+
+/* ══════════════════════════════════════════════════════
+   RESULTS SCREEN
+══════════════════════════════════════════════════════ */
+.results-page-title { width: 100%; max-width: 900px; margin-bottom: 24px; }
+.results-page-title h1 { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+.results-page-title p { font-size: 0.82rem; color: var(--text-muted); }
+
+.summary-row {
+  width: 100%;
+  max-width: 900px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; text-align: center; }
+.stat-card-label { font-size: 0.6rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.stat-card-value { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; }
+.stat-card-value.wpm-c  { color: var(--accent); }
+.stat-card-value.acc-c  { color: var(--correct); }
+.stat-card-value.base-c { color: var(--baseline-color); }
+.stat-card-sub { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
+
+.chart-card {
+  width: 100%;
+  max-width: 900px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px 28px 20px;
+  margin-bottom: 18px;
+}
+.chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+.chart-title { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
+.legend { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: var(--text-muted); }
+.legend-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.legend-line { width: 18px; height: 2px; flex-shrink: 0; }
+.legend-dash { width: 18px; height: 0; border-top: 2px dashed var(--corrected); flex-shrink: 0; }
+.chart-wrap { width: 100%; }
+canvas#results-chart { width: 100%; display: block; }
+
+.history-card { width: 100%; max-width: 900px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 24px; }
+.history-header { padding: 16px 26px; border-bottom: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
+table { width: 100%; border-collapse: collapse; }
+th { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 24px; text-align: left; border-bottom: 1px solid var(--border); }
+td { padding: 13px 24px; font-size: 0.84rem; border-bottom: 1px solid var(--border); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+.tbadge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+.tbadge-baseline { background: rgba(192,132,252,0.12); color: var(--baseline-color); border: 1px solid rgba(192,132,252,0.25); }
+.tbadge-pass { background: rgba(61,214,140,0.10); color: var(--correct); border: 1px solid rgba(61,214,140,0.2); }
+.tbadge-fail { background: rgba(255,92,108,0.10); color: var(--error); border: 1px solid rgba(255,92,108,0.2); }
+.wpm-val { color: var(--accent); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+.acc-val { color: var(--correct); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+.pts-val { font-family: 'JetBrains Mono', monospace; }
+
+.no-results {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     LOADING OVERLAY
+═══════════════════════════════════════════════════ -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+</div>
+
+<!-- Hidden capture textarea for typing test -->
+<textarea id="capture" spellcheck="false" autocomplete="off"
+          autocorrect="off" autocapitalize="off" aria-label="Type here"></textarea>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN 1: LOGIN
+═══════════════════════════════════════════════════ -->
+<div class="screen active" id="screen-login">
+  <div class="login-box">
+    <div>
+      <div class="login-logo">// typing.check</div>
+    </div>
+    <div class="login-title">Enter your student number to begin</div>
+    <div class="login-form">
+      <label class="login-label" for="student-input">Student Number</label>
+      <input class="login-input" id="student-input" type="text"
+             placeholder="e.g. S20241042" autocomplete="off" autocorrect="off"
+             autocapitalize="characters" spellcheck="false">
+      <button class="btn btn-primary login-btn" onclick="doLogin()">Log In</button>
+      <div class="error-box" id="login-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN 2: HOME
+═══════════════════════════════════════════════════ -->
+<div class="screen" id="screen-home">
+  <div class="top-bar">
+    <div class="logo">// typing.check</div>
+    <div class="student-badge" id="home-badge"></div>
+  </div>
+  <div class="greeting">
+    <h1 id="home-greeting">Welcome back!</h1>
+    <p id="home-subtext"></p>
+  </div>
+  <div class="stats-strip">
+    <div class="strip-stat">
+      <div class="strip-label">Best WPM</div>
+      <div class="strip-value wpm" id="home-best-wpm">--</div>
+    </div>
+    <div class="strip-stat">
+      <div class="strip-label">Best Accuracy</div>
+      <div class="strip-value acc" id="home-best-acc">--%</div>
+    </div>
+    <div class="strip-stat">
+      <div class="strip-label">Sessions Done</div>
+      <div class="strip-value sess" id="home-sessions">--</div>
+    </div>
+  </div>
+  <div class="action-cards" id="home-action-cards"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN 3: TYPING TEST
+═══════════════════════════════════════════════════ -->
+<div class="screen" id="screen-test">
+  <div class="top-bar">
+    <div class="logo">// typing.check</div>
+    <div class="student-badge" id="test-badge"></div>
+  </div>
+
+  <div class="test-header">
+    <div class="test-session-title" id="test-session-title"></div>
+    <div class="test-session-sub" id="test-session-sub"></div>
+  </div>
+
+  <div class="baseline-banner" id="baseline-banner">
+    &#9670; This is your <strong>Baseline Check</strong>. You will type 3 short paragraphs.
+    Your average WPM will be recorded as your starting benchmark. This session is not graded.
+  </div>
+
+  <div class="para-counter" id="para-counter" style="display:none">
+    <div class="para-counter-label">PARAGRAPH</div>
+    <div class="para-pip" id="para-pip-1"></div>
+    <div class="para-pip" id="para-pip-2"></div>
+    <div class="para-pip" id="para-pip-3"></div>
+  </div>
+
+  <div class="attempt-row" id="attempt-row">
+    <div class="attempt-label">ATTEMPT</div>
+    <div class="attempt-pip" id="pip-1"></div>
+    <div class="attempt-pip" id="pip-2"></div>
+    <div class="attempt-pip" id="pip-3"></div>
+    <div class="best-badge" id="best-badge-test">BEST: -- WPM</div>
+  </div>
+
+  <div class="card">
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-label">WPM</div><div class="stat-value" id="stat-wpm">0</div></div>
+      <div class="stat"><div class="stat-label">ACCURACY</div><div class="stat-value" id="stat-acc">100<span class="stat-unit">%</span></div></div>
+      <div class="stat"><div class="stat-label">PROGRESS</div><div class="stat-value" id="stat-prog">0<span class="stat-unit">%</span></div></div>
+      <div class="stat"><div class="stat-label">TIME</div><div class="stat-value" id="stat-time">0<span class="stat-unit">s</span></div></div>
+    </div>
+    <div class="typing-area">
+      <div class="para-label">TYPE THE PARAGRAPH BELOW</div>
+      <div id="target-row"></div>
+      <hr class="row-divider">
+      <div id="typed-row"></div>
+    </div>
+  </div>
+
+  <div class="keyboard-wrap">
+    <div class="keyboard-label">KEYBOARD GUIDE</div>
+    <div class="keyboard">
+      <div class="key-row">
+        <div class="key" data-key="`"><span class="sc">~</span><span class="mc">`</span></div>
+        <div class="key" data-key="1"><span class="sc">!</span><span class="mc">1</span></div>
+        <div class="key" data-key="2"><span class="sc">"</span><span class="mc">2</span></div>
+        <div class="key" data-key="3"><span class="sc">#</span><span class="mc">3</span></div>
+        <div class="key" data-key="4"><span class="sc">$</span><span class="mc">4</span></div>
+        <div class="key" data-key="5"><span class="sc">%</span><span class="mc">5</span></div>
+        <div class="key" data-key="6"><span class="sc">^</span><span class="mc">6</span></div>
+        <div class="key" data-key="7"><span class="sc">'</span><span class="mc">7</span></div>
+        <div class="key" data-key="8"><span class="sc">*</span><span class="mc">8</span></div>
+        <div class="key" data-key="9"><span class="sc">(</span><span class="mc">9</span></div>
+        <div class="key" data-key="0"><span class="sc">)</span><span class="mc">0</span></div>
+        <div class="key" data-key="-"><span class="sc">_</span><span class="mc">-</span></div>
+        <div class="key" data-key="="><span class="sc">+</span><span class="mc">=</span></div>
+        <div class="key w20" data-key="Backspace">&#x232B; back</div>
+      </div>
+      <div class="key-row">
+        <div class="key w15">tab</div>
+        <div class="key" data-key="q">q</div><div class="key" data-key="w">w</div>
+        <div class="key" data-key="e">e</div><div class="key" data-key="r">r</div>
+        <div class="key" data-key="t">t</div><div class="key" data-key="y">y</div>
+        <div class="key" data-key="u">u</div><div class="key" data-key="i">i</div>
+        <div class="key" data-key="o">o</div><div class="key" data-key="p">p</div>
+        <div class="key" data-key="["><span class="sc">{</span><span class="mc">[</span></div>
+        <div class="key" data-key="]"><span class="sc">}</span><span class="mc">]</span></div>
+        <div class="key w15" data-key="\"><span class="sc">|</span><span class="mc">\</span></div>
+      </div>
+      <div class="key-row">
+        <div class="key wcap">caps</div>
+        <div class="key" data-key="a">a</div><div class="key" data-key="s">s</div>
+        <div class="key" data-key="d">d</div><div class="key" data-key="f">f</div>
+        <div class="key" data-key="g">g</div><div class="key" data-key="h">h</div>
+        <div class="key" data-key="j">j</div><div class="key" data-key="k">k</div>
+        <div class="key" data-key="l">l</div>
+        <div class="key" data-key=";"><span class="sc">:</span><span class="mc">;</span></div>
+        <div class="key" data-key="'"><span class="sc">@</span><span class="mc">'</span></div>
+        <div class="key went">enter &#x21B5;</div>
+      </div>
+      <div class="key-row">
+        <div class="key wsl" id="key-sl">shift &#x21E7;</div>
+        <div class="key" data-key="z">z</div><div class="key" data-key="x">x</div>
+        <div class="key" data-key="c">c</div><div class="key" data-key="v">v</div>
+        <div class="key" data-key="b">b</div><div class="key" data-key="n">n</div>
+        <div class="key" data-key="m">m</div>
+        <div class="key" data-key=","><span class="sc">&lt;</span><span class="mc">,</span></div>
+        <div class="key" data-key="."><span class="sc">&gt;</span><span class="mc">.</span></div>
+        <div class="key" data-key="/"><span class="sc">?</span><span class="mc">/</span></div>
+        <div class="key wsr" id="key-sr">shift &#x21E7;</div>
+      </div>
+      <div class="key-row">
+        <div class="key w20">ctrl</div>
+        <div class="key w15">opt</div>
+        <div class="key wsp" data-key=" ">space</div>
+        <div class="key w15">opt</div>
+        <div class="key w20">ctrl</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graded attempt result -->
+  <div class="result-panel" id="result-panel">
+    <div class="result-title">// attempt result</div>
+    <div class="result-grid">
+      <div class="result-item"><div class="ril">Completion</div><div class="riv" id="res-comp">--</div><div class="rip" id="res-comp-pts">--</div></div>
+      <div class="result-item"><div class="ril">Accuracy</div><div class="riv" id="res-acc">--</div><div class="rip" id="res-acc-pts">--</div></div>
+      <div class="result-item"><div class="ril">WPM</div><div class="riv" id="res-wpm">--</div><div class="rip" id="res-wpm-pts">--</div></div>
+    </div>
+    <div class="result-actions" id="result-actions"></div>
+  </div>
+
+  <!-- Baseline paragraph result -->
+  <div class="baseline-result-panel" id="baseline-result-panel">
+    <div class="result-title">// paragraph complete</div>
+    <div class="baseline-wpm" id="baseline-wpm-display">--</div>
+    <div class="baseline-wpm-label">WPM this paragraph</div>
+    <div class="result-actions" id="baseline-result-actions"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCREEN 4: RESULTS
+═══════════════════════════════════════════════════ -->
+<div class="screen" id="screen-results">
+  <div class="top-bar">
+    <div class="logo">// typing.check</div>
+    <div class="student-badge" id="results-badge"></div>
+  </div>
+  <div class="results-page-title">
+    <h1>My Progress</h1>
+    <p>All sessions from baseline to most recent. Best attempt per session recorded.</p>
+  </div>
+  <div class="summary-row">
+    <div class="stat-card"><div class="stat-card-label">Baseline WPM</div><div class="stat-card-value base-c" id="sum-baseline">--</div><div class="stat-card-sub" id="sum-baseline-date"></div></div>
+    <div class="stat-card"><div class="stat-card-label">Best WPM Ever</div><div class="stat-card-value wpm-c" id="sum-best-wpm">--</div><div class="stat-card-sub" id="sum-best-wpm-sess"></div></div>
+    <div class="stat-card"><div class="stat-card-label">Best Accuracy</div><div class="stat-card-value acc-c" id="sum-best-acc">--%</div><div class="stat-card-sub" id="sum-best-acc-sess"></div></div>
+    <div class="stat-card"><div class="stat-card-label">Sessions Done</div><div class="stat-card-value" style="color:var(--text)" id="sum-sessions">--</div><div class="stat-card-sub">incl. baseline</div></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-header">
+      <div class="chart-title">// WPM &amp; ACCURACY OVER TIME</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--baseline-color)"></div>Baseline</div>
+        <div class="legend-item"><div class="legend-line" style="background:var(--accent)"></div>WPM</div>
+        <div class="legend-item"><div class="legend-line" style="background:var(--correct)"></div>Accuracy %</div>
+        <div class="legend-item"><div class="legend-dash"></div>Target WPM</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="results-chart" height="300"></canvas></div>
+  </div>
+  <div class="history-card">
+    <div class="history-header">// session history</div>
+    <div id="history-content"></div>
+  </div>
+  <button class="btn btn-secondary" onclick="showScreen('home')" style="margin-top:8px">&#8592; Back to Home</button>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  CONFIGURATION — replace with your deployed Web App URL
+// ════════════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdGooHlbi8UcKe-Cx6sa2_h15qGER6Ica2ATEAGD9Dy4X8clRxFPuvWfoPQZeem6jD5g/exec';
+
+// ════════════════════════════════════════════════════════
+//  JIS KEYBOARD MAP
+// ════════════════════════════════════════════════════════
+const JIS = {
+  "'": { keys: ['7'], shift: true },
+  '"': { keys: ['2'], shift: true },
+};
+
+// ════════════════════════════════════════════════════════
+//  APP STATE
+// ════════════════════════════════════════════════════════
+const state = {
+  // Student info
+  studentNumber: '',
+  nameEng:       '',
+  nameJpn:       '',
+  className:     '',
+
+  // Session info
+  session:       null,   // full session object from backend
+  pastResults:   [],     // array of past result objects
+
+  // Typing test state
+  paragraphs:    [],     // array of {order, text} for this session
+  paraIndex:     0,      // which paragraph we're on (0-based)
+  baselineWpms:  [],     // WPM per paragraph for baseline average
+
+  // Attempt state
+  attemptNum:    1,
+  maxAttempts:   3,
+  typed:         '',
+  charStates:    [],
+  everWrong:     [],
+  startTime:     null,
+  timerInterval: null,
+  running:       false,
+  finished:      false,
+  bestWpmThisSession: 0,
+  bestAccThisSession: 0,
+  bestCompletedThisSession: false,
+  submittedFinal: false,
+};
+
+// ════════════════════════════════════════════════════════
+//  SCREEN MANAGEMENT
+// ════════════════════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showLoading(on) {
+  document.getElementById('loading').classList.toggle('show', on);
+}
+
+// ════════════════════════════════════════════════════════
+//  API CALLS
+// ════════════════════════════════════════════════════════
+async function apiGet(params) {
+  const url = SCRIPT_URL + '?' + new URLSearchParams(params).toString();
+  const res  = await fetch(url);
+  return res.json();
+}
+
+async function apiPost(body) {
+  const res = await fetch(SCRIPT_URL, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(body),
+  });
+  return res.json();
+}
+
+// ════════════════════════════════════════════════════════
+//  LOGIN
+// ════════════════════════════════════════════════════════
+document.getElementById('student-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+async function doLogin() {
+  const input = document.getElementById('student-input').value.trim().toUpperCase();
+  const errEl = document.getElementById('login-error');
+  errEl.classList.remove('show');
+
+  if (!input) { showError(errEl, 'Please enter your student number.'); return; }
+
+  showLoading(true);
+  try {
+    const data = await apiGet({ action: 'login', studentNumber: input });
+    if (data.error) { showError(errEl, data.error); return; }
+
+    // Store student info
+    state.studentNumber = data.studentNumber;
+    state.nameEng       = data.nameEng;
+    state.nameJpn       = data.nameJpn;
+    state.className     = data.className;
+
+    // Load session + results in parallel
+    const [sessData, resData] = await Promise.all([
+      apiGet({ action: 'getSession',  studentNumber: state.studentNumber, className: state.className }),
+      apiGet({ action: 'getResults',  studentNumber: state.studentNumber }),
+    ]);
+
+    if (sessData.error) { showError(errEl, sessData.error); return; }
+    if (resData.error)  { showError(errEl, resData.error);  return; }
+
+    state.session     = sessData.session;
+    state.pastResults = resData.results || [];
+
+    buildHomeScreen();
+    showScreen('home');
+  } catch (err) {
+    showError(errEl, 'Connection error. Please try again.');
+    console.error(err);
+  } finally {
+    showLoading(false);
+  }
+}
+
+function showError(el, msg) {
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+// ════════════════════════════════════════════════════════
+//  HOME SCREEN
+// ════════════════════════════════════════════════════════
+function buildHomeScreen() {
+  const s = state;
+
+  // Badge
+  document.getElementById('home-badge').innerHTML =
+    '<b>' + s.studentNumber + '</b> &nbsp;·&nbsp; ' + s.nameEng + ' &nbsp;·&nbsp; ' + s.className;
+
+  // Greeting
+  document.getElementById('home-greeting').textContent = 'Welcome back, ' + s.nameEng.split(' ')[0] + '!';
+
+  // Stats from past results
+  const gradedResults = s.pastResults.filter(r => !r.isBaseline);
+  const allWpms       = s.pastResults.map(r => r.wpm);
+  const bestWpm       = allWpms.length > 0 ? Math.max(...allWpms) : null;
+  const bestAcc       = s.pastResults.length > 0 ? Math.max(...s.pastResults.map(r => r.accuracy)) : null;
+
+  // Next target WPM
+  const nextTarget = bestWpm !== null ? bestWpm + 1 : null;
+
+  document.getElementById('home-best-wpm').textContent = bestWpm !== null ? bestWpm : '--';
+  document.getElementById('home-best-acc').textContent = bestAcc !== null ? bestAcc + '%' : '--%';
+  document.getElementById('home-sessions').textContent = s.pastResults.length;
+
+  const subtext = nextTarget
+    ? 'Class ' + s.className + ' &nbsp;·&nbsp; Your next target is <span class="target-wpm">' + nextTarget + '+ WPM</span>'
+    : 'Class ' + s.className + ' &nbsp;·&nbsp; Complete your baseline to set your WPM target.';
+  document.getElementById('home-subtext').innerHTML = subtext;
+
+  // Action cards
+  renderHomeCards();
+}
+
+function renderHomeCards() {
+  const sess = state.session;
+  const el   = document.getElementById('home-action-cards');
+
+  // Results card — always available
+  const resultsCard = `
+    <div class="action-card results-card" onclick="goToResults()">
+      <div class="card-icon green">&#128200;</div>
+      <div class="card-title">View My Results</div>
+      <div class="card-desc">See your WPM and accuracy history across all sessions with your progress graph.</div>
+      <div class="card-arrow">&#8594;</div>
+    </div>`;
+
+  let checkCard = '';
+  const sessName = sess ? (sess.sessionName + (sess.sessionNumber > 0 ? ' #' + sess.sessionNumber : '')) : '';
+
+  if (!sess || sess.status !== 'open') {
+    // No session open
+    checkCard = `
+      <div class="action-card locked">
+        <div class="session-badge badge-locked">NOT YET OPEN</div>
+        <div class="card-icon grey">&#128274;</div>
+        <div class="card-title">Next Skill Check</div>
+        <div class="card-desc">No typing check is currently open. Check back when your teacher opens the next session.</div>
+        <div class="lock-reason">&#128274; Waiting for teacher to open</div>
+      </div>`;
+  } else if (sess.alreadyCompleted) {
+    // Already done this session
+    checkCard = `
+      <div class="action-card locked">
+        <div class="session-badge badge-done">COMPLETED</div>
+        <div class="card-icon grey">&#10003;</div>
+        <div class="card-title">${sessName}</div>
+        <div class="card-desc">You have completed this session. Check your results to see how you did.</div>
+        <div class="lock-reason">&#10003; Submitted — well done!</div>
+      </div>`;
+  } else {
+    // Open and not done
+    checkCard = `
+      <div class="action-card" onclick="startTest()">
+        <div class="session-badge badge-open">OPEN</div>
+        <div class="card-icon blue">&#9000;</div>
+        <div class="card-title">${sessName}</div>
+        <div class="card-desc">${sess.isBaseline
+          ? 'This is your baseline check. Type 3 paragraphs to set your WPM benchmark. Not graded.'
+          : 'Your new typing check is ready. Up to 3 attempts — best score recorded.'}</div>
+        <div class="card-arrow">&#8594;</div>
+      </div>`;
+  }
+
+  el.innerHTML = resultsCard + checkCard;
+}
+
+// ════════════════════════════════════════════════════════
+//  START TEST
+// ════════════════════════════════════════════════════════
+function startTest() {
+  const sess = state.session;
+  if (!sess || !sess.paragraphs || sess.paragraphs.length === 0) {
+    alert('No paragraphs found for this session. Please contact your teacher.');
+    return;
+  }
+
+  // Reset test state
+  state.paragraphs    = sess.paragraphs;
+  state.paraIndex     = 0;
+  state.baselineWpms  = [];
+  state.attemptNum    = 1;
+  state.bestWpmThisSession      = 0;
+  state.bestAccThisSession      = 0;
+  state.bestCompletedThisSession= false;
+  state.submittedFinal          = false;
+
+  // Update badges
+  const badge = state.studentNumber + ' &nbsp;·&nbsp; ' + state.nameEng + ' &nbsp;·&nbsp; ' + state.className;
+  document.getElementById('test-badge').innerHTML = badge;
+
+  // Session title
+  const titleEl = document.getElementById('test-session-title');
+  const subEl   = document.getElementById('test-session-sub');
+  const today   = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  if (sess.isBaseline) {
+    titleEl.textContent = 'Typing Skill Baseline Check — ' + today;
+    subEl.textContent   = 'Type each paragraph carefully. Your average WPM sets your personal benchmark.';
+    document.getElementById('baseline-banner').classList.add('show');
+    document.getElementById('para-counter').style.display = 'flex';
+    document.getElementById('attempt-row').style.display  = 'none';
+  } else {
+    titleEl.textContent = sess.sessionName + ' #' + sess.sessionNumber + ' — ' + today;
+    subEl.textContent   = 'Up to 3 attempts. Your best score will be submitted.';
+    document.getElementById('baseline-banner').classList.remove('show');
+    document.getElementById('para-counter').style.display = 'none';
+    document.getElementById('attempt-row').style.display  = 'flex';
+  }
+
+  loadParagraph();
+  showScreen('test');
+  setTimeout(() => document.getElementById('capture').focus(), 200);
+}
+
+// ════════════════════════════════════════════════════════
+//  TYPING TEST LOGIC
+// ════════════════════════════════════════════════════════
+const TOKENS_CACHE = {};
+
+function buildTokens(text) {
+  if (TOKENS_CACHE[text]) return TOKENS_CACHE[text];
+  const tokens = [];
+  let i = 0;
+  while (i < text.length) {
+    if (text[i] === ' ') {
+      let s = i; while (i < text.length && text[i] === ' ') i++;
+      tokens.push({ type: 'spaces', start: s, end: i });
+    } else {
+      let s = i; while (i < text.length && text[i] !== ' ') i++;
+      tokens.push({ type: 'word', start: s, end: i });
+    }
+  }
+  TOKENS_CACHE[text] = tokens;
+  return tokens;
+}
+
+function esc(ch) {
+  if (ch === '&') return '&amp;';
+  if (ch === '<') return '&lt;';
+  if (ch === '>') return '&gt;';
+  return ch;
+}
+
+function renderRow(rowEl, sample, charStates, typed, limit, showCursor) {
+  const tokens = buildTokens(sample);
+  let html = '';
+  for (const tok of tokens) {
+    if (tok.start >= limit) break;
+    if (tok.type === 'spaces') {
+      for (let ci = tok.start; ci < tok.end && ci < limit; ci++) {
+        const st  = charStates[ci] || 'pending';
+        const cur = showCursor && ci === typed.length;
+        html += '<span class="ch ' + st + (cur ? ' cursor' : '') + '">&nbsp;</span>';
+      }
+      if (tok.end <= limit) html += '<wbr>';
+    } else {
+      let wh = '';
+      for (let ci = tok.start; ci < tok.end && ci < limit; ci++) {
+        const st  = charStates[ci] || 'pending';
+        const cur = showCursor && ci === typed.length;
+        wh += '<span class="ch ' + st + (cur ? ' cursor' : '') + '">' + esc(sample[ci]) + '</span>';
+      }
+      if (wh) html += '<span class="word">' + wh + '</span>';
+    }
+  }
+  rowEl.innerHTML = html;
+}
+
+function renderAll() {
+  const sample = state.paragraphs[state.paraIndex].text;
+  renderRow(document.getElementById('target-row'), sample, state.charStates, state.typed, sample.length, true);
+  renderRow(document.getElementById('typed-row'),  sample, state.charStates, state.typed, state.typed.length, false);
+}
+
+function loadParagraph() {
+  const sample = state.paragraphs[state.paraIndex].text;
+  state.typed       = '';
+  state.charStates  = Array(sample.length).fill('pending');
+  state.everWrong   = Array(sample.length).fill(false);
+  state.startTime   = null;
+  state.running     = false;
+  state.finished    = false;
+  state.attemptNum  = 1;
+  state.bestWpmThisSession = 0;
+
+  document.getElementById('capture').value = '';
+  document.getElementById('result-panel').classList.remove('show');
+  document.getElementById('baseline-result-panel').classList.remove('show');
+
+  // Update para pips for baseline
+  if (state.session.isBaseline) {
+    for (let p = 1; p <= 3; p++) {
+      const pip = document.getElementById('para-pip-' + p);
+      if (!pip) continue;
+      if (p - 1 < state.paraIndex)       pip.className = 'para-pip done';
+      else if (p - 1 === state.paraIndex) pip.className = 'para-pip active';
+      else                                pip.className = 'para-pip';
+    }
+  }
+
+  updateAttemptPips();
+  renderAll();
+  updateStats();
+  highlightNext();
+}
+
+function resetAttempt() {
+  const sample = state.paragraphs[state.paraIndex].text;
+  clearInterval(state.timerInterval);
+  state.typed      = '';
+  state.charStates = Array(sample.length).fill('pending');
+  state.everWrong  = Array(sample.length).fill(false);
+  state.startTime  = null;
+  state.running    = false;
+  state.finished   = false;
+  document.getElementById('capture').value = '';
+  document.getElementById('result-panel').classList.remove('show');
+  document.getElementById('baseline-result-panel').classList.remove('show');
+  renderAll();
+  updateStats();
+  highlightNext();
+}
+
+function updateAttemptPips() {
+  if (state.session.isBaseline) return;
+  for (let p = 1; p <= state.maxAttempts; p++) {
+    const pip = document.getElementById('pip-' + p);
+    if (!pip) continue;
+    if (p < state.attemptNum)        pip.className = 'attempt-pip done';
+    else if (p === state.attemptNum) pip.className = 'attempt-pip active';
+    else                             pip.className = 'attempt-pip';
+  }
+  document.getElementById('best-badge-test').textContent =
+    state.bestWpmThisSession > 0 ? 'BEST: ' + state.bestWpmThisSession + ' WPM' : 'BEST: -- WPM';
+}
+
+// ── Stats ─────────────────────────────────────────────
+function updateStats() {
+  const elapsed   = state.startTime ? (Date.now() - state.startTime) / 1000 : 0;
+  const wordCount = state.typed.trim().length > 0 ? state.typed.trim().split(/\s+/).filter(Boolean).length : 0;
+  const wpm       = elapsed > 1 ? Math.round((wordCount / elapsed) * 60) : 0;
+  const correct   = state.charStates.filter(s => s === 'correct' || s === 'corrected').length;
+  const acc       = state.typed.length > 0 ? Math.round((correct / state.typed.length) * 100) : 100;
+  const sample    = state.paragraphs[state.paraIndex] ? state.paragraphs[state.paraIndex].text : '';
+  const prog      = sample.length > 0 ? Math.min(Math.round((state.typed.length / sample.length) * 100), 100) : 0;
+
+  const wpmEl = document.getElementById('stat-wpm');
+  const accEl = document.getElementById('stat-acc');
+  wpmEl.textContent = wpm;
+  accEl.innerHTML   = acc + '<span class="stat-unit">%</span>';
+  document.getElementById('stat-prog').innerHTML = prog + '<span class="stat-unit">%</span>';
+  document.getElementById('stat-time').innerHTML = Math.round(elapsed) + '<span class="stat-unit">s</span>';
+  wpmEl.className = 'stat-value' + (wpm >= 35 ? ' good' : wpm >= 20 ? ' warn' : wpm > 0 ? ' bad' : '');
+  accEl.className = 'stat-value' + (acc >= 90 ? ' good' : acc >= 75 ? ' warn' : ' bad');
+}
+
+// ── Keyboard ──────────────────────────────────────────
+function clearHighlights() {
+  document.querySelectorAll('#screen-test .key.active').forEach(k => k.classList.remove('active'));
+  setShift(false);
+}
+function highlightNext() {
+  clearHighlights();
+  const sample = state.paragraphs[state.paraIndex] ? state.paragraphs[state.paraIndex].text : '';
+  if (state.typed.length >= sample.length) return;
+  const ch = sample[state.typed.length];
+  if (JIS[ch]) {
+    JIS[ch].keys.forEach(k => { const el = document.querySelector('#screen-test .key[data-key="' + k + '"]'); if (el) el.classList.add('active'); });
+    if (JIS[ch].shift) setShift(true);
+    return;
+  }
+  if (/[A-Z]/.test(ch)) {
+    const el = document.querySelector('#screen-test .key[data-key="' + ch.toLowerCase() + '"]');
+    if (el) el.classList.add('active');
+    setShift(true);
+    return;
+  }
+  if (ch === ' ') { const el = document.querySelector('#screen-test .key[data-key=" "]'); if (el) el.classList.add('active'); return; }
+  const el = document.querySelector('#screen-test .key[data-key="' + ch + '"]');
+  if (el) el.classList.add('active');
+}
+function setShift(on) {
+  document.getElementById('key-sl').classList.toggle('sh-active', on);
+  document.getElementById('key-sr').classList.toggle('sh-active', on);
+}
+
+// ── Input capture ─────────────────────────────────────
+const capture = document.getElementById('capture');
+document.addEventListener('click', () => { if (document.getElementById('screen-test').classList.contains('active') && !state.finished) capture.focus(); });
+
+capture.addEventListener('input', () => {
+  if (state.finished) return;
+  const val = capture.value;
+  if (!state.running && val.length > 0) {
+    state.running   = true;
+    state.startTime = Date.now();
+    state.timerInterval = setInterval(updateStats, 400);
+  }
+  state.typed = val;
+  const sample = state.paragraphs[state.paraIndex].text;
+  for (let i = 0; i < sample.length; i++) {
+    if (i >= state.typed.length) {
+      state.charStates[i] = 'pending';
+    } else if (state.typed[i] === sample[i]) {
+      state.charStates[i] = state.everWrong[i] ? 'corrected' : 'correct';
+    } else {
+      state.charStates[i] = 'error';
+      state.everWrong[i]  = true;
+    }
+  }
+  renderAll();
+  updateStats();
+  highlightNext();
+  if (state.typed.length >= sample.length) {
+    clearInterval(state.timerInterval);
+    state.running  = false;
+    state.finished = true;
+    finishParagraph();
+  }
+});
+
+capture.addEventListener('keydown', e => {
+  if (e.key === 'Shift') setShift(true);
+  if (e.key === 'Tab')   e.preventDefault();
+});
+capture.addEventListener('keyup', e => {
+  if (e.key === 'Shift') {
+    const sample = state.paragraphs[state.paraIndex] ? state.paragraphs[state.paraIndex].text : '';
+    if (state.typed.length < sample.length) {
+      const next = sample[state.typed.length];
+      if (!(/[A-Z]/.test(next) || (JIS[next] && JIS[next].shift))) setShift(false);
+    } else { setShift(false); }
+  }
+});
+
+// ════════════════════════════════════════════════════════
+//  FINISH A PARAGRAPH
+// ════════════════════════════════════════════════════════
+function finishParagraph() {
+  const elapsed   = state.startTime ? (Date.now() - state.startTime) / 1000 : 1;
+  const wordCount = state.typed.trim().split(/\s+/).filter(Boolean).length;
+  const wpm       = Math.round((wordCount / elapsed) * 60);
+  const correct   = state.charStates.filter(s => s === 'correct' || s === 'corrected').length;
+  const acc       = state.typed.length > 0 ? Math.round((correct / state.typed.length) * 100) : 0;
+  const completed = state.typed.length >= state.paragraphs[state.paraIndex].text.length;
+
+  if (state.session.isBaseline) {
+    handleBaselineParagraph(wpm);
+  } else {
+    handleGradedAttempt(wpm, acc, completed);
+  }
+}
+
+// ── Baseline paragraph complete ────────────────────────
+function handleBaselineParagraph(wpm) {
+  state.baselineWpms.push(wpm);
+
+  document.getElementById('baseline-wpm-display').textContent = wpm;
+
+  const actEl = document.getElementById('baseline-result-actions');
+  actEl.innerHTML = '';
+
+  const isLastPara = state.paraIndex >= state.paragraphs.length - 1;
+
+  if (!isLastPara) {
+    const nextBtn = document.createElement('button');
+    nextBtn.className   = 'btn btn-primary';
+    nextBtn.textContent = 'Next Paragraph (' + (state.paragraphs.length - state.paraIndex - 1) + ' left)';
+    nextBtn.onclick     = () => {
+      state.paraIndex++;
+      loadParagraph();
+      setTimeout(() => capture.focus(), 100);
+    };
+    actEl.appendChild(nextBtn);
+  } else {
+    // All 3 paragraphs done — calculate average and submit
+    const avgWpm = Math.round(state.baselineWpms.reduce((a, b) => a + b, 0) / state.baselineWpms.length);
+    document.getElementById('baseline-wpm-display').textContent = avgWpm;
+    document.querySelector('#baseline-result-panel .result-title').textContent = '// baseline complete — average WPM';
+
+    const finishBtn = document.createElement('button');
+    finishBtn.className   = 'btn btn-finish';
+    finishBtn.textContent = 'Submit Baseline & Return Home';
+    finishBtn.onclick     = () => submitBaseline(avgWpm);
+    actEl.appendChild(finishBtn);
+  }
+
+  document.getElementById('baseline-result-panel').classList.add('show');
+  document.getElementById('baseline-result-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function submitBaseline(avgWpm) {
+  showLoading(true);
+  try {
+    await apiPost({
+      action:        'submitResult',
+      studentNumber: state.studentNumber,
+      className:     state.className,
+      sessionName:   state.session.sessionName,
+      sessionNumber: state.session.sessionNumber,
+      isBaseline:    true,
+      wpm:           avgWpm,
+      accuracy:      Math.round(state.baselineWpms.reduce((a,b) => a+b, 0) / state.baselineWpms.length),
+      completed:     true,
+      score:         0,
+      totalPoints:   0,
+    });
+    // Refresh results and return home
+    const resData = await apiGet({ action: 'getResults', studentNumber: state.studentNumber });
+    state.pastResults       = resData.results || [];
+    state.session.alreadyCompleted = true;
+    buildHomeScreen();
+    showScreen('home');
+  } catch (err) {
+    alert('Error submitting results. Please try again.');
+    console.error(err);
+  } finally {
+    showLoading(false);
+  }
+}
+
+// ── Graded attempt complete ────────────────────────────
+function handleGradedAttempt(wpm, acc, completed) {
+  const sess = state.session;
+  const accThreshold = sess.accuracyThreshold || 80;
+  const personalBest = sess.personalBestWpm    || 0;
+
+  // Track best this session
+  if (wpm > state.bestWpmThisSession) state.bestWpmThisSession = wpm;
+  if (acc > state.bestAccThisSession) state.bestAccThisSession = acc;
+  if (completed) state.bestCompletedThisSession = true;
+  updateAttemptPips();
+
+  // Scoring
+  const compPass = completed;
+  const accPass  = acc  >= accThreshold;
+  const wpmPass  = wpm  >  personalBest;
+  const score    = (compPass ? sess.completionPoints : 0) +
+                   (accPass  ? sess.accuracyPoints   : 0) +
+                   (wpmPass  ? sess.wpmPoints         : 0);
+  const total    = sess.completionPoints + sess.accuracyPoints + sess.wpmPoints;
+
+  // Fill result panel
+  document.getElementById('res-comp').textContent = compPass ? 'PASS' : 'FAIL';
+  document.getElementById('res-comp').className   = 'riv ' + (compPass ? 'pass' : 'fail');
+  document.getElementById('res-comp-pts').textContent = compPass
+    ? sess.completionPoints + ' / ' + sess.completionPoints + ' pts'
+    : '0 / ' + sess.completionPoints + ' pts';
+
+  document.getElementById('res-acc').textContent = acc + '%';
+  document.getElementById('res-acc').className   = 'riv ' + (accPass ? 'pass' : 'fail');
+  document.getElementById('res-acc-pts').textContent = accPass
+    ? sess.accuracyPoints + ' / ' + sess.accuracyPoints + ' pts'
+    : '0 / ' + sess.accuracyPoints + ' pts — need ' + accThreshold + '%+';
+
+  document.getElementById('res-wpm').textContent = wpm;
+  document.getElementById('res-wpm').className   = 'riv ' + (wpmPass ? 'pass' : 'warn');
+  document.getElementById('res-wpm-pts').textContent = wpmPass
+    ? sess.wpmPoints + ' / ' + sess.wpmPoints + ' pts'
+    : '0 / ' + sess.wpmPoints + ' pts — target: ' + (personalBest + 1) + '+ WPM';
+
+  // Action buttons
+  const actEl = document.getElementById('result-actions');
+  actEl.innerHTML = '';
+
+  if (state.attemptNum < state.maxAttempts) {
+    const remaining = state.maxAttempts - state.attemptNum;
+    const tryBtn = document.createElement('button');
+    tryBtn.className   = 'btn btn-secondary';
+    tryBtn.textContent = 'Try Again (' + remaining + ' attempt' + (remaining > 1 ? 's' : '') + ' left)';
+    tryBtn.onclick     = () => {
+      state.attemptNum++;
+      resetAttempt();
+      updateAttemptPips();
+      setTimeout(() => capture.focus(), 100);
+    };
+    actEl.appendChild(tryBtn);
+  }
+
+  const finishBtn = document.createElement('button');
+  finishBtn.className   = 'btn btn-finish';
+  finishBtn.textContent = 'Finish & Submit Best Score';
+  finishBtn.onclick     = () => submitGraded(score, total);
+  actEl.appendChild(finishBtn);
+
+  document.getElementById('result-panel').classList.add('show');
+  document.getElementById('result-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function submitGraded(score, total) {
+  if (state.submittedFinal) return;
+  state.submittedFinal = true;
+  showLoading(true);
+
+  const sess       = state.session;
+  const personalBest = sess.personalBestWpm || 0;
+  const accThreshold = sess.accuracyThreshold || 80;
+  const compPass   = state.bestCompletedThisSession;
+  const accPass    = state.bestAccThisSession  >= accThreshold;
+  const wpmPass    = state.bestWpmThisSession  >  personalBest;
+  const finalScore = (compPass ? sess.completionPoints : 0) +
+                     (accPass  ? sess.accuracyPoints   : 0) +
+                     (wpmPass  ? sess.wpmPoints         : 0);
+
+  try {
+    await apiPost({
+      action:        'submitResult',
+      studentNumber: state.studentNumber,
+      className:     state.className,
+      sessionName:   sess.sessionName,
+      sessionNumber: sess.sessionNumber,
+      isBaseline:    false,
+      wpm:           state.bestWpmThisSession,
+      accuracy:      state.bestAccThisSession,
+      completed:     state.bestCompletedThisSession,
+      score:         finalScore,
+      totalPoints:   sess.completionPoints + sess.accuracyPoints + sess.wpmPoints,
+    });
+    const resData = await apiGet({ action: 'getResults', studentNumber: state.studentNumber });
+    state.pastResults            = resData.results || [];
+    state.session.alreadyCompleted = true;
+    buildHomeScreen();
+    showScreen('home');
+  } catch (err) {
+    alert('Error submitting results. Please try again.');
+    state.submittedFinal = false;
+    console.error(err);
+  } finally {
+    showLoading(false);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  RESULTS SCREEN
+// ════════════════════════════════════════════════════════
+function goToResults() {
+  buildResultsScreen();
+  showScreen('results');
+}
+
+function buildResultsScreen() {
+  const results = state.pastResults;
+  const badge   = state.studentNumber + ' &nbsp;·&nbsp; ' + state.nameEng + ' &nbsp;·&nbsp; ' + state.className;
+  document.getElementById('results-badge').innerHTML = badge;
+
+  if (results.length === 0) {
+    document.getElementById('history-content').innerHTML =
+      '<div class="no-results">No sessions completed yet. Complete your baseline check to get started.</div>';
+    document.getElementById('sum-baseline').textContent    = '--';
+    document.getElementById('sum-best-wpm').textContent    = '--';
+    document.getElementById('sum-best-acc').textContent    = '--%';
+    document.getElementById('sum-sessions').textContent    = '0';
+    return;
+  }
+
+  // Summary cards
+  const baseline   = results.find(r => r.isBaseline);
+  const allWpms    = results.map(r => r.wpm);
+  const bestWpm    = Math.max(...allWpms);
+  const bestWpmR   = results.find(r => r.wpm === bestWpm);
+  const bestAcc    = Math.max(...results.map(r => r.accuracy));
+  const bestAccR   = results.find(r => r.accuracy === bestAcc);
+
+  document.getElementById('sum-baseline').textContent      = baseline ? baseline.wpm : '--';
+  document.getElementById('sum-baseline-date').textContent = baseline ? baseline.timestamp : '';
+  document.getElementById('sum-best-wpm').textContent      = bestWpm;
+  document.getElementById('sum-best-wpm-sess').textContent = bestWpmR ? bestWpmR.sessionName : '';
+  document.getElementById('sum-best-acc').textContent      = bestAcc + '%';
+  document.getElementById('sum-best-acc-sess').textContent = bestAccR ? bestAccR.sessionName : '';
+  document.getElementById('sum-sessions').textContent      = results.length;
+
+  // History table
+  let tableHtml = `<table><thead><tr>
+    <th>Session</th><th>Date</th><th>WPM</th><th>Accuracy</th><th>Result</th><th>Score</th>
+  </tr></thead><tbody>`;
+
+  results.forEach((r, i) => {
+    const prevBest = i === 0 ? 0 : Math.max(...results.slice(0, i).map(x => x.wpm));
+    const wpmPass  = !r.isBaseline && r.wpm > prevBest;
+    const accPass  = r.accuracy >= (state.session ? state.session.accuracyThreshold : 80);
+    const overallPass = !r.isBaseline && r.completed && wpmPass && accPass;
+
+    const resultBadge = r.isBaseline
+      ? '<span class="tbadge tbadge-baseline">Baseline</span>'
+      : (overallPass
+          ? '<span class="tbadge tbadge-pass">PASS</span>'
+          : '<span class="tbadge tbadge-fail">FAIL</span>');
+
+    const scoreCell = r.isBaseline
+      ? '<span style="color:var(--text-muted)">—</span>'
+      : '<span class="pts-val">' + r.score + ' / ' + r.totalPoints + '</span>';
+
+    const targetNote = (!r.isBaseline && prevBest > 0)
+      ? ' <span style="font-size:0.7rem;color:var(--text-muted)">(target: ' + (prevBest + 1) + '+)</span>'
+      : '';
+
+    tableHtml += `<tr>
+      <td>${r.sessionName}${r.sessionNumber > 0 ? ' #' + r.sessionNumber : ''}</td>
+      <td style="color:var(--text-muted);font-size:0.8rem">${r.timestamp}</td>
+      <td><span class="wpm-val">${r.wpm}</span>${targetNote}</td>
+      <td><span class="acc-val">${r.accuracy}%</span></td>
+      <td>${resultBadge}</td>
+      <td>${scoreCell}</td>
+    </tr>`;
+  });
+
+  tableHtml += '</tbody></table>';
+  document.getElementById('history-content').innerHTML = tableHtml;
+
+  // Draw chart
+  drawResultsChart(results);
+}
+
+// ════════════════════════════════════════════════════════
+//  RESULTS CHART
+// ════════════════════════════════════════════════════════
+function drawResultsChart(sessions) {
+  const canvas = document.getElementById('results-chart');
+  const dpr    = window.devicePixelRatio || 1;
+  const W      = canvas.parentElement.clientWidth;
+  const H      = 300;
+
+  canvas.width        = W * dpr;
+  canvas.height       = H * dpr;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const PAD = { top: 24, right: 24, bottom: 56, left: 50 };
+  const cw  = W - PAD.left - PAD.right;
+  const ch  = H - PAD.top  - PAD.bottom;
+
+  const allWpm = sessions.map(s => s.wpm);
+  const allAcc = sessions.map(s => s.accuracy);
+  const maxVal = Math.max(...allWpm, ...allAcc, 100);
+  const currentBest = Math.max(...allWpm);
+
+  // x includes one extra slot for "Next Check"
+  const totalSlots = sessions.length + 1;
+  function xPos(i)   { return PAD.left + (i / (totalSlots - 1)) * cw; }
+  function yPos(val) { return PAD.top  + (1 - val / maxVal) * ch; }
+
+  const nextX  = xPos(sessions.length);
+  const targetY = yPos(currentBest);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(46,49,80,0.7)';
+  ctx.lineWidth   = 1;
+  [0, 20, 40, 60, 80, 100].forEach(v => {
+    if (v > maxVal) return;
+    const y = yPos(v);
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cw, y); ctx.stroke();
+    ctx.fillStyle = '#5a5f7a';
+    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(v, PAD.left - 6, y + 4);
+  });
+
+  // X labels — sessions
+  sessions.forEach((s, i) => {
+    const x = xPos(i);
+    ctx.fillStyle  = s.isBaseline ? '#c084fc' : '#5a5f7a';
+    ctx.font       = (s.isBaseline ? 'bold ' : '') + '10px JetBrains Mono, monospace';
+    ctx.textAlign  = 'center';
+    ctx.fillText(s.isBaseline ? 'Baseline' : s.sessionName + (s.sessionNumber > 0 ? ' #' + s.sessionNumber : ''),
+                 x, H - PAD.bottom + 16);
+    ctx.fillStyle = '#3a3e5a';
+    ctx.font      = '9px JetBrains Mono, monospace';
+    ctx.fillText(s.timestamp, x, H - PAD.bottom + 30);
+  });
+
+  // X label — Next Check
+  ctx.fillStyle = '#f5c842';
+  ctx.font      = 'bold 10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('Next Check', nextX, H - PAD.bottom + 16);
+  ctx.fillStyle = '#7a6520';
+  ctx.font      = '9px JetBrains Mono, monospace';
+  ctx.fillText('beat ' + (currentBest + 1) + '+ WPM', nextX, H - PAD.bottom + 30);
+
+  // Dashed target line — full width to Next Check
+  ctx.save();
+  ctx.setLineDash([6, 5]);
+  ctx.strokeStyle  = '#f5c842';
+  ctx.lineWidth    = 1.8;
+  ctx.globalAlpha  = 0.85;
+  ctx.beginPath(); ctx.moveTo(PAD.left, targetY); ctx.lineTo(nextX, targetY); ctx.stroke();
+  ctx.restore();
+
+  // Draw a line + dots for a data series
+  function drawSeries(dataFn, lineColor, dotColor) {
+    ctx.save();
+    ctx.strokeStyle = lineColor;
+    ctx.lineWidth   = 2.5;
+    ctx.lineJoin    = 'round';
+    ctx.lineCap     = 'round';
+    ctx.beginPath();
+    sessions.forEach((s, i) => {
+      const x = xPos(i), y = yPos(dataFn(s));
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.restore();
+
+    sessions.forEach((s, i) => {
+      const x = xPos(i), y = yPos(dataFn(s));
+      ctx.beginPath();
+      ctx.arc(x, y, s.isBaseline ? 7 : 5, 0, Math.PI * 2);
+      ctx.fillStyle   = s.isBaseline ? '#c084fc' : dotColor;
+      ctx.fill();
+      ctx.strokeStyle = '#0f1117';
+      ctx.lineWidth   = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = s.isBaseline ? '#c084fc' : dotColor;
+      ctx.font      = 'bold 10px JetBrains Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(dataFn(s) + (dotColor === '#3dd68c' ? '%' : ''), x, y - 12);
+    });
+  }
+
+  drawSeries(s => s.accuracy, '#3dd68c', '#3dd68c');
+  drawSeries(s => s.wpm,      '#5b7fff', '#5b7fff');
+
+  // Hollow target dot at Next Check
+  ctx.beginPath();
+  ctx.arc(nextX, targetY, 6, 0, Math.PI * 2);
+  ctx.fillStyle   = '#1a1d27';
+  ctx.strokeStyle = '#f5c842';
+  ctx.lineWidth   = 2;
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = '#f5c842';
+  ctx.font      = 'bold 10px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText((currentBest + 1) + '+', nextX, targetY - 12);
+
+  // Baseline vertical marker
+  ctx.save();
+  ctx.strokeStyle = 'rgba(192,132,252,0.2)';
+  ctx.lineWidth   = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(xPos(0), PAD.top);
+  ctx.lineTo(xPos(0), PAD.top + ch);
+  ctx.stroke();
+  ctx.restore();
+}
+
+// Redraw chart on resize
+window.addEventListener('resize', () => {
+  if (state.pastResults.length > 0 && document.getElementById('screen-results').classList.contains('active')) {
+    drawResultsChart(state.pastResults);
+  }
+});
+</script>
+</body>
+</html>
