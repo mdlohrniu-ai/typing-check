@@ -46,7 +46,7 @@ body {
   width: 100%;
   flex-direction: column;
   align-items: center;
-  padding: 36px 16px 56px;
+  padding: 36px 24px 56px;
   min-height: 100vh;
 }
 .screen.active { display: flex; }
@@ -54,7 +54,7 @@ body {
 /* ── Shared header ─────────────────────────────────── */
 .top-bar {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -112,7 +112,7 @@ body {
 
 .card {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -233,7 +233,7 @@ body {
 ══════════════════════════════════════════════════════ */
 .greeting {
   width: 100%;
-  max-width: 700px;
+  max-width: 1100px;
   text-align: center;
   margin-bottom: 32px;
 }
@@ -248,7 +248,7 @@ body {
 
 .stats-strip {
   width: 100%;
-  max-width: 700px;
+  max-width: 1100px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
@@ -280,7 +280,7 @@ body {
 
 .action-cards {
   width: 100%;
-  max-width: 700px;
+  max-width: 1100px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
@@ -350,7 +350,7 @@ body {
 ══════════════════════════════════════════════════════ */
 .test-header {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   margin-bottom: 20px;
 }
 .test-session-title {
@@ -367,7 +367,7 @@ body {
 
 .attempt-row {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -434,7 +434,7 @@ body {
 /* Baseline info banner */
 .baseline-banner {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   background: rgba(192,132,252,0.08);
   border: 1px solid rgba(192,132,252,0.25);
   border-radius: 10px;
@@ -449,7 +449,7 @@ body {
 /* Baseline paragraph counter */
 .para-counter {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -472,7 +472,7 @@ body {
 /* Result panel */
 .result-panel {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -495,7 +495,7 @@ body {
 /* Baseline result */
 .baseline-result-panel {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   background: rgba(192,132,252,0.07);
   border: 1px solid rgba(192,132,252,0.25);
   border-radius: 16px;
@@ -517,7 +517,7 @@ body {
 /* ── Keyboard ─────────────────────────────────────── */
 .keyboard-wrap {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -561,13 +561,13 @@ body {
 /* ══════════════════════════════════════════════════════
    RESULTS SCREEN
 ══════════════════════════════════════════════════════ */
-.results-page-title { width: 100%; max-width: 900px; margin-bottom: 24px; }
+.results-page-title { width: 100%; max-width: 1100px; margin-bottom: 24px; }
 .results-page-title h1 { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
 .results-page-title p { font-size: 0.82rem; color: var(--text-muted); }
 
 .summary-row {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
@@ -583,7 +583,7 @@ body {
 
 .chart-card {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -600,7 +600,7 @@ body {
 .chart-wrap { width: 100%; }
 canvas#results-chart { width: 100%; display: block; }
 
-.history-card { width: 100%; max-width: 900px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 24px; }
+.history-card { width: 100%; max-width: 1100px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 24px; }
 .history-header { padding: 16px 26px; border-bottom: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
 table { width: 100%; border-collapse: collapse; }
 th { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 24px; text-align: left; border-bottom: 1px solid var(--border); }
@@ -629,7 +629,10 @@ tr:hover td { background: var(--surface2); }
      LOADING OVERLAY
 ═══════════════════════════════════════════════════ -->
 <div class="loading-overlay" id="loading">
-  <div class="spinner"></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+    <div class="spinner"></div>
+    <div id="loading-msg" style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:#5a5f7a;letter-spacing:0.05em">Connecting...</div>
+  </div>
 </div>
 
 <!-- Hidden capture textarea for typing test -->
@@ -643,6 +646,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.check</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v0.2</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -812,6 +816,12 @@ tr:hover td { background: var(--surface2); }
     <div class="result-title">// paragraph complete</div>
     <div class="baseline-wpm" id="baseline-wpm-display">--</div>
     <div class="baseline-wpm-label">WPM this paragraph</div>
+    <div style="display:flex;justify-content:center;gap:32px;margin-bottom:8px">
+      <div style="text-align:center">
+        <div style="font-size:0.62rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px">ACCURACY</div>
+        <div id="baseline-acc-display" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--correct)">--%</div>
+      </div>
+    </div>
     <div class="result-actions" id="baseline-result-actions"></div>
   </div>
 </div>
@@ -911,8 +921,10 @@ function showScreen(name) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function showLoading(on) {
+function showLoading(on, msg) {
   document.getElementById('loading').classList.toggle('show', on);
+  if (msg) document.getElementById('loading-msg').textContent = msg;
+  else document.getElementById('loading-msg').textContent = 'Connecting...';
 }
 
 // ════════════════════════════════════════════════════════
@@ -947,7 +959,7 @@ async function doLogin() {
 
   if (!input) { showError(errEl, 'Please enter your student number.'); return; }
 
-  showLoading(true);
+  showLoading(true, 'Checking student number...');
   try {
     const data = await apiGet({ action: 'login', studentNumber: input });
     if (data.error) { showError(errEl, data.error); return; }
@@ -959,6 +971,7 @@ async function doLogin() {
     state.className     = data.className;
 
     // Load session + results in parallel
+    showLoading(true, 'Loading your session...');
     const [sessData, resData] = await Promise.all([
       apiGet({ action: 'getSession',  studentNumber: state.studentNumber, className: state.className }),
       apiGet({ action: 'getResults',  studentNumber: state.studentNumber }),
@@ -1159,6 +1172,7 @@ function esc(ch) {
 }
 
 function renderRow(rowEl, sample, charStates, typed, limit, showCursor) {
+  if (limit === 0) { rowEl.innerHTML = ''; return; }
   const tokens = buildTokens(sample);
   let html = '';
   for (const tok of tokens) {
@@ -1186,6 +1200,7 @@ function renderRow(rowEl, sample, charStates, typed, limit, showCursor) {
 function renderAll() {
   const sample = state.paragraphs[state.paraIndex].text;
   renderRow(document.getElementById('target-row'), sample, state.charStates, state.typed, sample.length, true);
+  // limit typed row strictly to how many characters have been typed
   renderRow(document.getElementById('typed-row'),  sample, state.charStates, state.typed, state.typed.length, false);
 }
 
@@ -1372,7 +1387,12 @@ function finishParagraph() {
 function handleBaselineParagraph(wpm) {
   state.baselineWpms.push(wpm);
 
+  const correct = state.charStates.filter(s => s === 'correct' || s === 'corrected').length;
+  const acc = state.typed.length > 0 ? Math.round((correct / state.typed.length) * 100) : 0;
+
   document.getElementById('baseline-wpm-display').textContent = wpm;
+  document.getElementById('baseline-acc-display').textContent = acc + '%';
+  document.getElementById('baseline-acc-display').style.color = acc >= 90 ? 'var(--correct)' : acc >= 75 ? 'var(--corrected)' : 'var(--error)';
 
   const actEl = document.getElementById('baseline-result-actions');
   actEl.innerHTML = '';
