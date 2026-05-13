@@ -646,7 +646,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.check</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v0.3</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v0.4</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -865,7 +865,7 @@ tr:hover td { background: var(--surface2); }
 // ════════════════════════════════════════════════════════
 //  CONFIGURATION — replace with your deployed Web App URL
 // ════════════════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdGooHlbi8UcKe-Cx6sa2_h15qGER6Ica2ATEAGD9Dy4X8clRxFPuvWfoPQZeem6jD5g/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7pgeujRDwsV4U3v8hKpapECTNLw1LElK8i3FCzy0QXSU-yDnCCzwrHcmI-roAPj7fRw/exec';
 
 // ════════════════════════════════════════════════════════
 //  JIS KEYBOARD MAP
@@ -935,11 +935,9 @@ async function apiGet(params) {
 }
 
 async function apiPost(body) {
-  const res = await fetch(SCRIPT_URL, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify(body),
-  });
+  // Use GET with encoded JSON payload to avoid CORS issues with Apps Script
+  const params = new URLSearchParams({ payload: JSON.stringify(body) });
+  const res = await fetch(SCRIPT_URL + '?' + params.toString());
   return res.json();
 }
 
