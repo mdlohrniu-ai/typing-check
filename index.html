@@ -646,7 +646,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.check</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v0.5</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v0.6</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -1104,6 +1104,7 @@ function startTest() {
   state.paragraphs    = sess.paragraphs;
   state.paraIndex     = 0;
   state.baselineWpms  = [];
+  state.baselineAccs  = [];
   state.attemptNum    = 1;
   state.bestWpmThisSession      = 0;
   state.bestAccThisSession      = 0;
@@ -1384,6 +1385,8 @@ function handleBaselineParagraph(wpm) {
 
   const correct = state.charStates.filter(s => s === 'correct' || s === 'corrected').length;
   const acc = state.typed.length > 0 ? Math.round((correct / state.typed.length) * 100) : 0;
+  state.baselineAccs = state.baselineAccs || [];
+  state.baselineAccs.push(acc);
 
   document.getElementById('baseline-wpm-display').textContent = wpm;
   document.getElementById('baseline-acc-display').textContent = acc + '%';
@@ -1432,7 +1435,7 @@ async function submitBaseline(avgWpm) {
       sessionNumber: state.session.sessionNumber,
       isBaseline:    true,
       wpm:           avgWpm,
-      accuracy:      Math.round(state.baselineWpms.reduce((a,b) => a+b, 0) / state.baselineWpms.length),
+      accuracy:      Math.round((state.baselineAccs || []).reduce((a,b) => a+b, 0) / Math.max((state.baselineAccs || []).length, 1)),
       completed:     true,
       score:         0,
       totalPoints:   0,
