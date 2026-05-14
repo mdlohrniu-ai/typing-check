@@ -646,7 +646,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.check</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v0.6</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v0.7</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -1602,7 +1602,7 @@ function buildResultsScreen() {
   document.getElementById('sum-baseline-date').textContent = baseline ? baseline.timestamp : '';
   document.getElementById('sum-best-wpm').textContent      = bestWpm;
   document.getElementById('sum-best-wpm-sess').textContent = bestWpmR ? bestWpmR.sessionName : '';
-  document.getElementById('sum-best-acc').textContent      = bestAcc + '%';
+  document.getElementById('sum-best-acc').textContent      = (bestAcc === 0) ? '--' : bestAcc + '%';
   document.getElementById('sum-best-acc-sess').textContent = bestAccR ? bestAccR.sessionName : '';
   document.getElementById('sum-sessions').textContent      = results.length;
 
@@ -1635,7 +1635,7 @@ function buildResultsScreen() {
       <td>${r.sessionName}${r.sessionNumber > 0 ? ' #' + r.sessionNumber : ''}</td>
       <td style="color:var(--text-muted);font-size:0.8rem">${r.timestamp}</td>
       <td><span class="wpm-val">${r.wpm}</span>${targetNote}</td>
-      <td><span class="acc-val">${r.accuracy}%</span></td>
+      <td><span class="acc-val">${(r.isBaseline && r.accuracy === 0) ? '--' : r.accuracy + '%'}</span></td>
       <td>${resultBadge}</td>
       <td>${scoreCell}</td>
     </tr>`;
@@ -1752,7 +1752,10 @@ function drawResultsChart(sessions) {
       ctx.fillStyle = s.isBaseline ? '#c084fc' : dotColor;
       ctx.font      = 'bold 10px JetBrains Mono, monospace';
       ctx.textAlign = 'center';
-      ctx.fillText(dataFn(s) + (dotColor === '#3dd68c' ? '%' : ''), x, y - 12);
+      const label = dotColor === '#3dd68c'
+        ? (s.accuracy === 0 && s.isBaseline ? '--' : dataFn(s) + '%')
+        : dataFn(s);
+      ctx.fillText(label, x, y - 12);
     });
   }
 
