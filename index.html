@@ -3,189 +3,334 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spelling Drill</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>// typing.check</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+/* ── RESET & BASE ─────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f5f0e8;
-  --card:#fffdf8;
-  --ink:#1a1208;
-  --ink-soft:#6b5f4a;
-  --accent:#c84b2f;
-  --accent-light:#f5ddd8;
-  --border:#e0d5c0;
-  --green:#3a7d44;
-  --green-light:#d4ead8;
-  --red:#c0392b;
-  --red-light:#fde8e6;
-  --hint:#888;
-  --blank:#ccc;
-  --mono:'Courier New',monospace;
+  --bg:#0d0f17;
+  --surface:#161925;
+  --surface2:#1e2235;
+  --border:#2a2f45;
+  --accent:#5b7fff;
+  --accent2:#7c9fff;
+  --text:#e8eaf0;
+  --muted:#6b7299;
+  --green:#3dd68c;
+  --red:#ff5c6c;
+  --yellow:#ffd166;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Inter',sans-serif;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;
-  background-image:radial-gradient(circle at 20% 20%,rgba(200,75,47,.06) 0%,transparent 50%),
-                   radial-gradient(circle at 80% 80%,rgba(212,168,71,.08) 0%,transparent 50%);}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans)}
 
-/* ── SCREENS ── */
-.screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+/* ── SCREENS ──────────────────────────────────────────── */
+.screen{display:none;min-height:100vh;align-items:center;justify-content:center;flex-direction:column;padding:2rem}
 .screen.active{display:flex}
 
-/* ── LOGIN ── */
-#login{gap:1.5rem;text-align:center}
-.logo{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--ink)}
-.logo span{color:var(--accent);font-style:italic}
-.login-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem 2.5rem;width:100%;max-width:360px;display:flex;flex-direction:column;gap:1.25rem}
-.login-card label{font-size:.8rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.3rem;display:block}
-.login-card input{width:100%;font-size:1.1rem;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;transition:border .2s}
-.login-card input:focus{border-color:var(--accent)}
-.btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.75rem 2rem;font-size:1rem;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:opacity .2s;width:100%}
-.btn:hover{opacity:.88}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.error-msg{font-size:.85rem;color:var(--red);min-height:18px;text-align:center}
-.loading-msg{font-size:.85rem;color:var(--ink-soft);text-align:center;min-height:18px}
+/* ── LOGIN ────────────────────────────────────────────── */
+#login{gap:2rem;text-align:center}
+.logo{font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--accent);letter-spacing:-.02em}
+.logo span{color:var(--muted);font-weight:300}
+.version{font-family:var(--mono);font-size:.75rem;color:var(--muted);margin-top:.25rem}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem 2.5rem;width:100%;max-width:380px;display:flex;flex-direction:column;gap:1.25rem}
+.login-card p{color:var(--muted);font-size:.9rem;text-align:center}
+.field label{display:block;font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;color:var(--muted);margin-bottom:.5rem;text-transform:uppercase}
+.field input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;font-family:var(--mono);font-size:1rem;color:var(--text);outline:none;transition:border-color .2s}
+.field input:focus{border-color:var(--accent)}
+.field input::placeholder{color:var(--muted)}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.8rem;font-family:var(--mono);font-size:.9rem;font-weight:500;cursor:pointer;transition:opacity .2s;width:100%}
+.btn-primary:hover{opacity:.85}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.error{font-family:var(--mono);font-size:.75rem;color:var(--red);min-height:16px;text-align:center}
+.loading{font-family:var(--mono);font-size:.75rem;color:var(--muted);min-height:16px;text-align:center}
 
-/* ── NO WORDS ── */
-#no-words{gap:1rem;text-align:center}
-#no-words h2{font-family:'DM Serif Display',serif;font-size:1.8rem}
-#no-words p{color:var(--ink-soft);max-width:340px;line-height:1.6}
+/* ── ACTIVITY CHOOSER ─────────────────────────────────── */
+#chooser{gap:2rem;text-align:center}
+.chooser-greeting{font-family:var(--mono);color:var(--accent);font-size:1rem}
+.chooser-sub{color:var(--muted);font-size:.85rem}
+.chooser-cards{display:flex;gap:1.25rem;flex-wrap:wrap;justify-content:center;width:100%;max-width:560px}
+.act-card{flex:1;min-width:220px;max-width:260px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem 1.5rem;cursor:pointer;transition:border-color .2s,transform .15s;display:flex;flex-direction:column;gap:.75rem;text-align:left}
+.act-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.act-icon{font-family:var(--mono);font-size:1.5rem;color:var(--accent)}
+.act-title{font-family:var(--mono);font-size:1rem;font-weight:500;color:var(--text)}
+.act-desc{font-size:.8rem;color:var(--muted);line-height:1.5}
+.act-badge{display:inline-block;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;padding:.2rem .5rem;border-radius:4px;margin-top:.25rem}
+.act-badge.typing{background:rgba(91,127,255,.15);color:var(--accent)}
+.act-badge.spelling{background:rgba(61,214,140,.15);color:var(--green)}
+.back-btn{font-family:var(--mono);font-size:.75rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:.5rem;margin-top:.5rem}
+.back-btn:hover{color:var(--text)}
 
-/* ── DRILL ── */
-#drill{gap:0;align-items:stretch;padding:0}
-.drill-header{background:var(--card);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;width:100%}
-.drill-header-name{font-size:.85rem;color:var(--ink-soft)}
-.drill-header-progress{font-size:.85rem;color:var(--ink-soft)}
-.drill-body{flex:1;display:flex;align-items:center;justify-content:center;padding:1.5rem 1rem;width:100%}
-.drill-inner{width:100%;max-width:620px;display:flex;flex-direction:column;align-items:center;gap:0;outline:none}
+/* ── TYPING CHECK screens (no-session, already-done, typing) ── */
+#no-session,#already-done{gap:1.5rem;text-align:center}
+.msg-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:420px;width:100%;display:flex;flex-direction:column;gap:.75rem}
+.msg-card h2{font-family:var(--mono);font-size:1.1rem;color:var(--accent)}
+.msg-card p{color:var(--muted);font-size:.85rem;line-height:1.6}
+.stat-row{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.stat{background:var(--surface2);border-radius:8px;padding:.75rem 1.25rem;text-align:center}
+.stat-val{font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--accent)}
+.stat-lbl{font-size:.7rem;color:var(--muted);margin-top:.2rem;text-transform:uppercase;letter-spacing:.08em}
 
-/* progress bar */
+/* ── TYPING EXERCISE ──────────────────────────────────── */
+#typing{padding:0;justify-content:flex-start}
+.typing-header{width:100%;background:var(--surface);border-bottom:1px solid var(--border);padding:.75rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.typing-header-left{font-family:var(--mono);font-size:.8rem;color:var(--accent)}
+.typing-header-right{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+.typing-body{flex:1;width:100%;max-width:780px;margin:0 auto;padding:2rem 1.5rem;display:flex;flex-direction:column;gap:1.25rem}
+.para-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;position:relative}
+.para-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.75rem;text-transform:uppercase}
+.para-text{font-family:var(--mono);font-size:.95rem;line-height:1.9;color:var(--text);white-space:pre-wrap;word-break:break-word}
+.char{position:relative;display:inline}
+.char.correct{color:var(--green)}
+.char.wrong{color:var(--red);text-decoration:underline;text-decoration-color:var(--red)}
+.char.current{color:var(--text)}
+.char.current::after{content:'';position:absolute;left:0;bottom:-1px;width:100%;height:2px;background:var(--accent);animation:blink .9s step-start infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.char.untyped{color:var(--muted)}
+.metrics-bar{display:flex;gap:1rem;flex-wrap:wrap}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.6rem 1rem;min-width:90px}
+.metric-val{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--accent)}
+.metric-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:.15rem}
+.typing-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.85rem 1rem;font-family:var(--mono);font-size:.95rem;color:var(--text);outline:none;resize:none;min-height:64px;transition:border-color .2s}
+.typing-input:focus{border-color:var(--accent)}
+.para-nav{display:flex;gap:.75rem;justify-content:flex-end}
+.btn-sec{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.6rem 1.25rem;font-family:var(--mono);font-size:.8rem;color:var(--text);cursor:pointer;transition:background .2s}
+.btn-sec:hover{background:var(--border)}
+.btn-submit{background:var(--accent);border:none;border-radius:8px;padding:.6rem 1.25rem;font-family:var(--mono);font-size:.8rem;color:#fff;cursor:pointer;opacity:.5;transition:opacity .2s}
+.btn-submit.ready{opacity:1}
+.btn-submit.ready:hover{opacity:.85}
+.progress-dots{display:flex;gap:6px}
+.pdot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .2s}
+.pdot.done{background:var(--green)}
+.pdot.active{background:var(--accent)}
+
+/* ── TYPING RESULT ────────────────────────────────────── */
+#typing-result{gap:1.5rem;text-align:center}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:440px;width:100%;display:flex;flex-direction:column;gap:1rem}
+.result-card h2{font-family:var(--mono);font-size:1.1rem;color:var(--accent)}
+.score-big{font-family:var(--mono);font-size:3rem;font-weight:700}
+.score-big.pass{color:var(--green)}
+.score-big.fail{color:var(--red)}
+.breakdown{display:flex;flex-direction:column;gap:.5rem;text-align:left}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.8rem;padding:.4rem .6rem;border-radius:6px;background:var(--surface2)}
+.breakdown-row .label{color:var(--muted)}
+.breakdown-row .value{font-weight:500}
+.breakdown-row .value.pass{color:var(--green)}
+.breakdown-row .value.fail{color:var(--red)}
+
+/* ── NO WORDS ─────────────────────────────────────────── */
+#no-words{gap:1.5rem;text-align:center}
+
+/* ── SPELLING DRILL ───────────────────────────────────── */
+#drill{padding:0;justify-content:flex-start}
+.drill-topbar{width:100%;background:var(--surface);border-bottom:1px solid var(--border);padding:.65rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.drill-topbar-name{font-family:var(--mono);font-size:.75rem;color:var(--accent)}
+.drill-topbar-prog{font-family:var(--mono);font-size:.75rem;color:var(--muted)}
+.drill-body{flex:1;width:100%;display:flex;align-items:center;justify-content:center;padding:1.5rem 1rem}
+.drill-inner{width:100%;max-width:620px;display:flex;flex-direction:column;align-items:center;outline:none}
 .prog-wrap{width:100%;display:flex;align-items:center;gap:10px;margin-bottom:1.25rem}
-.prog-track{flex:1;height:3px;background:var(--border);border-radius:99px;overflow:hidden}
+.prog-track{flex:1;height:2px;background:var(--border);border-radius:99px;overflow:hidden}
 .prog-fill{height:100%;background:var(--green);border-radius:99px;transition:width .4s}
-.prog-lbl{font-size:.75rem;color:var(--ink-soft);white-space:nowrap}
-
-/* stage label */
-.stage-lbl{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:1rem}
-
-/* mascot + content side by side */
+.prog-lbl{font-family:var(--mono);font-size:.7rem;color:var(--muted);white-space:nowrap}
+.stage-lbl{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;color:var(--muted);margin-bottom:1rem;text-transform:uppercase}
 .drill-row{display:flex;align-items:flex-end;gap:14px;justify-content:center;margin-bottom:1.5rem;width:100%}
 .mascot-wrap{flex-shrink:0;width:48px;display:flex;flex-direction:column;align-items:center;gap:4px}
 #mascot-canvas{image-rendering:pixelated;image-rendering:crisp-edges;width:48px;height:72px}
-#speech{font-size:10px;color:var(--ink-soft);text-align:center;min-height:12px;line-height:1.2;font-family:'DM Sans',sans-serif}
-
-/* letter tiles */
+#speech{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;min-height:12px;line-height:1.2}
 .letter-row{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;align-items:flex-end;flex:1}
 .cell{display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;width:44px}
 .cell-top{height:50px;display:flex;align-items:center;justify-content:center;position:relative;width:100%}
-.cell-char{font-size:34px;font-weight:500;font-family:var(--mono);color:var(--ink);line-height:1;transition:color .1s}
-.cell-char.hint{color:var(--hint)}
+.cell-char{font-size:34px;font-weight:500;font-family:var(--mono);line-height:1;transition:color .1s}
+.cell-char.hint{color:var(--muted)}
 .cell-char.correct{color:var(--green)}
 .cell-char.wrong{color:var(--red)}
-.cell-char.blank{color:var(--blank)}
+.cell-char.blank{color:var(--border)}
 .cell-ul{width:34px;height:2px;border-radius:1px;background:var(--border)}
-.cell-ul.active{background:var(--ink)}
-.v-cur{position:absolute;left:1px;top:5px;width:2px;height:40px;background:var(--ink);border-radius:1px}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-.v-cur{animation:blink .9s step-start infinite}
-
-/* sentence tiles */
+.cell-ul.active{background:var(--accent)}
+.v-cur{position:absolute;left:1px;top:5px;width:2px;height:40px;background:var(--accent);border-radius:1px;animation:blink .9s step-start infinite}
 .sent-block{flex:1;display:flex;flex-direction:column;gap:6px}
 .sent-line{display:flex;gap:3px;flex-wrap:nowrap;justify-content:center;align-items:flex-end}
 .sc{display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
-.sc-char{font-size:19px;font-family:var(--mono);color:var(--ink);line-height:1;min-width:11px;text-align:center}
+.sc-char{font-size:19px;font-family:var(--mono);line-height:1;min-width:11px;text-align:center}
 .sc-char.correct{color:var(--green)}
 .sc-char.wrong{color:var(--red)}
-.sc-char.blank{color:var(--blank)}
-.sc-char.hint{color:var(--hint)}
+.sc-char.blank{color:var(--border)}
+.sc-char.hint{color:var(--muted)}
 .sc-ul{height:1.5px;border-radius:1px;background:var(--border);width:100%;min-width:11px}
-.sc-ul.active{background:var(--ink)}
-.sv-cur{position:absolute;left:-1px;top:0;width:1.5px;height:21px;background:var(--ink);border-radius:1px;animation:blink .9s step-start infinite}
+.sc-ul.active{background:var(--accent)}
+.sv-cur{position:absolute;left:-1px;top:0;width:1.5px;height:21px;background:var(--accent);border-radius:1px;animation:blink .9s step-start infinite}
 .space-gap{width:8px;flex-shrink:0}
-
-/* step dots */
 .step-dots{display:flex;gap:8px;justify-content:center;margin-bottom:.75rem}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--border);border:1px solid #ccc;transition:background .2s}
-.dot.done{background:var(--green);border-color:var(--green)}
-.dot.active{background:var(--accent);border-color:var(--accent)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .2s}
+.dot.done{background:var(--green)}
+.dot.active{background:var(--accent)}
+.sp-feedback{font-family:var(--mono);font-size:.75rem;min-height:16px;margin-bottom:.5rem;text-align:center;color:var(--muted)}
+.sp-feedback.good{color:var(--green)}
+.sp-feedback.bad{color:var(--red)}
 
-/* feedback */
-.feedback{text-align:center;font-size:.8rem;min-height:16px;margin-bottom:.5rem;color:var(--ink-soft)}
-.feedback.good{color:var(--green)}
-.feedback.bad{color:var(--red)}
-
-/* ── COMPLETE ── */
-#complete{gap:1.5rem;text-align:center}
-.complete-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;max-width:400px;width:100%;display:flex;flex-direction:column;align-items:center;gap:1rem}
-.complete-card h2{font-family:'DM Serif Display',serif;font-size:2rem}
-.complete-card p{color:var(--ink-soft);line-height:1.6;font-size:.95rem}
-.badge-complete{background:var(--green);color:#fff;border-radius:99px;padding:.4rem 1.2rem;font-size:.8rem;font-weight:500;letter-spacing:.05em}
+/* ── SPELL COMPLETE ───────────────────────────────────── */
+#spell-complete{gap:1.5rem;text-align:center}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ════════════════ LOGIN ════════════════ -->
 <div class="screen active" id="login">
-  <div class="logo">Spelling <span>Drill</span></div>
+  <div>
+    <div class="logo"><span>// </span>typing.check</div>
+    <div class="version">v0.8</div>
+  </div>
   <div class="login-card">
-    <div>
+    <p>Enter your student number to begin</p>
+    <div class="field">
       <label>Student Number</label>
-      <input type="text" id="student-input" placeholder="e.g. 2611166" inputmode="numeric"
-             onkeydown="if(event.key==='Enter')startLogin()">
+      <input type="text" id="login-input" placeholder="e.g. 2511001" inputmode="numeric"
+             onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button class="btn" onclick="startLogin()">Start</button>
-    <div class="error-msg" id="login-error"></div>
-    <div class="loading-msg" id="login-loading"></div>
+    <button class="btn-primary" id="login-btn" onclick="doLogin()">Log In</button>
+    <div class="error" id="login-error"></div>
+    <div class="loading" id="login-loading"></div>
   </div>
 </div>
 
-<!-- NO WORDS -->
-<div class="screen" id="no-words">
-  <h2>No words yet!</h2>
-  <p id="no-words-msg">You don't have any spelling words this week. Check back after your blog entry is marked.</p>
-  <button class="btn" style="max-width:200px;margin-top:1rem" onclick="show('login')">Back</button>
+<!-- ════════════════ ACTIVITY CHOOSER ════════════════ -->
+<div class="screen" id="chooser">
+  <div class="chooser-greeting" id="chooser-greeting"></div>
+  <div class="chooser-sub">What would you like to do today?</div>
+  <div class="chooser-cards">
+    <div class="act-card" onclick="startTypingFlow()">
+      <div class="act-icon">&gt;_</div>
+      <div class="act-title">Typing Check</div>
+      <div class="act-desc">Timed typing exercise — measure your speed and accuracy.</div>
+      <div class="act-badge typing">SPEED &amp; ACCURACY</div>
+    </div>
+    <div class="act-card" onclick="startSpellingFlow()">
+      <div class="act-icon">S_</div>
+      <div class="act-title">Spelling Drill</div>
+      <div class="act-desc">Practice words you misspelled in your blog entry.</div>
+      <div class="act-badge spelling" id="spell-badge">PERSONALISED</div>
+    </div>
+  </div>
+  <button class="back-btn" onclick="show('login')">← different student</button>
 </div>
 
-<!-- DRILL -->
+<!-- ════════════════ NO SESSION ════════════════ -->
+<div class="screen" id="no-session">
+  <div class="msg-card">
+    <h2>No active session</h2>
+    <p>There is no typing session open for your class right now. Check back when your teacher opens the next session.</p>
+  </div>
+  <button class="back-btn" onclick="show('chooser')">← back</button>
+</div>
+
+<!-- ════════════════ ALREADY DONE ════════════════ -->
+<div class="screen" id="already-done">
+  <div class="msg-card">
+    <h2>Already submitted</h2>
+    <p id="already-msg"></p>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-val" id="done-wpm">—</div><div class="stat-lbl">WPM</div></div>
+      <div class="stat"><div class="stat-val" id="done-acc">—</div><div class="stat-lbl">Accuracy</div></div>
+    </div>
+  </div>
+  <button class="back-btn" onclick="show('chooser')">← back</button>
+</div>
+
+<!-- ════════════════ TYPING EXERCISE ════════════════ -->
+<div class="screen" id="typing">
+  <div class="typing-header">
+    <span class="typing-header-left" id="t-header-left"></span>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <div class="progress-dots" id="t-dots"></div>
+      <span class="typing-header-right" id="t-header-right"></span>
+    </div>
+  </div>
+  <div class="typing-body">
+    <div class="metrics-bar">
+      <div class="metric"><div class="metric-val" id="m-wpm">0</div><div class="metric-lbl">WPM</div></div>
+      <div class="metric"><div class="metric-val" id="m-acc">100%</div><div class="metric-lbl">Accuracy</div></div>
+      <div class="metric"><div class="metric-val" id="m-time">0s</div><div class="metric-lbl">Time</div></div>
+      <div class="metric"><div class="metric-val" id="m-prog">0%</div><div class="metric-lbl">Progress</div></div>
+    </div>
+    <div class="para-card">
+      <div class="para-label" id="para-label">Paragraph 1</div>
+      <div class="para-text" id="para-display"></div>
+    </div>
+    <textarea class="typing-input" id="typing-input" placeholder="Click here and start typing…"
+              oninput="handleTypingInput()" rows="3" autocomplete="off" autocorrect="off"
+              autocapitalize="off" spellcheck="false"></textarea>
+    <div class="para-nav">
+      <button class="btn-submit" id="btn-submit" onclick="submitTyping()">Submit result</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ TYPING RESULT ════════════════ -->
+<div class="screen" id="typing-result">
+  <div class="result-card">
+    <h2>Session complete</h2>
+    <div class="score-big" id="res-score">—</div>
+    <div class="breakdown" id="res-breakdown"></div>
+    <p style="font-size:.75rem;color:var(--muted);font-family:var(--mono)">Result saved to your teacher's gradebook.</p>
+  </div>
+  <button class="back-btn" onclick="show('chooser')">← back to activities</button>
+</div>
+
+<!-- ════════════════ NO WORDS ════════════════ -->
+<div class="screen" id="no-words">
+  <div class="msg-card">
+    <h2>No spelling words yet</h2>
+    <p id="no-words-msg">You don't have any spelling words this week. Check back after your blog entry has been marked.</p>
+  </div>
+  <button class="back-btn" onclick="show('chooser')">← back</button>
+</div>
+
+<!-- ════════════════ SPELLING DRILL ════════════════ -->
 <div class="screen" id="drill">
-  <div class="drill-header">
-    <span class="drill-header-name" id="drill-name"></span>
-    <span class="drill-header-progress" id="drill-prog-lbl"></span>
+  <div class="drill-topbar">
+    <span class="drill-topbar-name" id="drill-name"></span>
+    <span class="drill-topbar-prog" id="drill-topbar-prog"></span>
   </div>
   <div class="drill-body">
     <div class="drill-inner" id="drill-inner" tabindex="0">
       <div class="prog-wrap">
-        <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-        <span class="prog-lbl" id="prog-lbl-inner"></span>
+        <div class="prog-track"><div class="prog-fill" id="sp-prog" style="width:0%"></div></div>
+        <span class="prog-lbl" id="sp-prog-lbl"></span>
       </div>
-      <div class="stage-lbl" id="stage-lbl"></div>
-      <div class="drill-row" id="drill-row">
+      <div class="stage-lbl" id="sp-stage-lbl"></div>
+      <div class="drill-row">
         <div class="mascot-wrap">
           <canvas id="mascot-canvas" width="12" height="21"></canvas>
           <div id="speech"></div>
         </div>
-        <div id="main-row"></div>
+        <div id="sp-main-row"></div>
       </div>
-      <div class="feedback" id="fb"></div>
-      <div class="step-dots" id="dots"></div>
+      <div class="sp-feedback" id="sp-fb"></div>
+      <div class="step-dots" id="sp-dots"></div>
     </div>
   </div>
 </div>
 
-<!-- COMPLETE -->
-<div class="screen" id="complete">
-  <div class="complete-card">
-    <div class="badge-complete">Complete</div>
-    <h2>Well done!</h2>
-    <p id="complete-msg"></p>
-    <p id="complete-sub" style="font-size:.8rem;color:#aaa"></p>
+<!-- ════════════════ SPELL COMPLETE ════════════════ -->
+<div class="screen" id="spell-complete">
+  <div class="msg-card">
+    <h2 style="color:var(--green)">Drill complete!</h2>
+    <p id="sc-msg"></p>
+    <p id="sc-sub" style="font-size:.75rem;color:var(--muted);font-family:var(--mono)"></p>
   </div>
+  <button class="back-btn" onclick="show('chooser')">← back to activities</button>
 </div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════════════════════
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7pgeujRDwsV4U3v8hKpapECTNLw1LElK8i3FCzy0QXSU-yDnCCzwrHcmI-roAPj7fRw/exec';
 
-// ── ROSTER (student# -> {name, class}) ──────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+//  ROSTER  (student# → {name, class})
+// ═══════════════════════════════════════════════════════════════════
 const ROSTER = {
   "2511003":{"name":"ABE GAITO","class":"EWSIII"},
   "2511004":{"name":"ABE FUCHI","class":"EWSIII"},
@@ -217,135 +362,460 @@ const ROSTER = {
   "2600000":{"name":"LOHR MICHAEL","class":"EWSI"}
 };
 
-// ── WORD BANK (keyed by annotation name format: "LAST FIRST") ───────────────
-// Maps roster English name (LAST FIRST) to word list
-// Annotation names like "Kanon MORI" -> normalised to "MORI KANON"
-const WORD_BANK_RAW = {"Kanon MORI": [{"word": "possession", "sentence": "Today I will talk about my favorite ___."},{"word": "useful", "sentence": "A smartphone is very ___ for us."}],"Maiki NAKAO": [{"word": "usually", "sentence": "I ___ make it when I find something that I like on Instagram."}],"Nao NOMURA": [{"word": "possession", "sentence": "My precious ___ is a soccer shoes."}],"Rara HARASHIMA": [{"word": "happiness", "sentence": "Sleeping is my greatest ___!!"}],"Yuki OURA": [{"word": "listening", "sentence": "I use it for watching many movies, ___ to music and playing some games."},{"word": "causes", "sentence": "It ___ bad effects on my health, so I want to use it suitably."}],"Hitomi MIYAMOTO": [{"word": "possession", "sentence": "Today, I'm talking about my favorite ___ (thing)!!"},{"word": "Classical", "sentence": "Rock, K-POP, J-POP, Jazz, ___, etc...."},{"word": "recommended", "sentence": "What is your favorite (___) song?"}],"Musashi NISHIMURA": [{"word": "pleased", "sentence": "Then I was very ___!"},{"word": "forever", "sentence": "Perhaps, I would use the wallet ___!"}],"Shiki NAKASHIMA": [{"word": "smartphone", "sentence": "Because a ___ can play these."}],"Riku NAKANO": [{"word": "possession", "sentence": "My favorite ___ is clothes."},{"word": "memories", "sentence": "I will never forget these ___."}],"Miryu URA": [{"word": "Expensive", "sentence": "___ fashion items are very cool and I love them."}],"Haruka MARUTA": [{"word": "packages", "sentence": "There are many kinds of AQUA sunblock such as purple, green and pink ___."},{"word": "package", "sentence": "I am using the green ___."},{"word": "recommend", "sentence": "I ___ AQUA in the green package."},{"word": "useful", "sentence": "It will be ___ for summer!"},{"word": "measure", "sentence": "Do you do ___ sunblock?"}]};
+// ═══════════════════════════════════════════════════════════════════
+//  SPELLING WORD BANK  (LAST FIRST → [{word, sentence}])
+// ═══════════════════════════════════════════════════════════════════
+const WORD_BANK = {"MORI KANON":[{"word":"possession","sentence":"Today I will talk about my favorite ___."},{"word":"useful","sentence":"A smartphone is very ___ for us."}],"NAKAO MAIKI":[{"word":"usually","sentence":"I ___ make it when I find something that I like on Instagram."}],"NOMURA NAO":[{"word":"possession","sentence":"My precious ___ is a soccer shoes."}],"HARASHIMA RARA":[{"word":"happiness","sentence":"Sleeping is my greatest ___!!"}],"OURA YUKI":[{"word":"listening","sentence":"I use it for watching many movies, ___ to music and playing some games."},{"word":"causes","sentence":"It ___ bad effects on my health, so I want to use it suitably."}],"MIYAMOTO HITOMI":[{"word":"possession","sentence":"Today, I'm talking about my favorite ___ (thing)!!"},{"word":"Classical","sentence":"Rock, K-POP, J-POP, Jazz, ___, etc...."},{"word":"recommended","sentence":"What is your favorite (___) song?"}],"NISHIMURA MUSASHI":[{"word":"pleased","sentence":"Then I was very ___!"},{"word":"forever","sentence":"Perhaps, I would use the wallet ___!"}],"NAKASHIMA SHIKI":[{"word":"smartphone","sentence":"Because a ___ can play these."}],"NAKANO RIKU":[{"word":"possession","sentence":"My favorite ___ is clothes."},{"word":"memories","sentence":"I will never forget these ___."}],"URA MIRYU":[{"word":"Expensive","sentence":"___ fashion items are very cool and I love them."}],"MARUTA HARUKA":[{"word":"packages","sentence":"There are many kinds of AQUA sunblock such as purple, green and pink ___."},{"word":"package","sentence":"I am using the green ___."},{"word":"recommend","sentence":"I ___ AQUA in the green package."},{"word":"useful","sentence":"It will be ___ for summer!"},{"word":"measure","sentence":"Do you do ___ sunblock?"}]};
 
-// Normalise annotation name "First LAST" -> "LAST FIRST"
-function normAnnotName(n){
-  const p=n.trim().split(/\s+/);
-  if(p.length<2)return n.toUpperCase();
-  const last=p[p.length-1].toUpperCase();
-  const first=p.slice(0,-1).map(w=>w.toUpperCase()).join(' ');
-  return last+' '+first;
+const MAX_SPELL_WORDS = 5;
+
+// ═══════════════════════════════════════════════════════════════════
+//  GLOBAL STATE
+// ═══════════════════════════════════════════════════════════════════
+let studentNum='', studentName='', studentClass='';
+let sessionData=null;
+
+// ── helpers ──
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
+function $(id){return document.getElementById(id);}
 
-const WORD_BANK = {};
-for(const[k,v] of Object.entries(WORD_BANK_RAW)){
-  WORD_BANK[normAnnotName(k)] = v;
-}
+// ═══════════════════════════════════════════════════════════════════
+//  LOGIN  — calls Apps Script to validate student number
+// ═══════════════════════════════════════════════════════════════════
+async function doLogin(){
+  const num = $('login-input').value.trim();
+  $('login-error').textContent='';
+  $('login-loading').textContent='';
+  if(!num){$('login-error').textContent='Please enter your student number.';return;}
 
-// ── STATE ───────────────────────────────────────────────────────────────────
-let studentNum='', studentName='', studentClass='', wordList=[], wi=0, si=0, pos=0, mistakes=0;
-const STAGES=['full','half','none','sentence'];
-const STAGE_LABELS=['Study this word — type every letter','Some letters shown — type every letter','Spell it from memory','Type the full sentence'];
-const MAX_WORDS = 5;
-
-// ── HELPERS ─────────────────────────────────────────────────────────────────
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function setFb(msg,cls=''){const f=document.getElementById('fb');f.textContent=msg;f.className='feedback'+(cls?' '+cls:'');}
-
-// ── LOGIN ────────────────────────────────────────────────────────────────────
-function startLogin(){
-  const num = document.getElementById('student-input').value.trim();
-  const errEl = document.getElementById('login-error');
-  const ldEl  = document.getElementById('login-loading');
-  errEl.textContent='';
-
-  if(!num){errEl.textContent='Please enter your student number.';return;}
-  if(!ROSTER[num]){errEl.textContent='Student number not found. Please check and try again.';return;}
+  // Check roster client-side first (fast)
+  const student = ROSTER[num];
+  if(!student){$('login-error').textContent='Student number not found. Please check and try again.';return;}
 
   studentNum   = num;
-  studentName  = ROSTER[num].name;
-  studentClass = ROSTER[num].class;
+  studentName  = student.name;
+  studentClass = student.class;
 
-  // Look up word bank by normalised name
-  const words = WORD_BANK[studentName] || [];
-  if(words.length===0){
-    document.getElementById('no-words-msg').textContent =
-      `Hi ${studentName}! You don't have any spelling words yet this week. Check back after your blog entry has been marked.`;
-    show('no-words');
+  $('login-loading').textContent='Signing in…';
+  $('login-btn').disabled=true;
+
+  // Fetch session from Apps Script
+  try{
+    const url = `${SCRIPT_URL}?action=getSession&className=${encodeURIComponent(studentClass)}&studentNumber=${encodeURIComponent(studentNum)}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+    $('login-loading').textContent='';
+    $('login-btn').disabled=false;
+
+    if(data.ok) sessionData = data.session;
+    else sessionData = null;
+  }catch(e){
+    $('login-loading').textContent='';
+    $('login-btn').disabled=false;
+    sessionData=null;
+  }
+
+  // Check spelling words
+  const spellWords = WORD_BANK[studentName] || [];
+
+  // Show chooser
+  $('chooser-greeting').textContent=`// ${studentName}`;
+  // Update spelling badge
+  if(spellWords.length===0){
+    $('spell-badge').textContent='NO WORDS YET';
+    $('spell-badge').style.background='rgba(107,114,153,.15)';
+    $('spell-badge').style.color='var(--muted)';
+  } else {
+    $('spell-badge').textContent=`${Math.min(spellWords.length,MAX_SPELL_WORDS)} WORD${Math.min(spellWords.length,MAX_SPELL_WORDS)!==1?'S':''}`;
+  }
+  show('chooser');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  TYPING CHECK FLOW
+// ═══════════════════════════════════════════════════════════════════
+let tParas=[], tParaIdx=0, tTyped='', tStartTime=null, tTimer=null;
+let tWpmArr=[], tAccArr=[], tTimeArr=[];
+
+function startTypingFlow(){
+  if(!sessionData){show('no-session');return;}
+  if(sessionData.alreadyCompleted){
+    $('already-msg').textContent=`You already completed "${sessionData.sessionName}".`;
+    $('done-wpm').textContent=sessionData.personalBestWpm||'—';
+    $('done-acc').textContent='—';
+    show('already-done');return;
+  }
+  if(sessionData.status!=='open'){show('no-session');return;}
+
+  tParas = (sessionData.paragraphs||[]).map(p=>p.text);
+  if(tParas.length===0){show('no-session');return;}
+  tParaIdx=0; tWpmArr=[]; tAccArr=[]; tTimeArr=[];
+  $('t-header-left').textContent=`// ${studentName} · ${sessionData.sessionName}`;
+  loadPara();
+  show('typing');
+}
+
+function loadPara(){
+  const text = tParas[tParaIdx];
+  tTyped=''; tStartTime=null;
+  if(tTimer)clearInterval(tTimer);
+
+  // Dots
+  $('t-dots').innerHTML=tParas.map((_,i)=>{
+    let c='pdot';
+    if(i<tParaIdx)c+=' done';
+    else if(i===tParaIdx)c+=' active';
+    return`<div class="${c}"></div>`;
+  }).join('');
+  $('para-label').textContent=`Paragraph ${tParaIdx+1} of ${tParas.length}`;
+  $('t-header-right').textContent=`${tParaIdx+1}/${tParas.length}`;
+  renderParaDisplay(text,'');
+  $('typing-input').value='';
+  $('typing-input').focus();
+  $('btn-submit').classList.remove('ready');
+  $('m-wpm').textContent='0';
+  $('m-acc').textContent='100%';
+  $('m-time').textContent='0s';
+  $('m-prog').textContent='0%';
+}
+
+function renderParaDisplay(target, typed){
+  const el=$('para-display');
+  let html='';
+  for(let i=0;i<target.length;i++){
+    const ch=target[i]==='  '?' ':target[i];
+    if(i<typed.length){
+      const ok=typed[i]===target[i];
+      html+=`<span class="char ${ok?'correct':'wrong'}">${ch==='<'?'&lt;':ch==='>'?'&gt;':ch===' '?'&nbsp;':ch}</span>`;
+    } else if(i===typed.length){
+      html+=`<span class="char current">${ch==='<'?'&lt;':ch==='>'?'&gt;':ch===' '?'&nbsp;':ch}</span>`;
+    } else {
+      html+=`<span class="char untyped">${ch==='<'?'&lt;':ch==='>'?'&gt;':ch===' '?'&nbsp;':ch}</span>`;
+    }
+  }
+  el.innerHTML=html;
+  // scroll cursor into view
+  const cur=el.querySelector('.char.current');
+  if(cur)cur.scrollIntoView({block:'nearest'});
+}
+
+function handleTypingInput(){
+  const text=tParas[tParaIdx];
+  const val=$('typing-input').value;
+  if(!tStartTime&&val.length>0){
+    tStartTime=Date.now();
+    tTimer=setInterval(updateMetrics,500);
+  }
+  tTyped=val;
+  renderParaDisplay(text,val);
+  const done=val.length>=text.length;
+  $('btn-submit').classList.toggle('ready',done);
+  updateMetrics();
+}
+
+function updateMetrics(){
+  const text=tParas[tParaIdx];
+  const typed=$('typing-input').value;
+  const elapsed=tStartTime?(Date.now()-tStartTime)/1000/60:0;
+  const words=typed.trim().split(/\s+/).filter(Boolean).length;
+  const wpm=elapsed>0?Math.round(words/elapsed):0;
+  let correct=0;
+  for(let i=0;i<Math.min(typed.length,text.length);i++){if(typed[i]===text[i])correct++;}
+  const acc=typed.length>0?Math.round(correct/typed.length*100):100;
+  const secs=tStartTime?Math.round((Date.now()-tStartTime)/1000):0;
+  const prog=Math.round(Math.min(typed.length/text.length*100,100));
+  $('m-wpm').textContent=wpm;
+  $('m-acc').textContent=acc+'%';
+  $('m-time').textContent=secs+'s';
+  $('m-prog').textContent=prog+'%';
+}
+
+function finalisePara(){
+  const text=tParas[tParaIdx];
+  const typed=$('typing-input').value;
+  const elapsed=tStartTime?(Date.now()-tStartTime)/1000/60:0.001;
+  const words=text.trim().split(/\s+/).length;
+  const wpm=Math.round(words/elapsed);
+  let correct=0;
+  for(let i=0;i<Math.min(typed.length,text.length);i++){if(typed[i]===text[i])correct++;}
+  const acc=typed.length>0?Math.round(correct/typed.length*100):0;
+  const secs=Math.round((Date.now()-tStartTime)/1000);
+  tWpmArr.push(wpm); tAccArr.push(acc); tTimeArr.push(secs);
+  if(tTimer)clearInterval(tTimer);
+}
+
+function submitTyping(){
+  if(!$('btn-submit').classList.contains('ready'))return;
+  finalisePara();
+  tParaIdx++;
+  if(tParaIdx<tParas.length){loadPara();return;}
+
+  // All paragraphs done — calculate final score
+  const avgWpm=Math.round(tWpmArr.reduce((a,b)=>a+b,0)/tWpmArr.length);
+  const avgAcc=Math.round(tAccArr.reduce((a,b)=>a+b,0)/tAccArr.length);
+  const prevBest=sessionData.personalBestWpm||0;
+  const compPts=sessionData.completionPoints||0;
+  const accPts=sessionData.accuracyPoints||0;
+  const wpmPts=sessionData.wpmPoints||0;
+  const totalPts=compPts+accPts+wpmPts;
+  const accThresh=sessionData.accuracyThreshold||80;
+
+  const compPass=true;
+  const accPass=avgAcc>=accThresh;
+  const wpmPass=avgWpm>prevBest;
+  const score=(compPass?compPts:0)+(accPass?accPts:0)+(wpmPass?wpmPts:0);
+  const pass=score>=60;
+
+  // Show result
+  $('res-score').textContent=score+'/'+totalPts;
+  $('res-score').className='score-big '+(pass?'pass':'fail');
+  $('res-breakdown').innerHTML=`
+    <div class="breakdown-row"><span class="label">Completion</span><span class="value pass">Pass (+${compPts})</span></div>
+    <div class="breakdown-row"><span class="label">Accuracy (${avgAcc}%)</span><span class="value ${accPass?'pass':'fail'}">${accPass?'Pass (+'+accPts+')':'Fail (+0)'}</span></div>
+    <div class="breakdown-row"><span class="label">WPM (${avgWpm} wpm)</span><span class="value ${wpmPass?'pass':'fail'}">${wpmPass?'Pass (+'+wpmPts+')':'Fail (+0)'}</span></div>
+  `;
+  show('typing-result');
+
+  // Submit to Apps Script
+  const payload={
+    action:'submitResult',
+    studentNumber:studentNum,
+    className:studentClass,
+    sessionName:sessionData.sessionName,
+    sessionNumber:sessionData.sessionNumber,
+    isBaseline:sessionData.isBaseline,
+    wpm:avgWpm,
+    accuracy:avgAcc,
+    completed:true,
+    score:score,
+    totalPoints:totalPts
+  };
+  fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{});
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  SPELLING DRILL FLOW
+// ═══════════════════════════════════════════════════════════════════
+const STAGES=['full','half','none','sentence'];
+const STAGE_LABELS=['Study this word — type every letter','Some letters shown — type every letter','Spell it from memory','Type the full sentence'];
+let spWords=[], spWi=0, spSi=0, spPos=0, spMistakes=0;
+const spMain=()=>$('sp-main-row');
+
+function startSpellingFlow(){
+  const allWords = WORD_BANK[studentName]||[];
+  if(allWords.length===0){
+    $('no-words-msg').textContent=`Hi ${studentName}! You don't have any spelling words this week. Check back after your blog entry has been marked.`;
+    show('no-words');return;
+  }
+  spWords=[...allWords].sort(()=>Math.random()-.5).slice(0,MAX_SPELL_WORDS);
+  spWi=0;spSi=0;spPos=0;spMistakes=0;
+  $('drill-name').textContent=`${studentName} · ${studentClass}`;
+  show('drill');
+  spRenderStage();
+  $('drill-inner').focus();
+}
+
+function spSetFb(msg,cls=''){const f=$('sp-fb');f.textContent=msg;f.className='sp-feedback'+(cls?' '+cls:'');}
+function spShakeRow(){const r=spMain();r.style.transform='translateX(-5px)';setTimeout(()=>r.style.transform='translateX(5px)',70);setTimeout(()=>r.style.transform='translateX(-3px)',140);setTimeout(()=>r.style.transform='translateX(0)',210);}
+function spGetVis(word,stage){
+  if(stage==='full')return word.split('').map(()=>true);
+  if(stage==='half')return word.split('').map((_,i)=>i%2===0);
+  return word.split('').map(()=>false);
+}
+function spRenderDots(){
+  $('sp-dots').innerHTML=STAGES.slice(0,-1).map((_,i)=>{
+    let c='dot';if(i<spSi)c+=' done';else if(i===spSi)c+=' active';
+    return`<div class="${c}"></div>`;
+  }).join('');
+}
+function spUpdateHeader(){
+  const t=Math.round(spWi/spWords.length*100);
+  $('sp-prog').style.width=t+'%';
+  $('sp-prog-lbl').textContent=`Word ${spWi+1} of ${spWords.length}`;
+  $('drill-topbar-prog').textContent=`Word ${spWi+1} of ${spWords.length}`;
+}
+function spRenderStage(){
+  if(spWi>=spWords.length){spSubmitCompletion();return;}
+  const{word,sentence}=spWords[spWi];
+  spPos=0;spMistakes=0;
+  $('sp-stage-lbl').textContent=STAGE_LABELS[spSi];
+  spSetFb('');spUpdateHeader();spRenderDots();
+  if(STAGES[spSi]==='sentence')spBuildSent(word,sentence);
+  else spBuildWord(word,STAGES[spSi]);
+  $('drill-inner').focus();
+}
+function spBuildWord(word,stage){
+  const vis=spGetVis(word,stage);
+  spMain().innerHTML='';
+  const r=document.createElement('div');r.className='letter-row';
+  word.split('').forEach((ch,i)=>{
+    const cell=document.createElement('div');cell.className='cell';
+    const top=document.createElement('div');top.className='cell-top';
+    if(i===spPos){const cur=document.createElement('div');cur.className='v-cur';top.appendChild(cur);}
+    const span=document.createElement('div');span.className='cell-char '+(vis[i]?'hint':'blank');span.id='lc'+i;span.textContent=vis[i]?ch:'_';
+    top.appendChild(span);
+    const ul=document.createElement('div');ul.className='cell-ul'+(i===spPos?' active':'');ul.id='lu'+i;
+    cell.appendChild(top);cell.appendChild(ul);r.appendChild(cell);
+  });
+  spMain().appendChild(r);
+}
+function spBuildSent(word,sentence){
+  const before=(sentence.split('___')[0]||''),after=(sentence.split('___')[1]||'');
+  const full=before+word+after;
+  spMain()._full=full;spMain()._ts=before.length;spMain()._te=before.length+word.length;
+  const CW=14,GAP=3,SW=8,MAX=390;
+  const tokens=[];let buf='',bufStart=0;
+  for(let i=0;i<full.length;i++){
+    if(full[i]===' '){if(buf){tokens.push({type:'word',chars:buf.split('').map((ch,k)=>({ch,gi:bufStart+k,isTarget:(bufStart+k)>=spMain()._ts&&(bufStart+k)<spMain()._te}))});buf='';}tokens.push({type:'space',gi:i});bufStart=i+1;}
+    else{if(!buf)bufStart=i;buf+=full[i];}
+  }
+  if(buf)tokens.push({type:'word',chars:buf.split('').map((ch,k)=>({ch,gi:bufStart+k,isTarget:(bufStart+k)>=spMain()._ts&&(bufStart+k)<spMain()._te}))});
+  const lines=[];let curLine=[],curW=0;
+  tokens.forEach(tok=>{
+    if(tok.type==='space'){if(curLine.length>0){curLine.push(tok);curW+=SW+GAP;}}
+    else{const w=tok.chars.length*(CW+GAP);if(curLine.length>0&&curW+w>MAX){if(curLine[curLine.length-1].type==='space')curLine.pop();lines.push(curLine);curLine=[];curW=0;}curLine.push(tok);curW+=w;}
+  });
+  if(curLine.length){if(curLine[curLine.length-1].type==='space')curLine.pop();lines.push(curLine);}
+  spMain().innerHTML='';
+  const block=document.createElement('div');block.className='sent-block';
+  lines.forEach(line=>{
+    const ld=document.createElement('div');ld.className='sent-line';
+    line.forEach(tok=>{
+      if(tok.type==='space'){const g=document.createElement('div');g.className='space-gap';ld.appendChild(g);}
+      else tok.chars.forEach(({ch,gi:g,isTarget})=>{
+        const sc=document.createElement('div');sc.className='sc';
+        if(g===spPos){const cur=document.createElement('div');cur.className='sv-cur';sc.appendChild(cur);}
+        const sp=document.createElement('div');sp.id='sc'+g;sp.className='sc-char '+(isTarget?'blank':'hint');sp.textContent=isTarget?'_':ch;
+        const ul=document.createElement('div');ul.id='su'+g;ul.className='sc-ul';if(g===spPos)ul.classList.add('active');
+        sc.appendChild(sp);sc.appendChild(ul);ld.appendChild(sc);
+      });
+    });
+    block.appendChild(ld);
+  });
+  spMain().appendChild(block);
+}
+function spMoveCurWord(word){
+  document.querySelectorAll('.v-cur').forEach(c=>c.remove());
+  document.querySelectorAll('.cell-ul').forEach(u=>u.classList.remove('active'));
+  if(spPos>=word.length)return;
+  const top=document.getElementById('lc'+spPos)?.parentElement;
+  if(top){const cur=document.createElement('div');cur.className='v-cur';top.insertBefore(cur,top.firstChild);}
+  const ul=document.getElementById('lu'+spPos);if(ul)ul.classList.add('active');
+}
+function spMoveCurSent(){
+  document.querySelectorAll('.sv-cur').forEach(c=>c.remove());
+  document.querySelectorAll('.sc-ul').forEach(u=>u.classList.remove('active'));
+  if(spPos>=spMain()._full.length)return;
+  const sc=document.getElementById('sc'+spPos)?.parentElement;
+  if(sc){const cur=document.createElement('div');cur.className='sv-cur';sc.insertBefore(cur,sc.firstChild);}
+  const ul=document.getElementById('su'+spPos);if(ul)ul.classList.add('active');
+}
+
+$('drill-inner').addEventListener('keydown',e=>{
+  if(spWi>=spWords.length)return;
+  const{word}=spWords[spWi];
+  const stage=STAGES[spSi];
+  if(stage==='sentence'){
+    const full=spMain()._full,total=full.length;
+    if(e.key==='Backspace'){e.preventDefault();if(spPos>0){spPos--;const sp=document.getElementById('sc'+spPos);const isT=spPos>=spMain()._ts&&spPos<spMain()._te;if(sp){sp.className='sc-char '+(isT?'blank':'hint');sp.textContent=isT?'_':full[spPos];}spMoveCurSent();spSetFb('');}return;}
+    if(e.key.length!==1||e.ctrlKey||e.metaKey||e.altKey)return;
+    e.preventDefault();if(spPos>=total)return;
+    const isT=spPos>=spMain()._ts&&spPos<spMain()._te;
+    const sp=document.getElementById('sc'+spPos);
+    if(e.key.toLowerCase()===full[spPos].toLowerCase()){
+      if(sp){sp.className='sc-char correct';sp.textContent=full[spPos];}
+      spPos++;spMistakes=0;spSetFb('');spMoveCurSent();
+      if(spPos>=total){spSetFb('Perfect!','good');startCheer('Nailed it!');setTimeout(()=>{spSi=0;spWi++;spRenderStage();},900);}
+      else if(spPos===spMain()._te)startCheer('Great spell!');
+    }else{
+      spMistakes++;
+      if(sp){const oc=sp.className;sp.className='sc-char wrong';sp.textContent=e.key;setTimeout(()=>{sp.className=oc;sp.textContent=isT?'_':full[spPos];},280);}
+      spShakeRow();showSad();if(spMistakes>=3)spSetFb(`Hint: "${full[spPos]}"`, 'bad');
+    }
     return;
   }
+  const vis=spGetVis(word,stage);
+  if(e.key==='Backspace'){e.preventDefault();if(spPos>0){spPos--;const ch=document.getElementById('lc'+spPos);if(ch){ch.className='cell-char '+(vis[spPos]?'hint':'blank');ch.textContent=vis[spPos]?word[spPos]:'_';}spMoveCurWord(word);spSetFb('');}return;}
+  if(e.key.length!==1||e.ctrlKey||e.metaKey||e.altKey)return;
+  e.preventDefault();if(spPos>=word.length)return;
+  const ch=document.getElementById('lc'+spPos);
+  if(e.key.toLowerCase()===word[spPos].toLowerCase()){
+    if(ch){ch.className='cell-char correct';ch.textContent=word[spPos];}
+    spPos++;spMistakes=0;spSetFb('');spMoveCurWord(word);
+    if(spPos>=word.length){spSetFb('Nice!','good');startCheer(spSi===2?'Perfect!':'Keep going!');setTimeout(()=>{spSi++;spRenderStage();},700);}
+  }else{
+    spMistakes++;
+    if(ch){ch.className='cell-char wrong';ch.textContent=e.key;setTimeout(()=>{ch.className='cell-char '+(vis[spPos]?'hint':'blank');ch.textContent=vis[spPos]?word[spPos]:'_';},280);}
+    spShakeRow();showSad();if(spMistakes>=3)spSetFb(`Hint: "${word[spPos]}"`, 'bad');
+  }
+});
 
-  // Shuffle and take up to MAX_WORDS
-  const shuffled = [...words].sort(()=>Math.random()-.5);
-  wordList = shuffled.slice(0, MAX_WORDS);
-  wi=0; si=0; pos=0; mistakes=0;
-
-  document.getElementById('drill-name').textContent = studentName + ' · ' + studentClass;
-  show('drill');
-  renderStage();
-  document.getElementById('drill-inner').focus();
+function spSubmitCompletion(){
+  const now=new Date();
+  $('sc-msg').textContent=`You drilled ${spWords.length} word${spWords.length!==1?'s':''} from your blog entry. Great work!`;
+  $('sc-sub').textContent=`Completed ${now.toLocaleDateString('en-GB')} at ${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
+  show('spell-complete');
+  startCheer('You did it!');
+  fetch(SCRIPT_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      action:'spellingDrill',
+      studentNum,studentName,class:studentClass,
+      wordsCount:spWords.length,
+      words:spWords.map(w=>w.word).join(', '),
+      timestamp:now.toISOString(),
+      completed:true
+    })
+  }).catch(()=>{});
 }
 
-// ── PIXEL MASCOT ─────────────────────────────────────────────────────────────
-const mCanvas=document.getElementById('mascot-canvas');
+// ═══════════════════════════════════════════════════════════════════
+//  PIXEL MASCOT
+// ═══════════════════════════════════════════════════════════════════
+const mCanvas=$('mascot-canvas');
 const mCtx=mCanvas.getContext('2d');
-const speech=document.getElementById('speech');
-
+const speech=$('speech');
 const SK='#F0C080',HR='#2A1A08',SU='#2255AA',SD='#1A3D7A',VS='#1A3060',VSD='#0F1F40',
       SH='#EEEEEE',TI='#CC2222',TID='#881111',GL='#111111',EY='#111111',LN='#D8EEF8',MH='#B05040',NN='';
-
 function cl(){mCtx.clearRect(0,0,12,21);}
 function px(x,y,c){if(!c||c===NN)return;mCtx.fillStyle=c;mCtx.fillRect(x,y,1,1);}
-function row(y,a){a.forEach((c,x)=>px(x,y,c));}
-
+function mrow(y,a){a.forEach((c,x)=>px(x,y,c));}
 function glasses(y,smiling){
-  px(2,y,LN);px(3,y,LN);px(2,y+1,LN);px(3,y+1,LN);
-  px(7,y,LN);px(8,y,LN);px(7,y+1,LN);px(8,y+1,LN);
-  px(1,y,GL);px(2,y,GL);px(3,y,GL);px(4,y,GL);
-  px(1,y+1,GL);px(4,y+1,GL);
-  px(1,y+2,GL);px(2,y+2,GL);px(3,y+2,GL);px(4,y+2,GL);
+  px(2,y,LN);px(3,y,LN);px(2,y+1,LN);px(3,y+1,LN);px(7,y,LN);px(8,y,LN);px(7,y+1,LN);px(8,y+1,LN);
+  px(1,y,GL);px(2,y,GL);px(3,y,GL);px(4,y,GL);px(1,y+1,GL);px(4,y+1,GL);px(1,y+2,GL);px(2,y+2,GL);px(3,y+2,GL);px(4,y+2,GL);
   px(5,y+1,GL);
-  px(6,y,GL);px(7,y,GL);px(8,y,GL);px(9,y,GL);
-  px(6,y+1,GL);px(9,y+1,GL);
-  px(6,y+2,GL);px(7,y+2,GL);px(8,y+2,GL);px(9,y+2,GL);
-  if(smiling){px(2,y+1,EY);px(3,y,EY);px(7,y+1,EY);px(8,y,EY);}
-  else{px(2,y+1,EY);px(8,y+1,EY);}
+  px(6,y,GL);px(7,y,GL);px(8,y,GL);px(9,y,GL);px(6,y+1,GL);px(9,y+1,GL);px(6,y+2,GL);px(7,y+2,GL);px(8,y+2,GL);px(9,y+2,GL);
+  if(smiling){px(2,y+1,EY);px(3,y,EY);px(7,y+1,EY);px(8,y,EY);}else{px(2,y+1,EY);px(8,y+1,EY);}
 }
-
-function drawBase(mouth,arms,b=0){
+function drawBase(mouth,arms){
   cl();
-  row(0+b,[NN,NN,HR,HR,HR,HR,HR,HR,HR,NN,NN,NN]);
-  row(1+b,[NN,HR,SK,SK,SK,SK,SK,SK,SK,HR,NN,NN]);
-  row(2+b,[NN,HR,SK,SK,SK,SK,SK,SK,SK,HR,NN,NN]);
-  glasses(3+b,mouth==='smile');
-  px(2,3+b,LN);px(3,3+b,LN);px(7,3+b,LN);px(8,3+b,LN);
-  px(2,4+b,LN);px(3,4+b,LN);px(7,4+b,LN);px(8,4+b,LN);
-  row(6+b,[NN,NN,SK,SK,SK,SK,SK,SK,SK,NN,NN,NN]);
-  if(mouth==='neutral'){row(7+b,[NN,NN,SK,SK,MH,MH,MH,SK,SK,NN,NN,NN]);}
-  else if(mouth==='smile'){row(7+b,[NN,NN,MH,SK,SK,SK,SK,SK,MH,NN,NN,NN]);row(8+b,[NN,NN,SK,MH,MH,MH,MH,MH,SK,NN,NN,NN]);}
-  else{row(7+b,[NN,NN,SK,MH,SK,SK,SK,MH,SK,NN,NN,NN]);row(8+b,[NN,NN,MH,SK,SK,SK,SK,SK,MH,NN,NN,NN]);}
-  row(9+b,[NN,NN,SK,SK,SK,SK,SK,SK,SK,NN,NN,NN]);
-  row(10,[NN,NN,SU,SH,SH,SH,SH,SH,SU,NN,NN,NN]);
-  px(5,10,TID);px(6,10,TID);
-  for(let y=11;y<=18;y++){
-    px(1,y,SU);px(2,y,SD);px(9,y,SU);px(8,y,SD);
-    px(3,y,VS);px(4,y,VSD);px(7,y,VS);px(6,y,VSD);
-    px(5,y,y<=15?TI:SH);
-    if(y===13)px(5,y,TID);
-  }
+  mrow(0,[NN,NN,HR,HR,HR,HR,HR,HR,HR,NN,NN,NN]);mrow(1,[NN,HR,SK,SK,SK,SK,SK,SK,SK,HR,NN,NN]);mrow(2,[NN,HR,SK,SK,SK,SK,SK,SK,SK,HR,NN,NN]);
+  glasses(3,mouth==='smile');
+  px(2,3,LN);px(3,3,LN);px(7,3,LN);px(8,3,LN);px(2,4,LN);px(3,4,LN);px(7,4,LN);px(8,4,LN);
+  mrow(6,[NN,NN,SK,SK,SK,SK,SK,SK,SK,NN,NN,NN]);
+  if(mouth==='neutral'){mrow(7,[NN,NN,SK,SK,MH,MH,MH,SK,SK,NN,NN,NN]);}
+  else if(mouth==='smile'){mrow(7,[NN,NN,MH,SK,SK,SK,SK,SK,MH,NN,NN,NN]);mrow(8,[NN,NN,SK,MH,MH,MH,MH,MH,SK,NN,NN,NN]);}
+  else{mrow(7,[NN,NN,SK,MH,SK,SK,SK,MH,SK,NN,NN,NN]);mrow(8,[NN,NN,MH,SK,SK,SK,SK,SK,MH,NN,NN,NN]);}
+  mrow(9,[NN,NN,SK,SK,SK,SK,SK,SK,SK,NN,NN,NN]);
+  mrow(10,[NN,NN,SU,SH,SH,SH,SH,SH,SU,NN,NN,NN]);px(5,10,TID);px(6,10,TID);
+  for(let y=11;y<=18;y++){px(1,y,SU);px(2,y,SD);px(9,y,SU);px(8,y,SD);px(3,y,VS);px(4,y,VSD);px(7,y,VS);px(6,y,VSD);px(5,y,y<=15?TI:SH);if(y===13)px(5,y,TID);}
   px(2,11,SH);px(3,11,SH);px(8,11,SH);px(7,11,SH);px(2,12,SH);px(8,12,SH);
-  row(19,[NN,SU,SD,VS,VSD,SH,TI,VSD,VS,SD,SU,NN]);
+  mrow(19,[NN,SU,SD,VS,VSD,SH,TI,VSD,VS,SD,SU,NN]);
   arms.forEach(([x,y,c])=>px(x,y,c));
-  row(20,[NN,NN,NN,SD,SD,NN,NN,SD,SD,NN,NN,NN]);
-  row(21,[NN,NN,NN,SD,SD,NN,NN,SD,SD,NN,NN,NN]);
-  row(22,[NN,NN,NN,SD,SD,NN,NN,SD,SD,NN,NN,NN]);
-  row(23,[NN,NN,HR,HR,HR,NN,NN,HR,HR,HR,NN,NN]);
-  row(24,[NN,NN,HR,HR,HR,NN,NN,HR,HR,HR,NN,NN]);
+  mrow(20,[NN,NN,NN,SD,SD,NN,NN,SD,SD,NN,NN,NN]);mrow(21,[NN,NN,NN,SD,SD,NN,NN,SD,SD,NN,NN,NN]);mrow(22,[NN,NN,NN,SD,SD,NN,NN,SD,SD,NN,NN,NN]);
+  mrow(23,[NN,NN,HR,HR,HR,NN,NN,HR,HR,HR,NN,NN]);mrow(24,[NN,NN,HR,HR,HR,NN,NN,HR,HR,HR,NN,NN]);
 }
-
 const ARMS_IDLE=[[0,12,SU],[0,13,SU],[0,14,SK],[0,15,SK],[10,12,SU],[10,13,SU],[10,14,SK],[10,15,SK]];
 const ARMS_UP_A=[[0,8,SK],[0,9,SK],[1,10,SU],[10,8,SK],[10,9,SK],[11,10,SU]];
 const ARMS_UP_B=[[0,7,SK],[0,8,SK],[1,9,SU],[10,7,SK],[10,8,SK],[11,9,SU]];
 const ARMS_SAD=[[0,13,SU],[0,14,SU],[0,15,SK],[10,13,SU],[10,14,SU],[10,15,SK]];
-
 function drawIdle(){drawBase('neutral',ARMS_IDLE);}
 function drawCheer(f){drawBase('smile',f%2===0?ARMS_UP_A:ARMS_UP_B);if(f%2===0){px(5,0,'#F5C518');px(4,0,'#F5C518');}}
-function drawSad(){drawBase('sad',ARMS_SAD);}
-
+function showSad(){drawBase('sad',ARMS_SAD);setTimeout(()=>drawIdle(),550);}
 let cheerTimer=null,cheerFrame=0,cheerCount=0;
 function startCheer(msg){
   speech.textContent=msg||'';
@@ -356,216 +826,7 @@ function startCheer(msg){
     if(++cheerCount>16){clearInterval(cheerTimer);cheerTimer=null;drawIdle();speech.textContent='';}
   },110);
 }
-function showSad(){drawSad();setTimeout(()=>drawIdle(),550);}
 drawIdle();
-
-// ── DRILL LOGIC ──────────────────────────────────────────────────────────────
-const mainRow=document.getElementById('main-row');
-const dots=document.getElementById('dots');
-
-function renderDots(){
-  dots.innerHTML=STAGES.slice(0,-1).map((_,i)=>{
-    let c='dot';
-    if(i<si)c+=' done';
-    else if(i===si)c+=' active';
-    return`<div class="${c}"></div>`;
-  }).join('');
-}
-
-function shakeRow(){
-  mainRow.style.transform='translateX(-5px)';
-  setTimeout(()=>mainRow.style.transform='translateX(5px)',70);
-  setTimeout(()=>mainRow.style.transform='translateX(-3px)',140);
-  setTimeout(()=>mainRow.style.transform='translateX(0)',210);
-}
-
-function getVis(word,stage){
-  if(stage==='full')return word.split('').map(()=>true);
-  if(stage==='half')return word.split('').map((_,i)=>i%2===0);
-  return word.split('').map(()=>false);
-}
-
-function buildWordRow(word,stage){
-  const vis=getVis(word,stage);
-  mainRow.innerHTML='';
-  const r=document.createElement('div');r.className='letter-row';
-  word.split('').forEach((ch,i)=>{
-    const cell=document.createElement('div');cell.className='cell';
-    const top=document.createElement('div');top.className='cell-top';
-    if(i===pos){const cur=document.createElement('div');cur.className='v-cur';top.appendChild(cur);}
-    const span=document.createElement('div');
-    span.className='cell-char '+(vis[i]?'hint':'blank');
-    span.id='lc'+i;span.textContent=vis[i]?ch:'_';
-    top.appendChild(span);
-    const ul=document.createElement('div');ul.className='cell-ul'+(i===pos?' active':'');ul.id='lu'+i;
-    cell.appendChild(top);cell.appendChild(ul);r.appendChild(cell);
-  });
-  mainRow.appendChild(r);
-}
-
-function buildSentenceRow(word,sentence){
-  const parts=sentence.split('___');
-  const before=parts[0]||'',after=parts[1]||'';
-  const full=before+word+after;
-  mainRow._full=full;mainRow._ts=before.length;mainRow._te=before.length+word.length;
-  const CW=14,GAP=3,SW=8,MAX=390;
-  const tokens=[];let buf='',bufStart=0;
-  for(let i=0;i<full.length;i++){
-    if(full[i]===' '){if(buf){tokens.push({type:'word',chars:buf.split('').map((ch,k)=>({ch,gi:bufStart+k,isTarget:(bufStart+k)>=mainRow._ts&&(bufStart+k)<mainRow._te}))});buf='';}tokens.push({type:'space',gi:i});bufStart=i+1;}
-    else{if(!buf)bufStart=i;buf+=full[i];}
-  }
-  if(buf)tokens.push({type:'word',chars:buf.split('').map((ch,k)=>({ch,gi:bufStart+k,isTarget:(bufStart+k)>=mainRow._ts&&(bufStart+k)<mainRow._te}))});
-  const lines=[];let curLine=[],curW=0;
-  tokens.forEach(tok=>{
-    if(tok.type==='space'){if(curLine.length>0){curLine.push(tok);curW+=SW+GAP;}}
-    else{
-      const w=tok.chars.length*(CW+GAP);
-      if(curLine.length>0&&curW+w>MAX){if(curLine[curLine.length-1].type==='space')curLine.pop();lines.push(curLine);curLine=[];curW=0;}
-      curLine.push(tok);curW+=w;
-    }
-  });
-  if(curLine.length){if(curLine[curLine.length-1].type==='space')curLine.pop();lines.push(curLine);}
-  mainRow.innerHTML='';
-  const block=document.createElement('div');block.className='sent-block';
-  lines.forEach(line=>{
-    const ld=document.createElement('div');ld.className='sent-line';
-    line.forEach(tok=>{
-      if(tok.type==='space'){const g=document.createElement('div');g.className='space-gap';ld.appendChild(g);}
-      else tok.chars.forEach(({ch,gi:g,isTarget})=>{
-        const sc=document.createElement('div');sc.className='sc';
-        if(g===pos){const cur=document.createElement('div');cur.className='sv-cur';sc.appendChild(cur);}
-        const sp=document.createElement('div');sp.id='sc'+g;
-        sp.className='sc-char '+(isTarget?'blank':'hint');sp.textContent=isTarget?'_':ch;
-        const ul=document.createElement('div');ul.id='su'+g;ul.className='sc-ul';if(g===pos)ul.classList.add('active');
-        sc.appendChild(sp);sc.appendChild(ul);ld.appendChild(sc);
-      });
-    });
-    block.appendChild(ld);
-  });
-  mainRow.appendChild(block);
-}
-
-function moveCursorWord(word){
-  document.querySelectorAll('.v-cur').forEach(c=>c.remove());
-  document.querySelectorAll('.cell-ul').forEach(u=>u.classList.remove('active'));
-  if(pos>=word.length)return;
-  const top=document.getElementById('lc'+pos)?.parentElement;
-  if(top){const cur=document.createElement('div');cur.className='v-cur';top.insertBefore(cur,top.firstChild);}
-  const ul=document.getElementById('lu'+pos);if(ul)ul.classList.add('active');
-}
-
-function moveCursorSent(){
-  document.querySelectorAll('.sv-cur').forEach(c=>c.remove());
-  document.querySelectorAll('.sc-ul').forEach(u=>u.classList.remove('active'));
-  if(pos>=mainRow._full.length)return;
-  const sc=document.getElementById('sc'+pos)?.parentElement;
-  if(sc){const cur=document.createElement('div');cur.className='sv-cur';sc.insertBefore(cur,sc.firstChild);}
-  const ul=document.getElementById('su'+pos);if(ul)ul.classList.add('active');
-}
-
-function updateHeader(){
-  document.getElementById('drill-prog-lbl').textContent=`Word ${wi+1} of ${wordList.length}`;
-  document.getElementById('prog-lbl-inner').textContent=`Word ${wi+1} of ${wordList.length}`;
-  document.getElementById('prog-fill').style.width=Math.round(wi/wordList.length*100)+'%';
-}
-
-function renderStage(){
-  if(wi>=wordList.length){submitCompletion();return;}
-  const{word,sentence}=wordList[wi];
-  pos=0;mistakes=0;
-  document.getElementById('stage-lbl').textContent=STAGE_LABELS[si];
-  setFb('');
-  updateHeader();
-  renderDots();
-  if(STAGES[si]==='sentence')buildSentenceRow(word,sentence);
-  else buildWordRow(word,STAGES[si]);
-  document.getElementById('drill-inner').focus();
-}
-
-// ── KEYBOARD ─────────────────────────────────────────────────────────────────
-document.getElementById('drill-inner').addEventListener('keydown',e=>{
-  if(wi>=wordList.length)return;
-  const{word}=wordList[wi];
-  const stage=STAGES[si];
-
-  if(stage==='sentence'){
-    const full=mainRow._full,total=full.length;
-    if(e.key==='Backspace'){
-      e.preventDefault();
-      if(pos>0){pos--;const sp=document.getElementById('sc'+pos);const isT=pos>=mainRow._ts&&pos<mainRow._te;if(sp){sp.className='sc-char '+(isT?'blank':'hint');sp.textContent=isT?'_':full[pos];}moveCursorSent();setFb('');}
-      return;
-    }
-    if(e.key.length!==1||e.ctrlKey||e.metaKey||e.altKey)return;
-    e.preventDefault();if(pos>=total)return;
-    const isT=pos>=mainRow._ts&&pos<mainRow._te;
-    const sp=document.getElementById('sc'+pos);
-    if(e.key.toLowerCase()===full[pos].toLowerCase()){
-      if(sp){sp.className='sc-char correct';sp.textContent=full[pos];}
-      pos++;mistakes=0;setFb('');moveCursorSent();
-      if(pos>=total){setFb('Perfect!','good');startCheer('Nailed it!');setTimeout(()=>{si=0;wi++;renderStage();},900);}
-      else if(pos===mainRow._te)startCheer('Great spell!');
-    } else {
-      mistakes++;
-      if(sp){const oc=sp.className;sp.className='sc-char wrong';sp.textContent=e.key;setTimeout(()=>{sp.className=oc;sp.textContent=isT?'_':full[pos];},280);}
-      shakeRow();showSad();
-      if(mistakes>=3)setFb(`Hint: "${full[pos]}"`, 'bad');
-    }
-    return;
-  }
-
-  const vis=getVis(word,stage);
-  if(e.key==='Backspace'){
-    e.preventDefault();
-    if(pos>0){pos--;const ch=document.getElementById('lc'+pos);if(ch){ch.className='cell-char '+(vis[pos]?'hint':'blank');ch.textContent=vis[pos]?word[pos]:'_';}moveCursorWord(word);setFb('');}
-    return;
-  }
-  if(e.key.length!==1||e.ctrlKey||e.metaKey||e.altKey)return;
-  e.preventDefault();if(pos>=word.length)return;
-  const ch=document.getElementById('lc'+pos);
-  if(e.key.toLowerCase()===word[pos].toLowerCase()){
-    if(ch){ch.className='cell-char correct';ch.textContent=word[pos];}
-    pos++;mistakes=0;setFb('');moveCursorWord(word);
-    if(pos>=word.length){setFb('Nice!','good');startCheer(si===2?'Perfect!':'Keep going!');setTimeout(()=>{si++;renderStage();},700);}
-  } else {
-    mistakes++;
-    if(ch){ch.className='cell-char wrong';ch.textContent=e.key;setTimeout(()=>{ch.className='cell-char '+(vis[pos]?'hint':'blank');ch.textContent=vis[pos]?word[pos]:'_';},280);}
-    shakeRow();showSad();
-    if(mistakes>=3)setFb(`Hint: "${word[pos]}"`, 'bad');
-  }
-});
-
-// ── COMPLETION & SUBMISSION ───────────────────────────────────────────────────
-function submitCompletion(){
-  show('complete');
-  startCheer('You did it!');
-
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('en-GB',{year:'numeric',month:'2-digit',day:'2-digit'});
-  const timeStr = now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-
-  document.getElementById('complete-msg').textContent =
-    `You drilled ${wordList.length} word${wordList.length!==1?'s':''} from your blog entry. Great work!`;
-  document.getElementById('complete-sub').textContent =
-    `Completed ${dateStr} at ${timeStr}`;
-
-  // Post to Google Sheet
-  const payload = {
-    action:      'spellingDrill',
-    studentNum:  studentNum,
-    studentName: studentName,
-    class:       studentClass,
-    wordsCount:  wordList.length,
-    words:       wordList.map(w=>w.word).join(', '),
-    timestamp:   now.toISOString(),
-    completed:   true
-  };
-
-  fetch(SCRIPT_URL, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(payload)
-  }).catch(()=>{}); // silent fail — completion is shown regardless
-}
 </script>
 </body>
 </html>
