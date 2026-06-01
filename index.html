@@ -363,10 +363,8 @@ const ROSTER = {
 };
 
 // ═══════════════════════════════════════════════════════════════════
-//  SPELLING WORD BANK  (LAST FIRST → [{word, sentence}])
+//  SPELL WORD BANK — fetched live from Apps Script on login
 // ═══════════════════════════════════════════════════════════════════
-const WORD_BANK = {"MORI KANON":[{"word":"possession","sentence":"Today I will talk about my favorite ___."},{"word":"useful","sentence":"A smartphone is very ___ for us."}],"NAKAO MAIKI":[{"word":"usually","sentence":"I ___ make it when I find something that I like on Instagram."}],"NOMURA NAO":[{"word":"possession","sentence":"My precious ___ is a soccer shoes."}],"HARASHIMA RARA":[{"word":"happiness","sentence":"Sleeping is my greatest ___!!"}],"OURA YUKI":[{"word":"listening","sentence":"I use it for watching many movies, ___ to music and playing some games."},{"word":"causes","sentence":"It ___ bad effects on my health, so I want to use it suitably."}],"MIYAMOTO HITOMI":[{"word":"possession","sentence":"Today, I'm talking about my favorite ___ (thing)!!"},{"word":"Classical","sentence":"Rock, K-POP, J-POP, Jazz, ___, etc...."},{"word":"recommended","sentence":"What is your favorite (___) song?"}],"NISHIMURA MUSASHI":[{"word":"pleased","sentence":"Then I was very ___!"},{"word":"forever","sentence":"Perhaps, I would use the wallet ___!"}],"NAKASHIMA SHIKI":[{"word":"smartphone","sentence":"Because a ___ can play these."}],"NAKANO RIKU":[{"word":"possession","sentence":"My favorite ___ is clothes."},{"word":"memories","sentence":"I will never forget these ___."}],"URA MIRYU":[{"word":"Expensive","sentence":"___ fashion items are very cool and I love them."}],"MARUTA HARUKA":[{"word":"packages","sentence":"There are many kinds of AQUA sunblock such as purple, green and pink ___."},{"word":"package","sentence":"I am using the green ___."},{"word":"recommend","sentence":"I ___ AQUA in the green package."},{"word":"useful","sentence":"It will be ___ for summer!"},{"word":"measure","sentence":"Do you do ___ sunblock?"}]};
-
 const MAX_SPELL_WORDS = 5;
 
 // ═══════════════════════════════════════════════════════════════════
@@ -374,8 +372,8 @@ const MAX_SPELL_WORDS = 5;
 // ═══════════════════════════════════════════════════════════════════
 let studentNum='', studentName='', studentClass='';
 let sessionData=null;
+let spellWordBank=[];  // fetched live from Apps Script
 
-// ── helpers ──
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -383,7 +381,7 @@ function show(id){
 function $(id){return document.getElementById(id);}
 
 // ═══════════════════════════════════════════════════════════════════
-//  LOGIN  — calls Apps Script to validate student number
+//  LOGIN — validates roster, fetches session + spell words in parallel
 // ═══════════════════════════════════════════════════════════════════
 async function doLogin(){
   const num = $('login-input').value.trim();
@@ -391,7 +389,6 @@ async function doLogin(){
   $('login-loading').textContent='';
   if(!num){$('login-error').textContent='Please enter your student number.';return;}
 
-  // Check roster client-side first (fast)
   const student = ROSTER[num];
   if(!student){$('login-error').textContent='Student number not found. Please check and try again.';return;}
 
@@ -402,38 +399,34 @@ async function doLogin(){
   $('login-loading').textContent='Signing in…';
   $('login-btn').disabled=true;
 
-  // Fetch session from Apps Script
   try{
-    const url = `${SCRIPT_URL}?action=getSession&className=${encodeURIComponent(studentClass)}&studentNumber=${encodeURIComponent(studentNum)}`;
-    const res  = await fetch(url);
-    const data = await res.json();
-    $('login-loading').textContent='';
-    $('login-btn').disabled=false;
-
-    if(data.ok) sessionData = data.session;
-    else sessionData = null;
-  }catch(e){
-    $('login-loading').textContent='';
-    $('login-btn').disabled=false;
-    sessionData=null;
+    const [sessRes, spellRes] = await Promise.all([
+      fetch(`${SCRIPT_URL}?action=getSession&className=${encodeURIComponent(studentClass)}&studentNumber=${encodeURIComponent(studentNum)}`),
+      fetch(`${SCRIPT_URL}?action=getSpellWords&studentNumber=${encodeURIComponent(studentNum)}`)
+    ]);
+    const [sd, spd] = await Promise.all([sessRes.json(), spellRes.json()]);
+    sessionData   = sd.ok  ? sd.session : null;
+    spellWordBank = spd.ok ? spd.words  : [];
+  } catch(e){
+    sessionData=null; spellWordBank=[];
   }
 
-  // Check spelling words
-  const spellWords = WORD_BANK[studentName] || [];
+  $('login-loading').textContent='';
+  $('login-btn').disabled=false;
 
-  // Show chooser
   $('chooser-greeting').textContent=`// ${studentName}`;
-  // Update spelling badge
-  if(spellWords.length===0){
+  if(spellWordBank.length===0){
     $('spell-badge').textContent='NO WORDS YET';
     $('spell-badge').style.background='rgba(107,114,153,.15)';
     $('spell-badge').style.color='var(--muted)';
   } else {
-    $('spell-badge').textContent=`${Math.min(spellWords.length,MAX_SPELL_WORDS)} WORD${Math.min(spellWords.length,MAX_SPELL_WORDS)!==1?'S':''}`;
+    const n=Math.min(spellWordBank.length,MAX_SPELL_WORDS);
+    $('spell-badge').textContent=`${n} WORD${n!==1?'S':''}`;
+    $('spell-badge').style.background='rgba(61,214,140,.15)';
+    $('spell-badge').style.color='var(--green)';
   }
   show('chooser');
 }
-
 // ═══════════════════════════════════════════════════════════════════
 //  TYPING CHECK FLOW
 // ═══════════════════════════════════════════════════════════════════
@@ -605,7 +598,7 @@ let spWords=[], spWi=0, spSi=0, spPos=0, spMistakes=0;
 const spMain=()=>$('sp-main-row');
 
 function startSpellingFlow(){
-  const allWords = WORD_BANK[studentName]||[];
+  const allWords = spellWordBank||[];
   if(allWords.length===0){
     $('no-words-msg').textContent=`Hi ${studentName}! You don't have any spelling words this week. Check back after your blog entry has been marked.`;
     show('no-words');return;
