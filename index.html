@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v2.5</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v2.6</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2145,20 +2145,19 @@ function spSubmitCompletion() {
   document.getElementById('sp-complete-sub').textContent =
     'Completed ' + now.toLocaleDateString('en-GB') + ' at ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   showScreen('sp-complete');
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      action: 'spellingDrill',
-      studentNum: state.studentNumber,
-      studentName: state.nameEng,
-      class: state.className,
-      wordsCount: spWords.length,
-      words: spWords.map(w => w.word).join(', '),
-      timestamp: now.toISOString(),
-      completed: true
-    })
-  }).catch(() => {});
+  // Use GET with encoded payload to avoid CORS issues (same as typing check)
+  const spPayload = {
+    action: 'spellingDrill',
+    studentNum: state.studentNumber,
+    studentName: state.nameEng,
+    class: state.className,
+    wordsCount: spWords.length,
+    words: spWords.map(w => w.word).join(', '),
+    timestamp: now.toISOString(),
+    completed: true
+  };
+  fetch(SCRIPT_URL + '?' + new URLSearchParams({ payload: JSON.stringify(spPayload) }).toString())
+    .catch(() => {});
 }
 
 </script>
