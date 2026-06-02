@@ -763,7 +763,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.check</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v0.9</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v1.0</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -1946,7 +1946,6 @@ const MAX_SPELL_WORDS = 5;
 // ═══════════════════════════════════════════════════════════════════
 let state.studentNumber='', state.nameEng='', state.className='';
 let sessionData=null;
-let spellWordBank=[];  // fetched live from Apps Script
 
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -1957,53 +1956,7 @@ function $(id){return document.getElementById(id);}
 // ═══════════════════════════════════════════════════════════════════
 //  LOGIN — validates roster, fetches session + spell words in parallel
 // ═══════════════════════════════════════════════════════════════════
-async function doLogin(){
-  const num = $('login-input').value.trim();
-  $('login-error').textContent='';
-  $('login-loading').textContent='';
-  if(!num){$('login-error').textContent='Please enter your student number.';return;}
-
-  const student = ROSTER[num];
-  if(!student){$('login-error').textContent='Student number not found. Please check and try again.';return;}
-
-  state.studentNumber   = num;
-  state.nameEng  = student.name;
-  state.className = student.class;
-
-  $('login-loading').textContent='Signing in…';
-  $('login-btn').disabled=true;
-
-  try{
-    const [sessRes, spellRes] = await Promise.all([
-      fetch(`${SCRIPT_URL}?action=getSession&className=${encodeURIComponent(state.className)}&state.studentNumberber=${encodeURIComponent(state.studentNumber)}`),
-      fetch(`${SCRIPT_URL}?action=getSpellWords&state.studentNumberber=${encodeURIComponent(state.studentNumber)}`)
-    ]);
-    const [sd, spd] = await Promise.all([sessRes.json(), spellRes.json()]);
-    sessionData   = sd.ok  ? sd.session : null;
-    spellWordBank = spd.ok ? spd.words  : [];
-  } catch(e){
-    sessionData=null; spellWordBank=[];
-  }
-
-  $('login-loading').textContent='';
-  $('login-btn').disabled=false;
-
-  $('chooser-greeting').textContent=`// ${state.nameEng}`;
-  if(spellWordBank.length===0){
-    $('spell-badge').textContent='NO WORDS YET';
-    $('spell-badge').style.background='rgba(107,114,153,.15)';
-    $('spell-badge').style.color='var(--muted)';
-  } else {
-    const n=Math.min(spellWordBank.length,MAX_SPELL_WORDS);
-    $('spell-badge').textContent=`${n} WORD${n!==1?'S':''}`;
-    $('spell-badge').style.background='rgba(61,214,140,.15)';
-    $('spell-badge').style.color='var(--green)';
-  }
-  show('chooser');
-}
-// ═══════════════════════════════════════════════════════════════════
-//  TYPING CHECK FLOW
-// ═══════════════════════════════════════════════════════════════════
+async 
 let tParas=[], tParaIdx=0, tTyped='', tStartTime=null, tTimer=null;
 let tWpmArr=[], tAccArr=[], tTimeArr=[];
 
