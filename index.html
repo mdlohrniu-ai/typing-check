@@ -763,7 +763,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.check</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v1.1</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v1.3</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -1944,7 +1944,6 @@ const MAX_SPELL_WORDS = 5;
 // ═══════════════════════════════════════════════════════════════════
 //  GLOBAL STATE
 // ═══════════════════════════════════════════════════════════════════
-let state.studentNumber='', state.nameEng='', state.className='';
 let sessionData=null;
 function $(id){return document.getElementById(id);}
 
@@ -2079,7 +2078,6 @@ function submitTyping(){
   // Submit to Apps Script
   const payload={
     action:'submitResult',
-    state.studentNumberber:state.studentNumber,
     className:state.className,
     sessionName:sessionData.sessionName,
     sessionNumber:sessionData.sessionNumber,
@@ -2259,7 +2257,6 @@ function spSubmitCompletion(){
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
       action:'spellingDrill',
-      state.studentNumber,state.nameEng,class:state.className,
       wordsCount:spWords.length,
       words:spWords.map(w=>w.word).join(', '),
       timestamp:now.toISOString(),
