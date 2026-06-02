@@ -665,7 +665,7 @@ tr:hover td { background: var(--surface2); }
 
 
 /* ── Chooser activity cards ──────────────── */
-.act-card{flex:1;min-width:220px;max-width:260px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem 1.5rem;cursor:pointer;transition:border-color .2s,transform .15s;display:flex;flex-direction:column;gap:.75rem;text-align:left}
+.act-card{flex:1;min-width:0;max-width:300px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem 1.5rem;cursor:pointer;transition:border-color .2s,transform .15s;display:flex;flex-direction:column;gap:.75rem;text-align:left}
 .act-card:hover{border-color:var(--accent);transform:translateY(-2px)}
 .act-icon{font-family:'JetBrains Mono',monospace;font-size:1.5rem;color:var(--accent)}
 .act-title{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:500}
@@ -673,7 +673,7 @@ tr:hover td { background: var(--surface2); }
 .act-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;padding:.2rem .5rem;border-radius:4px;margin-top:.25rem}
 .act-badge.typing{background:rgba(91,127,255,.15);color:var(--accent)}
 .act-badge.spelling{background:rgba(61,214,140,.15);color:var(--correct)}
-.chooser-cards{display:flex;gap:1.25rem;flex-wrap:wrap;justify-content:center;width:100%;max-width:560px;margin:1.5rem 0}
+.chooser-cards{display:flex;gap:1rem;flex-wrap:nowrap;justify-content:center;width:100%;max-width:900px;margin:1.5rem 0}
 .chooser-greeting{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:1rem;margin-bottom:.5rem}
 
 /* ── Back to activities & logout ─────────────────── */
@@ -807,7 +807,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v1.5</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v1.7</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2153,17 +2153,25 @@ let spWords=[], spWi=0, spSi=0, spPos=0, spMistakes=0;
 const spMain=()=>$('sp-main-row');
 
 function startSpellingFlow(){
-  const allWords = spellWordBank||[];
-  if(allWords.length===0){
-    $('no-words-msg').textContent=`Hi ${state.nameEng}! You don't have any spelling words this week. Check back after your blog entry has been marked.`;
-    show('no-words');return;
+  try {
+    const allWords = spellWordBank||[];
+    if(allWords.length===0){
+      const nm = document.getElementById('no-words-msg');
+      if(nm) nm.textContent='You don\'t have any spelling words yet. Check back after your blog entry has been marked.';
+      show('no-words');return;
+    }
+    spWords=[...allWords].sort(()=>Math.random()-.5).slice(0,MAX_SPELL_WORDS);
+    spWi=0;spSi=0;spPos=0;spMistakes=0;
+    const dn = document.getElementById('drill-name');
+    if(dn) dn.textContent=state.nameEng+' · '+state.className;
+    show('drill');
+    spRenderStage();
+    const di = document.getElementById('drill-inner');
+    if(di) di.focus();
+  } catch(err) {
+    alert('Spelling drill error: ' + err.message);
+    console.error(err);
   }
-  spWords=[...allWords].sort(()=>Math.random()-.5).slice(0,MAX_SPELL_WORDS);
-  spWi=0;spSi=0;spPos=0;spMistakes=0;
-  $('drill-name').textContent=`${state.nameEng} · ${state.className}`;
-  show('drill');
-  spRenderStage();
-  $('drill-inner').focus();
 }
 
 function spSetFb(msg,cls=''){const f=$('sp-fb');f.textContent=msg;f.className='sp-feedback'+(cls?' '+cls:'');}
