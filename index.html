@@ -134,10 +134,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .prog-fill{height:100%;background:var(--green);border-radius:99px;transition:width .4s}
 .prog-lbl{font-family:var(--mono);font-size:.7rem;color:var(--muted);white-space:nowrap}
 .stage-lbl{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;color:var(--muted);margin-bottom:1rem;text-transform:uppercase}
-.drill-row{display:flex;align-items:flex-end;gap:14px;justify-content:center;margin-bottom:1.5rem;width:100%}
-.mascot-wrap{flex-shrink:0;width:48px;display:flex;flex-direction:column;align-items:center;gap:4px}
-#mascot-canvas{image-rendering:pixelated;image-rendering:crisp-edges;width:48px;height:72px}
-#speech{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;min-height:12px;line-height:1.2}
+.drill-row{display:flex;align-items:flex-end;justify-content:center;margin-bottom:1.5rem;width:100%}
 .letter-row{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;align-items:flex-end;flex:1}
 .cell{display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;width:44px}
 .cell-top{height:50px;display:flex;align-items:center;justify-content:center;position:relative;width:100%}
@@ -300,10 +297,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
       </div>
       <div class="stage-lbl" id="sp-stage-lbl"></div>
       <div class="drill-row">
-        <div class="mascot-wrap">
-          <canvas id="mascot-canvas" width="12" height="21"></canvas>
-          <div id="speech"></div>
-        </div>
         <div id="sp-main-row"></div>
       </div>
       <div class="sp-feedback" id="sp-fb"></div>
@@ -721,12 +714,11 @@ $('drill-inner').addEventListener('keydown',e=>{
     if(e.key.toLowerCase()===full[spPos].toLowerCase()){
       if(sp){sp.className='sc-char correct';sp.textContent=full[spPos];}
       spPos++;spMistakes=0;spSetFb('');spMoveCurSent();
-      if(spPos>=total){spSetFb('Perfect!','good');startCheer('Nailed it!');setTimeout(()=>{spSi=0;spWi++;spRenderStage();},900);}
-      else if(spPos===spMain()._te)startCheer('Great spell!');
+
     }else{
       spMistakes++;
       if(sp){const oc=sp.className;sp.className='sc-char wrong';sp.textContent=e.key;setTimeout(()=>{sp.className=oc;sp.textContent=isT?'_':full[spPos];},280);}
-      spShakeRow();showSad();if(spMistakes>=3)spSetFb(`Hint: "${full[spPos]}"`, 'bad');
+
     }
     return;
   }
@@ -738,17 +730,17 @@ $('drill-inner').addEventListener('keydown',e=>{
   if(e.key.toLowerCase()===word[spPos].toLowerCase()){
     if(ch){ch.className='cell-char correct';ch.textContent=word[spPos];}
     spPos++;spMistakes=0;spSetFb('');spMoveCurWord(word);
-    if(spPos>=word.length){spSetFb('Nice!','good');startCheer(spSi===2?'Perfect!':'Keep going!');setTimeout(()=>{spSi++;spRenderStage();},700);}
+
   }else{
     spMistakes++;
     if(ch){ch.className='cell-char wrong';ch.textContent=e.key;setTimeout(()=>{ch.className='cell-char '+(vis[spPos]?'hint':'blank');ch.textContent=vis[spPos]?word[spPos]:'_';},280);}
-    spShakeRow();showSad();if(spMistakes>=3)spSetFb(`Hint: "${word[spPos]}"`, 'bad');
+
   }
 });
 
 function spSubmitCompletion(){
   const now=new Date();
-  $('sc-msg').textContent=`You drilled ${spWords.length} word${spWords.length!==1?'s':''} from your blog entry. Great work!`;
+  $('sc-msg').textContent=`You drilled ${spWords.length} word${spWords.length!==1?'s':''} from your blog entries. Great work!`;
   $('sc-sub').textContent=`Completed ${now.toLocaleDateString('en-GB')} at ${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
   show('spell-complete');
   startCheer('You did it!');
@@ -766,60 +758,6 @@ function spSubmitCompletion(){
   }).catch(()=>{});
 }
 
-// ═══════════════════════════════════════════════════════════════════
-//  PIXEL MASCOT
-// ═══════════════════════════════════════════════════════════════════
-const mCanvas=$('mascot-canvas');
-const mCtx=mCanvas.getContext('2d');
-const speech=$('speech');
-const SK='#F0C080',HR='#2A1A08',SU='#2255AA',SD='#1A3D7A',VS='#1A3060',VSD='#0F1F40',
-      SH='#EEEEEE',TI='#CC2222',TID='#881111',GL='#111111',EY='#111111',LN='#D8EEF8',MH='#B05040',NN='';
-function cl(){mCtx.clearRect(0,0,12,21);}
-function px(x,y,c){if(!c||c===NN)return;mCtx.fillStyle=c;mCtx.fillRect(x,y,1,1);}
-function mrow(y,a){a.forEach((c,x)=>px(x,y,c));}
-function glasses(y,smiling){
-  px(2,y,LN);px(3,y,LN);px(2,y+1,LN);px(3,y+1,LN);px(7,y,LN);px(8,y,LN);px(7,y+1,LN);px(8,y+1,LN);
-  px(1,y,GL);px(2,y,GL);px(3,y,GL);px(4,y,GL);px(1,y+1,GL);px(4,y+1,GL);px(1,y+2,GL);px(2,y+2,GL);px(3,y+2,GL);px(4,y+2,GL);
-  px(5,y+1,GL);
-  px(6,y,GL);px(7,y,GL);px(8,y,GL);px(9,y,GL);px(6,y+1,GL);px(9,y+1,GL);px(6,y+2,GL);px(7,y+2,GL);px(8,y+2,GL);px(9,y+2,GL);
-  if(smiling){px(2,y+1,EY);px(3,y,EY);px(7,y+1,EY);px(8,y,EY);}else{px(2,y+1,EY);px(8,y+1,EY);}
-}
-function drawBase(mouth,arms){
-  cl();
-  mrow(0,[NN,NN,HR,HR,HR,HR,HR,HR,HR,NN,NN,NN]);mrow(1,[NN,HR,SK,SK,SK,SK,SK,SK,SK,HR,NN,NN]);mrow(2,[NN,HR,SK,SK,SK,SK,SK,SK,SK,HR,NN,NN]);
-  glasses(3,mouth==='smile');
-  px(2,3,LN);px(3,3,LN);px(7,3,LN);px(8,3,LN);px(2,4,LN);px(3,4,LN);px(7,4,LN);px(8,4,LN);
-  mrow(6,[NN,NN,SK,SK,SK,SK,SK,SK,SK,NN,NN,NN]);
-  if(mouth==='neutral'){mrow(7,[NN,NN,SK,SK,MH,MH,MH,SK,SK,NN,NN,NN]);}
-  else if(mouth==='smile'){mrow(7,[NN,NN,MH,SK,SK,SK,SK,SK,MH,NN,NN,NN]);mrow(8,[NN,NN,SK,MH,MH,MH,MH,MH,SK,NN,NN,NN]);}
-  else{mrow(7,[NN,NN,SK,MH,SK,SK,SK,MH,SK,NN,NN,NN]);mrow(8,[NN,NN,MH,SK,SK,SK,SK,SK,MH,NN,NN,NN]);}
-  mrow(9,[NN,NN,SK,SK,SK,SK,SK,SK,SK,NN,NN,NN]);
-  mrow(10,[NN,NN,SU,SH,SH,SH,SH,SH,SU,NN,NN,NN]);px(5,10,TID);px(6,10,TID);
-  for(let y=11;y<=18;y++){px(1,y,SU);px(2,y,SD);px(9,y,SU);px(8,y,SD);px(3,y,VS);px(4,y,VSD);px(7,y,VS);px(6,y,VSD);px(5,y,y<=15?TI:SH);if(y===13)px(5,y,TID);}
-  px(2,11,SH);px(3,11,SH);px(8,11,SH);px(7,11,SH);px(2,12,SH);px(8,12,SH);
-  mrow(19,[NN,SU,SD,VS,VSD,SH,TI,VSD,VS,SD,SU,NN]);
-  arms.forEach(([x,y,c])=>px(x,y,c));
-  mrow(20,[NN,NN,NN,SD,SD,NN,NN,SD,SD,NN,NN,NN]);mrow(21,[NN,NN,NN,SD,SD,NN,NN,SD,SD,NN,NN,NN]);mrow(22,[NN,NN,NN,SD,SD,NN,NN,SD,SD,NN,NN,NN]);
-  mrow(23,[NN,NN,HR,HR,HR,NN,NN,HR,HR,HR,NN,NN]);mrow(24,[NN,NN,HR,HR,HR,NN,NN,HR,HR,HR,NN,NN]);
-}
-const ARMS_IDLE=[[0,12,SU],[0,13,SU],[0,14,SK],[0,15,SK],[10,12,SU],[10,13,SU],[10,14,SK],[10,15,SK]];
-const ARMS_UP_A=[[0,8,SK],[0,9,SK],[1,10,SU],[10,8,SK],[10,9,SK],[11,10,SU]];
-const ARMS_UP_B=[[0,7,SK],[0,8,SK],[1,9,SU],[10,7,SK],[10,8,SK],[11,9,SU]];
-const ARMS_SAD=[[0,13,SU],[0,14,SU],[0,15,SK],[10,13,SU],[10,14,SU],[10,15,SK]];
-function drawIdle(){drawBase('neutral',ARMS_IDLE);}
-function drawCheer(f){drawBase('smile',f%2===0?ARMS_UP_A:ARMS_UP_B);if(f%2===0){px(5,0,'#F5C518');px(4,0,'#F5C518');}}
-function showSad(){drawBase('sad',ARMS_SAD);setTimeout(()=>drawIdle(),550);}
-let cheerTimer=null,cheerFrame=0,cheerCount=0;
-function startCheer(msg){
-  speech.textContent=msg||'';
-  if(cheerTimer)clearInterval(cheerTimer);
-  cheerCount=0;cheerFrame=0;
-  cheerTimer=setInterval(()=>{
-    drawCheer(cheerFrame++);
-    if(++cheerCount>16){clearInterval(cheerTimer);cheerTimer=null;drawIdle();speech.textContent='';}
-  },110);
-}
-drawIdle();
 </script>
 </body>
 </html>
