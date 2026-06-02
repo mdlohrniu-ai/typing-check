@@ -807,7 +807,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v1.9</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v2.0</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2270,7 +2270,9 @@ function spMoveCurSent(){
   const ul=document.getElementById('su'+spPos);if(ul)ul.classList.add('active');
 }
 
-$('drill-inner').addEventListener('keydown',e=>{
+document.addEventListener('keydown',e=>{
+  const drillScreen = document.getElementById('drill');
+  if(!drillScreen || !drillScreen.classList.contains('active')) return;
   if(spWi>=spWords.length)return;
   const{word}=spWords[spWi];
   const stage=STAGES[spSi];
@@ -2306,6 +2308,7 @@ $('drill-inner').addEventListener('keydown',e=>{
     if(ch){ch.className='cell-char wrong';ch.textContent=e.key;setTimeout(()=>{ch.className='cell-char '+(vis[spPos]?'hint':'blank');ch.textContent=vis[spPos]?word[spPos]:'_';},280);}
 
   }
+
 });
 
 function spSubmitCompletion(){
