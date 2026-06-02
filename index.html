@@ -743,7 +743,6 @@ function spSubmitCompletion(){
   $('sc-msg').textContent=`You drilled ${spWords.length} word${spWords.length!==1?'s':''} from your blog entries. Great work!`;
   $('sc-sub').textContent=`Completed ${now.toLocaleDateString('en-GB')} at ${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
   show('spell-complete');
-  startCheer('You did it!');
   fetch(SCRIPT_URL,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
