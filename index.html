@@ -807,7 +807,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v2.2</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v2.3</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -1097,6 +1097,7 @@ function show(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const el = document.getElementById(id);
     if (el) el.classList.add('active');
+    if (id === 'drill') alert('Drill screen activated. Classes: ' + (el ? el.className : 'NOT FOUND'));
     // Blur the typing check capture textarea so it doesn't steal keystrokes
     const cap = document.getElementById('capture');
     if (cap) { cap.blur(); cap.disabled = true; }
@@ -2279,7 +2280,6 @@ function spMoveCurSent(){
 document.addEventListener('keydown',e=>{
   const drillScreen = document.getElementById('drill');
   if(!drillScreen || !drillScreen.classList.contains('active')) return;
-  alert('KEY: ' + e.key + ' | drill active: true | spWi:' + spWi + ' spWords:' + spWords.length);
   if(spWi>=spWords.length)return;
   const{word}=spWords[spWi];
   const stage=STAGES[spSi];
