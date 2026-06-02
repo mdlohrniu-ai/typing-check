@@ -763,7 +763,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.check</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v1.0</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v1.1</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -1946,11 +1946,6 @@ const MAX_SPELL_WORDS = 5;
 // ═══════════════════════════════════════════════════════════════════
 let state.studentNumber='', state.nameEng='', state.className='';
 let sessionData=null;
-
-function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
 function $(id){return document.getElementById(id);}
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1959,24 +1954,6 @@ function $(id){return document.getElementById(id);}
 async 
 let tParas=[], tParaIdx=0, tTyped='', tStartTime=null, tTimer=null;
 let tWpmArr=[], tAccArr=[], tTimeArr=[];
-
-function startTypingFlow(){
-  if(!sessionData){show('no-session');return;}
-  if(sessionData.alreadyCompleted){
-    $('already-msg').textContent=`You already completed "${sessionData.sessionName}".`;
-    $('done-wpm').textContent=sessionData.personalBestWpm||'—';
-    $('done-acc').textContent='—';
-    show('already-done');return;
-  }
-  if(sessionData.status!=='open'){show('no-session');return;}
-
-  tParas = (sessionData.paragraphs||[]).map(p=>p.text);
-  if(tParas.length===0){show('no-session');return;}
-  tParaIdx=0; tWpmArr=[]; tAccArr=[]; tTimeArr=[];
-  $('t-header-left').textContent=`// ${state.nameEng} · ${sessionData.sessionName}`;
-  loadPara();
-  show('typing');
-}
 
 function loadPara(){
   const text = tParas[tParaIdx];
