@@ -807,7 +807,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v1.8</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v1.9</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -1045,6 +1045,9 @@ const JIS = {
 // ════════════════════════════════════════════════════════
 let spellWordBank = [];
 let spWords=[], spWi=0, spSi=0, spPos=0, spMistakes=0;
+const STAGES=['full','half','none','sentence'];
+const STAGE_LABELS=['Study this word — type every letter','Some letters shown — type every letter','Spell it from memory','Type the full sentence'];
+const spMain=()=>document.getElementById('sp-main-row');
 
 const state = {
   // Student info
@@ -2148,9 +2151,6 @@ function submitTyping(){
 // ═══════════════════════════════════════════════════════════════════
 //  SPELLING DRILL FLOW
 // ═══════════════════════════════════════════════════════════════════
-const STAGES=['full','half','none','sentence'];
-const STAGE_LABELS=['Study this word — type every letter','Some letters shown — type every letter','Spell it from memory','Type the full sentence'];
-const spMain=()=>$('sp-main-row');
 
 function startSpellingFlow(){
   try {
