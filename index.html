@@ -708,23 +708,40 @@ tr:hover td { background: var(--surface2); }
 
 <!-- ════════════════ ACTIVITY CHOOSER ════════════════ -->
 <div class="screen" id="chooser">
-  <div class="chooser-greeting" id="chooser-greeting"></div>
-  <div class="chooser-sub">What would you like to do today?</div>
+  <div class="top-bar" style="max-width:900px;margin:0 auto;width:100%;padding:0">
+    <div class="logo">// typing.skills</div>
+    <div class="student-badge" id="chooser-badge"></div>
+  </div>
+  <div class="chooser-greeting" id="chooser-greeting" style="margin:2rem 0 .5rem"></div>
+  <p style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text-muted);margin-bottom:2rem">Choose an activity</p>
   <div class="chooser-cards">
+
+    <!-- Card 1: Typing Practice (external) -->
+    <div class="act-card" onclick="window.open('https://niutyping.typingclub.com/','_blank')">
+      <div class="act-icon">&#9654;_</div>
+      <div class="act-title">Typing Practice</div>
+      <div class="act-desc">Open the NIU Typing Club to practice your typing speed and technique.</div>
+      <div class="act-badge typing">TYPINGCLUB ↗</div>
+    </div>
+
+    <!-- Card 2: Spelling Drill -->
+    <div class="act-card" onclick="startSpellingFlow()">
+      <div class="act-icon">S_</div>
+      <div class="act-title">Typing Drills <span style="font-size:.7rem;opacity:.6">(Spelling)</span></div>
+      <div class="act-desc">Practice words you misspelled in your blog entries.</div>
+      <div class="act-badge spelling" id="spell-badge">PERSONALISED</div>
+    </div>
+
+    <!-- Card 3: Typing Check -->
     <div class="act-card" onclick="startTypingFlow()">
       <div class="act-icon">&gt;_</div>
       <div class="act-title">Typing Check</div>
       <div class="act-desc">Timed typing exercise — measure your speed and accuracy.</div>
       <div class="act-badge typing">SPEED &amp; ACCURACY</div>
     </div>
-    <div class="act-card" onclick="startSpellingFlow()">
-      <div class="act-icon">S_</div>
-      <div class="act-title">Spelling Drill</div>
-      <div class="act-desc">Practice words you misspelled in your blog entry.</div>
-      <div class="act-badge spelling" id="spell-badge">PERSONALISED</div>
-    </div>
+
   </div>
-  <button class="logout-btn" onclick="showScreen('login')">⏻ Log out</button>
+  <button class="logout-btn" onclick="showScreen('login')" style="margin-top:2rem">⏻ Log out</button>
 </div>
 
 <!-- ════════════════ NO WORDS ════════════════ -->
@@ -789,8 +806,8 @@ tr:hover td { background: var(--surface2); }
 <div class="screen active" id="screen-login">
   <div class="login-box">
     <div>
-      <div class="login-logo">// typing.check</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v1.4</div>
+      <div class="login-logo">// typing.skills</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v1.5</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -809,7 +826,7 @@ tr:hover td { background: var(--surface2); }
 ═══════════════════════════════════════════════════ -->
 <div class="screen" id="screen-home">
   <div class="top-bar">
-    <div class="logo">// typing.check</div>
+    <div class="logo">// typing.skills</div>
     <div class="student-badge" id="home-badge"></div>
   </div>
   <div class="greeting">
@@ -839,7 +856,7 @@ tr:hover td { background: var(--surface2); }
 ═══════════════════════════════════════════════════ -->
 <div class="screen" id="screen-test">
   <div class="top-bar">
-    <div class="logo">// typing.check</div>
+    <div class="logo">// typing.skills</div>
     <div class="student-badge" id="test-badge"></div>
   </div>
 
@@ -974,7 +991,7 @@ tr:hover td { background: var(--surface2); }
 ═══════════════════════════════════════════════════ -->
 <div class="screen" id="screen-results">
   <div class="top-bar">
-    <div class="logo">// typing.check</div>
+    <div class="logo">// typing.skills</div>
     <div class="student-badge" id="results-badge"></div>
   </div>
   <div class="results-page-title">
@@ -1003,7 +1020,10 @@ tr:hover td { background: var(--surface2); }
     <div class="history-header">// session history</div>
     <div id="history-content"></div>
   </div>
-  <button class="btn btn-secondary" onclick="showScreen('home')" style="margin-top:8px">&#8592; Back to Home</button>
+  <div style="display:flex;gap:1rem;margin-top:8px">
+  <button class="btn btn-secondary" onclick="show('chooser')">&#8592; Back to activities</button>
+  <button class="btn btn-secondary" onclick="showScreen('home')">Home</button>
+</div>
 </div>
 
 <script>
@@ -1153,14 +1173,16 @@ async function doLogin() {
     document.getElementById('chooser-greeting').textContent = '// ' + state.nameEng;
     const n = Math.min(spellWordBank.length, MAX_SPELL_WORDS);
     const badge = document.getElementById('spell-badge');
-    if(spellWordBank.length === 0){
-      badge.textContent = 'NO WORDS YET';
-      badge.style.background = 'rgba(91,127,255,.08)';
-      badge.style.color = 'var(--text-muted)';
-    } else {
-      badge.textContent = n + ' WORD' + (n !== 1 ? 'S' : '');
-      badge.style.background = 'rgba(61,214,140,.15)';
-      badge.style.color = 'var(--correct)';
+    if (badge) {
+      if(spellWordBank.length === 0){
+        badge.textContent = 'NO WORDS YET';
+        badge.style.background = 'rgba(91,127,255,.08)';
+        badge.style.color = 'var(--text-muted)';
+      } else {
+        badge.textContent = n + ' WORD' + (n !== 1 ? 'S' : '');
+        badge.style.background = 'rgba(61,214,140,.15)';
+        badge.style.color = 'var(--correct)';
+      }
     }
     show('chooser');
   } catch (err) {
@@ -1185,6 +1207,9 @@ function buildHomeScreen() {
   // Badge
   document.getElementById('home-badge').innerHTML =
     '<b>' + s.studentNumber + '</b> &nbsp;·&nbsp; ' + s.nameEng + ' &nbsp;·&nbsp; ' + s.className;
+  // Also update chooser badge
+  const cb = document.getElementById('chooser-badge');
+  if (cb) cb.innerHTML = '<b>' + s.studentNumber + '</b> &nbsp;·&nbsp; ' + s.nameEng + ' &nbsp;·&nbsp; ' + s.className;
 
   // Greeting
   document.getElementById('home-greeting').textContent = 'Welcome back, ' + s.nameEng.split(' ')[0] + '!';
