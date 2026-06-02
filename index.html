@@ -807,7 +807,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v2.0</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v2.1</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -1097,8 +1097,14 @@ function show(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const el = document.getElementById(id);
     if (el) el.classList.add('active');
+    // Blur the typing check capture textarea so it doesn't steal keystrokes
+    const cap = document.getElementById('capture');
+    if (cap) { cap.blur(); cap.disabled = true; }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
+    // Re-enable capture when returning to typing screens
+    const cap = document.getElementById('capture');
+    if (cap) cap.disabled = false;
     showScreen(id);
   }
 }
