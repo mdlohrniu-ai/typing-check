@@ -621,170 +621,68 @@ tr:hover td { background: var(--surface2); }
   color: var(--text-muted);
   font-size: 0.88rem;
 }
+
+/* ── Chooser ── */
+.chooser-cards{display:flex;gap:1rem;flex-wrap:nowrap;justify-content:center;width:100%;max-width:920px;margin:1.5rem 0}
+.act-card{flex:1;min-width:0;max-width:300px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem 1.5rem;cursor:pointer;transition:border-color .2s,transform .15s;display:flex;flex-direction:column;gap:.75rem;text-align:left}
+.act-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.act-icon{font-family:'JetBrains Mono',monospace;font-size:1.4rem;color:var(--accent)}
+.act-title{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600}
+.act-desc{font-size:.8rem;color:var(--text-muted);line-height:1.5;flex:1}
+.act-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;padding:.2rem .5rem;border-radius:4px;margin-top:.25rem;background:rgba(91,127,255,.15);color:var(--accent)}
+.act-badge.spell{background:rgba(61,214,140,.15);color:var(--correct)}
+.chooser-greeting{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:1rem;margin-bottom:.25rem}
+.logout-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:7px 18px;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text-muted);cursor:pointer;margin-top:2rem;transition:color .2s,border-color .2s}
+.logout-btn:hover{color:var(--text);border-color:var(--accent)}
+.back-act-btn{background:transparent;border:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text-muted);cursor:pointer;margin-top:1.5rem;padding:6px 12px;transition:color .2s}
+.back-act-btn:hover{color:var(--text)}
+
+/* ── Drill tiles ── */
 .drill-topbar{width:100%;background:var(--surface);border-bottom:1px solid var(--border);padding:.65rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
-.drill-topbar-name{font-family:var(--mono);font-size:.75rem;color:var(--accent)}
-.drill-topbar-prog{font-family:var(--mono);font-size:.75rem;color:var(--muted)}
+.drill-topbar-name{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--accent)}
+.drill-topbar-prog{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text-muted)}
 .drill-body{flex:1;width:100%;display:flex;align-items:center;justify-content:center;padding:1.5rem 1rem}
 .drill-inner{width:100%;max-width:620px;display:flex;flex-direction:column;align-items:center;outline:none}
 .prog-wrap{width:100%;display:flex;align-items:center;gap:10px;margin-bottom:1.25rem}
 .prog-track{flex:1;height:2px;background:var(--border);border-radius:99px;overflow:hidden}
-.prog-fill{height:100%;background:var(--green);border-radius:99px;transition:width .4s}
-.prog-lbl{font-family:var(--mono);font-size:.7rem;color:var(--muted);white-space:nowrap}
-.stage-lbl{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;color:var(--muted);margin-bottom:1rem;text-transform:uppercase}
+.prog-fill{height:100%;background:var(--correct);border-radius:99px;transition:width .4s}
+.prog-lbl{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text-muted);white-space:nowrap}
+.stage-lbl{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em;color:var(--text-muted);margin-bottom:1rem;text-transform:uppercase}
 .drill-row{display:flex;align-items:flex-end;justify-content:center;margin-bottom:1.5rem;width:100%}
 .letter-row{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;align-items:flex-end;flex:1}
 .cell{display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;width:44px}
 .cell-top{height:50px;display:flex;align-items:center;justify-content:center;position:relative;width:100%}
-.cell-char{font-size:34px;font-weight:500;font-family:var(--mono);line-height:1;transition:color .1s}
-.cell-char.hint{color:var(--muted)}
-.cell-char.correct{color:var(--green)}
-.cell-char.wrong{color:var(--red)}
+.cell-char{font-size:34px;font-weight:500;font-family:'JetBrains Mono',monospace;line-height:1;transition:color .1s;color:var(--text)}
+.cell-char.hint{color:var(--text-muted)}
+.cell-char.correct{color:var(--correct)}
+.cell-char.wrong{color:var(--error)}
 .cell-char.blank{color:var(--border)}
 .cell-ul{width:34px;height:2px;border-radius:1px;background:var(--border)}
 .cell-ul.active{background:var(--accent)}
-.v-cur{position:absolute;left:1px;top:5px;width:2px;height:40px;background:var(--accent);border-radius:1px;animation:blink .9s step-start infinite}
+.v-cur{position:absolute;left:1px;top:5px;width:2px;height:40px;background:var(--accent);border-radius:1px;animation:sp-blink .9s step-start infinite}
+@keyframes sp-blink{0%,100%{opacity:1}50%{opacity:0}}
 .sent-block{flex:1;display:flex;flex-direction:column;gap:6px}
 .sent-line{display:flex;gap:3px;flex-wrap:nowrap;justify-content:center;align-items:flex-end}
 .sc{display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
-.sc-char{font-size:19px;font-family:var(--mono);line-height:1;min-width:11px;text-align:center}
-.sc-char.correct{color:var(--green)}
-.sc-char.wrong{color:var(--red)}
+.sc-char{font-size:19px;font-family:'JetBrains Mono',monospace;line-height:1;min-width:11px;text-align:center;color:var(--text)}
+.sc-char.correct{color:var(--correct)}
+.sc-char.wrong{color:var(--error)}
 .sc-char.blank{color:var(--border)}
-.sc-char.hint{color:var(--muted)}
+.sc-char.hint{color:var(--text-muted)}
 .sc-ul{height:1.5px;border-radius:1px;background:var(--border);width:100%;min-width:11px}
 .sc-ul.active{background:var(--accent)}
-.sv-cur{position:absolute;left:-1px;top:0;width:1.5px;height:21px;background:var(--accent);border-radius:1px;animation:blink .9s step-start infinite}
+.sv-cur{position:absolute;left:-1px;top:0;width:1.5px;height:21px;background:var(--accent);border-radius:1px;animation:sp-blink .9s step-start infinite}
 .space-gap{width:8px;flex-shrink:0}
 .step-dots{display:flex;gap:8px;justify-content:center;margin-bottom:.75rem}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .2s}
-.dot.done{background:var(--green)}
-.dot.active{background:var(--accent)}
-.sp-feedback{font-family:var(--mono);font-size:.75rem;min-height:16px;margin-bottom:.5rem;text-align:center;color:var(--muted)}
-.sp-feedback.good{color:var(--green)}
-.sp-feedback.bad{color:var(--red)}
-
-
-/* ── Chooser activity cards ──────────────── */
-.act-card{flex:1;min-width:0;max-width:300px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem 1.5rem;cursor:pointer;transition:border-color .2s,transform .15s;display:flex;flex-direction:column;gap:.75rem;text-align:left}
-.act-card:hover{border-color:var(--accent);transform:translateY(-2px)}
-.act-icon{font-family:'JetBrains Mono',monospace;font-size:1.5rem;color:var(--accent)}
-.act-title{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:500}
-.act-desc{font-size:.8rem;color:var(--text-muted);line-height:1.5}
-.act-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;padding:.2rem .5rem;border-radius:4px;margin-top:.25rem}
-.act-badge.typing{background:rgba(91,127,255,.15);color:var(--accent)}
-.act-badge.spelling{background:rgba(61,214,140,.15);color:var(--correct)}
-.chooser-cards{display:flex;gap:1rem;flex-wrap:nowrap;justify-content:center;width:100%;max-width:900px;margin:1.5rem 0}
-.chooser-greeting{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:1rem;margin-bottom:.5rem}
-
-/* ── Back to activities & logout ─────────────────── */
-.back-to-chooser {
-  margin-top: 28px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 20px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
-}
-.back-to-chooser:hover { color: var(--text); border-color: var(--accent); }
-.logout-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 16px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
-}
-.logout-btn:hover { color: var(--text); border-color: var(--accent); }
+.sp-dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .2s}
+.sp-dot.done{background:var(--correct)}
+.sp-dot.active{background:var(--accent)}
+.sp-feedback{font-family:'JetBrains Mono',monospace;font-size:.75rem;min-height:16px;margin-bottom:.5rem;text-align:center;color:var(--text-muted)}
+.sp-feedback.good{color:var(--correct)}
+.sp-feedback.bad{color:var(--error)}
 </style>
 </head>
 <body>
-
-<!-- ════════════════ ACTIVITY CHOOSER ════════════════ -->
-<div class="screen" id="chooser">
-  <div class="top-bar" style="max-width:900px;margin:0 auto;width:100%;padding:0">
-    <div class="logo">// typing.skills</div>
-    <div class="student-badge" id="chooser-badge"></div>
-  </div>
-  <div class="chooser-greeting" id="chooser-greeting" style="margin:2rem 0 .5rem"></div>
-  <p style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text-muted);margin-bottom:2rem">Choose an activity</p>
-  <div class="chooser-cards">
-
-    <!-- Card 1: Typing Practice (external) -->
-    <div class="act-card" onclick="window.open('https://niutyping.typingclub.com/','_blank')">
-      <div class="act-icon">&#9654;_</div>
-      <div class="act-title">Typing Practice</div>
-      <div class="act-desc">Open the NIU Typing Club to practice your typing speed and technique.</div>
-      <div class="act-badge typing">TYPINGCLUB ↗</div>
-    </div>
-
-    <!-- Card 2: Spelling Drill -->
-    <div class="act-card" onclick="startSpellingFlow()">
-      <div class="act-icon">S_</div>
-      <div class="act-title">Typing Drills <span style="font-size:.7rem;opacity:.6">(Spelling)</span></div>
-      <div class="act-desc">Practice words you misspelled in your blog entries.</div>
-      <div class="act-badge spelling" id="spell-badge">PERSONALISED</div>
-    </div>
-
-    <!-- Card 3: Typing Check -->
-    <div class="act-card" onclick="startTypingFlow()">
-      <div class="act-icon">&gt;_</div>
-      <div class="act-title">Typing Check</div>
-      <div class="act-desc">Timed typing exercise — measure your speed and accuracy.</div>
-      <div class="act-badge typing">SPEED &amp; ACCURACY</div>
-    </div>
-
-  </div>
-  <button class="logout-btn" onclick="showScreen('login')" style="margin-top:2rem">⏻ Log out</button>
-</div>
-
-<!-- ════════════════ NO WORDS ════════════════ -->
-<div class="screen" id="no-words">
-  <div class="msg-card">
-    <h2>No spelling words yet</h2>
-    <p id="no-words-msg">You don't have any spelling words this week. Check back after your blog entry has been marked.</p>
-  </div>
-  <button class="back-btn" onclick="showScreen('chooser')">← back</button>
-</div>
-
-<!-- ════════════════ SPELLING DRILL ════════════════ -->
-<div class="screen" id="drill">
-  <div class="drill-topbar">
-    <span class="drill-topbar-name" id="drill-name"></span>
-    <span class="drill-topbar-prog" id="drill-topbar-prog"></span>
-  </div>
-  <div class="drill-body">
-    <div class="drill-inner" id="drill-inner" tabindex="0">
-      <div class="prog-wrap">
-        <div class="prog-track"><div class="prog-fill" id="sp-prog" style="width:0%"></div></div>
-        <span class="prog-lbl" id="sp-prog-lbl"></span>
-      </div>
-      <div class="stage-lbl" id="sp-stage-lbl"></div>
-      <div class="drill-row">
-        <div id="sp-main-row"></div>
-      </div>
-      <div class="sp-feedback" id="sp-fb"></div>
-      <div class="step-dots" id="sp-dots"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════ SPELL COMPLETE ════════════════ -->
-<div class="screen" id="spell-complete">
-  <div class="msg-card">
-    <h2 style="color:var(--green)">Drill complete!</h2>
-    <p id="sc-msg"></p>
-    <p id="sc-sub" style="font-size:.75rem;color:var(--muted);font-family:var(--mono)"></p>
-  </div>
-  <button class="back-btn" onclick="showScreen('chooser')">← back to activities</button>
-</div>
-
 
 <!-- ═══════════════════════════════════════════════════
      LOADING OVERLAY
@@ -807,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v2.3</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v2.4</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -820,6 +718,77 @@ tr:hover td { background: var(--surface2); }
     </div>
   </div>
 </div>
+
+
+<!-- ═══ CHOOSER ═══ -->
+<div class="screen" id="chooser">
+  <div class="top-bar" style="max-width:960px;margin:0 auto;width:100%;padding:0">
+    <div class="logo">// typing.skills</div>
+    <div class="student-badge" id="chooser-badge"></div>
+  </div>
+  <div class="chooser-greeting" id="chooser-greeting"></div>
+  <p style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text-muted);margin-bottom:0">Choose an activity</p>
+  <div class="chooser-cards">
+    <div class="act-card" onclick="window.open('https://niutyping.typingclub.com/','_blank')">
+      <div class="act-icon">&#9654;_</div>
+      <div class="act-title">Typing Practice</div>
+      <div class="act-desc">Open NIU Typing Club to practice speed and technique.</div>
+      <div class="act-badge">TYPINGCLUB &#8599;</div>
+    </div>
+    <div class="act-card" onclick="startSpellingFlow()">
+      <div class="act-icon">S_</div>
+      <div class="act-title">Typing Drills <span style="font-size:.7rem;opacity:.6">(Spelling)</span></div>
+      <div class="act-desc">Practice words you misspelled in your blog entries.</div>
+      <div class="act-badge spell" id="spell-badge">PERSONALISED</div>
+    </div>
+    <div class="act-card" onclick="showScreen('home')">
+      <div class="act-icon">&gt;_</div>
+      <div class="act-title">Typing Check</div>
+      <div class="act-desc">Timed typing exercise — measure your speed and accuracy.</div>
+      <div class="act-badge">SPEED &amp; ACCURACY</div>
+    </div>
+  </div>
+  <button class="logout-btn" onclick="showScreen('login')">&#9211; Log out</button>
+</div>
+
+<!-- ═══ NO WORDS ═══ -->
+<div class="screen" id="sp-no-words">
+  <div class="top-bar"><div class="logo">// typing.skills</div></div>
+  <h2 style="font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:1rem">No spelling words yet</h2>
+  <p id="sp-no-words-msg" style="color:var(--text-muted);max-width:400px;text-align:center;line-height:1.6"></p>
+  <button class="back-act-btn" onclick="showScreen('chooser')">&#8592; Back</button>
+</div>
+
+<!-- ═══ SPELLING DRILL ═══ -->
+<div class="screen" id="sp-drill">
+  <div class="drill-topbar">
+    <span class="drill-topbar-name" id="sp-drill-name"></span>
+    <span class="drill-topbar-prog" id="sp-drill-prog"></span>
+  </div>
+  <input id="drill-capture" style="position:fixed;opacity:0;pointer-events:none;top:0;left:0;width:1px;height:1px;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <div class="drill-body">
+    <div class="drill-inner" id="sp-drill-inner">
+      <div class="prog-wrap">
+        <div class="prog-track"><div class="prog-fill" id="sp-prog" style="width:0%"></div></div>
+        <span class="prog-lbl" id="sp-prog-lbl"></span>
+      </div>
+      <div class="stage-lbl" id="sp-stage-lbl"></div>
+      <div class="drill-row"><div id="sp-main-row"></div></div>
+      <div class="sp-feedback" id="sp-fb"></div>
+      <div class="step-dots" id="sp-dots"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SPELL COMPLETE ═══ -->
+<div class="screen" id="sp-complete">
+  <div class="top-bar"><div class="logo">// typing.skills</div></div>
+  <h2 style="font-family:'JetBrains Mono',monospace;color:var(--correct);margin-bottom:1rem">Drill complete!</h2>
+  <p id="sp-complete-msg" style="color:var(--text-muted)"></p>
+  <p id="sp-complete-sub" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text-muted);margin-top:.5rem"></p>
+  <button class="back-act-btn" onclick="showScreen('chooser')">&#8592; Back to activities</button>
+</div>
+
 
 <!-- ═══════════════════════════════════════════════════
      SCREEN 2: HOME
@@ -848,7 +817,7 @@ tr:hover td { background: var(--surface2); }
     </div>
   </div>
   <div class="action-cards" id="home-action-cards"></div>
-  <button class="back-to-chooser" onclick="show('chooser')">← Back to activities</button>
+  <button class="back-act-btn" onclick="showScreen('chooser')">&#8592; Back to activities</button>
 </div>
 
 <!-- ═══════════════════════════════════════════════════
@@ -1020,10 +989,7 @@ tr:hover td { background: var(--surface2); }
     <div class="history-header">// session history</div>
     <div id="history-content"></div>
   </div>
-  <div style="display:flex;gap:1rem;margin-top:8px">
-  <button class="btn btn-secondary" onclick="show('chooser')">&#8592; Back to activities</button>
-  <button class="btn btn-secondary" onclick="showScreen('home')">Home</button>
-</div>
+  <div style="display:flex;gap:1rem;margin-top:8px"><button class="btn btn-secondary" onclick="showScreen('chooser')">&#8592; Activities</button><button class="btn btn-secondary" onclick="showScreen('home')">Home</button></div>
 </div>
 
 <script>
@@ -1043,12 +1009,6 @@ const JIS = {
 // ════════════════════════════════════════════════════════
 //  APP STATE
 // ════════════════════════════════════════════════════════
-let spellWordBank = [];
-let spWords=[], spWi=0, spSi=0, spPos=0, spMistakes=0;
-const STAGES=['full','half','none','sentence'];
-const STAGE_LABELS=['Study this word — type every letter','Some letters shown — type every letter','Spell it from memory','Type the full sentence'];
-const spMain=()=>document.getElementById('sp-main-row');
-
 const state = {
   // Student info
   studentNumber: '',
@@ -1089,27 +1049,6 @@ function showScreen(name) {
   document.getElementById('screen-' + name).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-function show(id) {
-  // For spell drill screens, use getElementById directly (no 'screen-' prefix)
-  const spellScreens = ['chooser','no-words','drill','spell-complete'];
-  if (spellScreens.includes(id)) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    const el = document.getElementById(id);
-    if (el) el.classList.add('active');
-    if (id === 'drill') alert('Drill screen activated. Classes: ' + (el ? el.className : 'NOT FOUND'));
-    // Blur the typing check capture textarea so it doesn't steal keystrokes
-    const cap = document.getElementById('capture');
-    if (cap) { cap.blur(); cap.disabled = true; }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } else {
-    // Re-enable capture when returning to typing screens
-    const cap = document.getElementById('capture');
-    if (cap) cap.disabled = false;
-    showScreen(id);
-  }
-}
-
 
 function showLoading(on, msg) {
   document.getElementById('loading').classList.toggle('show', on);
@@ -1173,29 +1112,28 @@ async function doLogin() {
 
     buildHomeScreen();
 
-    // Fetch spelling words for this student
+    // Fetch spelling words
     try {
       const spData = await apiGet({ action: 'getSpellWords', studentNumber: state.studentNumber });
       spellWordBank = spData.ok ? spData.words : [];
     } catch(e) { spellWordBank = []; }
 
-    // Show activity chooser
-    const firstName = state.nameEng.split(' ')[0];
+    // Update chooser badge and greeting
     document.getElementById('chooser-greeting').textContent = '// ' + state.nameEng;
-    const n = Math.min(spellWordBank.length, MAX_SPELL_WORDS);
-    const badge = document.getElementById('spell-badge');
-    if (badge) {
-      if(spellWordBank.length === 0){
-        badge.textContent = 'NO WORDS YET';
-        badge.style.background = 'rgba(91,127,255,.08)';
-        badge.style.color = 'var(--text-muted)';
+    const cb = document.getElementById('chooser-badge');
+    if (cb) cb.innerHTML = '<b>' + state.studentNumber + '</b> &nbsp;·&nbsp; ' + state.nameEng + ' &nbsp;·&nbsp; ' + state.className;
+    const spBadge = document.getElementById('spell-badge');
+    if (spBadge) {
+      const n = Math.min(spellWordBank.length, MAX_SPELL_WORDS);
+      if (spellWordBank.length === 0) {
+        spBadge.textContent = 'NO WORDS YET';
+        spBadge.style.opacity = '0.5';
       } else {
-        badge.textContent = n + ' WORD' + (n !== 1 ? 'S' : '');
-        badge.style.background = 'rgba(61,214,140,.15)';
-        badge.style.color = 'var(--correct)';
+        spBadge.textContent = n + ' WORD' + (n !== 1 ? 'S' : '');
+        spBadge.style.opacity = '1';
       }
     }
-    show('chooser');
+    showScreen('chooser');
   } catch (err) {
     showError(errEl, 'Connection error. Please try again.');
     console.error(err);
@@ -1218,9 +1156,6 @@ function buildHomeScreen() {
   // Badge
   document.getElementById('home-badge').innerHTML =
     '<b>' + s.studentNumber + '</b> &nbsp;·&nbsp; ' + s.nameEng + ' &nbsp;·&nbsp; ' + s.className;
-  // Also update chooser badge
-  const cb = document.getElementById('chooser-badge');
-  if (cb) cb.innerHTML = '<b>' + s.studentNumber + '</b> &nbsp;·&nbsp; ' + s.nameEng + ' &nbsp;·&nbsp; ' + s.className;
 
   // Greeting
   document.getElementById('home-greeting').textContent = 'Welcome back, ' + s.nameEng.split(' ')[0] + '!';
@@ -1997,351 +1932,235 @@ function drawResultsChart(sessions) {
   ctx.restore();
 }
 
-
-function startTypingFlow() {
-  showScreen('home');
-}
-
-// ════════ SPELLING DRILL ════════
-const MAX_SPELL_WORDS = 5;
-
-// ═══════════════════════════════════════════════════════════════════
-//  GLOBAL STATE
-// ═══════════════════════════════════════════════════════════════════
-let sessionData=null;
-function $(id){return document.getElementById(id);}
-
-// ═══════════════════════════════════════════════════════════════════
-//  LOGIN — validates roster, fetches session + spell words in parallel
-// ═══════════════════════════════════════════════════════════════════
-async 
-let tParas=[], tParaIdx=0, tTyped='', tStartTime=null, tTimer=null;
-let tWpmArr=[], tAccArr=[], tTimeArr=[];
-
-function loadPara(){
-  const text = tParas[tParaIdx];
-  tTyped=''; tStartTime=null;
-  if(tTimer)clearInterval(tTimer);
-
-  // Dots
-  $('t-dots').innerHTML=tParas.map((_,i)=>{
-    let c='pdot';
-    if(i<tParaIdx)c+=' done';
-    else if(i===tParaIdx)c+=' active';
-    return`<div class="${c}"></div>`;
-  }).join('');
-  $('para-label').textContent=`Paragraph ${tParaIdx+1} of ${tParas.length}`;
-  $('t-header-right').textContent=`${tParaIdx+1}/${tParas.length}`;
-  renderParaDisplay(text,'');
-  $('typing-input').value='';
-  $('typing-input').focus();
-  $('btn-submit').classList.remove('ready');
-  $('m-wpm').textContent='0';
-  $('m-acc').textContent='100%';
-  $('m-time').textContent='0s';
-  $('m-prog').textContent='0%';
-}
-
-function renderParaDisplay(target, typed){
-  const el=$('para-display');
-  let html='';
-  for(let i=0;i<target.length;i++){
-    const ch=target[i]==='  '?' ':target[i];
-    if(i<typed.length){
-      const ok=typed[i]===target[i];
-      html+=`<span class="char ${ok?'correct':'wrong'}">${ch==='<'?'&lt;':ch==='>'?'&gt;':ch===' '?'&nbsp;':ch}</span>`;
-    } else if(i===typed.length){
-      html+=`<span class="char current">${ch==='<'?'&lt;':ch==='>'?'&gt;':ch===' '?'&nbsp;':ch}</span>`;
-    } else {
-      html+=`<span class="char untyped">${ch==='<'?'&lt;':ch==='>'?'&gt;':ch===' '?'&nbsp;':ch}</span>`;
-    }
-  }
-  el.innerHTML=html;
-  // scroll cursor into view
-  const cur=el.querySelector('.char.current');
-  if(cur)cur.scrollIntoView({block:'nearest'});
-}
-
-function handleTypingInput(){
-  const text=tParas[tParaIdx];
-  const val=$('typing-input').value;
-  if(!tStartTime&&val.length>0){
-    tStartTime=Date.now();
-    tTimer=setInterval(updateMetrics,500);
-  }
-  tTyped=val;
-  renderParaDisplay(text,val);
-  const done=val.length>=text.length;
-  $('btn-submit').classList.toggle('ready',done);
-  updateMetrics();
-}
-
-function updateMetrics(){
-  const text=tParas[tParaIdx];
-  const typed=$('typing-input').value;
-  const elapsed=tStartTime?(Date.now()-tStartTime)/1000/60:0;
-  const words=typed.trim().split(/\s+/).filter(Boolean).length;
-  const wpm=elapsed>0?Math.round(words/elapsed):0;
-  let correct=0;
-  for(let i=0;i<Math.min(typed.length,text.length);i++){if(typed[i]===text[i])correct++;}
-  const acc=typed.length>0?Math.round(correct/typed.length*100):100;
-  const secs=tStartTime?Math.round((Date.now()-tStartTime)/1000):0;
-  const prog=Math.round(Math.min(typed.length/text.length*100,100));
-  $('m-wpm').textContent=wpm;
-  $('m-acc').textContent=acc+'%';
-  $('m-time').textContent=secs+'s';
-  $('m-prog').textContent=prog+'%';
-}
-
-function finalisePara(){
-  const text=tParas[tParaIdx];
-  const typed=$('typing-input').value;
-  const elapsed=tStartTime?(Date.now()-tStartTime)/1000/60:0.001;
-  const words=text.trim().split(/\s+/).length;
-  const wpm=Math.round(words/elapsed);
-  let correct=0;
-  for(let i=0;i<Math.min(typed.length,text.length);i++){if(typed[i]===text[i])correct++;}
-  const acc=typed.length>0?Math.round(correct/typed.length*100):0;
-  const secs=Math.round((Date.now()-tStartTime)/1000);
-  tWpmArr.push(wpm); tAccArr.push(acc); tTimeArr.push(secs);
-  if(tTimer)clearInterval(tTimer);
-}
-
-function submitTyping(){
-  if(!$('btn-submit').classList.contains('ready'))return;
-  finalisePara();
-  tParaIdx++;
-  if(tParaIdx<tParas.length){loadPara();return;}
-
-  // All paragraphs done — calculate final score
-  const avgWpm=Math.round(tWpmArr.reduce((a,b)=>a+b,0)/tWpmArr.length);
-  const avgAcc=Math.round(tAccArr.reduce((a,b)=>a+b,0)/tAccArr.length);
-  const prevBest=sessionData.personalBestWpm||0;
-  const compPts=sessionData.completionPoints||0;
-  const accPts=sessionData.accuracyPoints||0;
-  const wpmPts=sessionData.wpmPoints||0;
-  const totalPts=compPts+accPts+wpmPts;
-  const accThresh=sessionData.accuracyThreshold||80;
-
-  const compPass=true;
-  const accPass=avgAcc>=accThresh;
-  const wpmPass=avgWpm>prevBest;
-  const score=(compPass?compPts:0)+(accPass?accPts:0)+(wpmPass?wpmPts:0);
-  const pass=score>=60;
-
-  // Show result
-  $('res-score').textContent=score+'/'+totalPts;
-  $('res-score').className='score-big '+(pass?'pass':'fail');
-  $('res-breakdown').innerHTML=`
-    <div class="breakdown-row"><span class="label">Completion</span><span class="value pass">Pass (+${compPts})</span></div>
-    <div class="breakdown-row"><span class="label">Accuracy (${avgAcc}%)</span><span class="value ${accPass?'pass':'fail'}">${accPass?'Pass (+'+accPts+')':'Fail (+0)'}</span></div>
-    <div class="breakdown-row"><span class="label">WPM (${avgWpm} wpm)</span><span class="value ${wpmPass?'pass':'fail'}">${wpmPass?'Pass (+'+wpmPts+')':'Fail (+0)'}</span></div>
-  `;
-  show('typing-result');
-
-  // Submit to Apps Script
-  const payload={
-    action:'submitResult',
-    className:state.className,
-    sessionName:sessionData.sessionName,
-    sessionNumber:sessionData.sessionNumber,
-    isBaseline:sessionData.isBaseline,
-    wpm:avgWpm,
-    accuracy:avgAcc,
-    completed:true,
-    score:score,
-    totalPoints:totalPts
-  };
-  fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{});
-}
-
-// ═══════════════════════════════════════════════════════════════════
-//  SPELLING DRILL FLOW
-// ═══════════════════════════════════════════════════════════════════
-
-function startSpellingFlow(){
-  try {
-    const allWords = spellWordBank||[];
-    if(allWords.length===0){
-      const nm = document.getElementById('no-words-msg');
-      if(nm) nm.textContent='You don\'t have any spelling words yet. Check back after your blog entry has been marked.';
-      show('no-words');return;
-    }
-    spWords=[...allWords].sort(()=>Math.random()-.5).slice(0,MAX_SPELL_WORDS);
-    spWi=0;spSi=0;spPos=0;spMistakes=0;
-    const dn = document.getElementById('drill-name');
-    if(dn) dn.textContent=state.nameEng+' · '+state.className;
-    show('drill');
-    spRenderStage();
-    const di = document.getElementById('drill-inner');
-    if(di) di.focus();
-  } catch(err) {
-    alert('Spelling drill error: ' + err.message);
-    console.error(err);
-  }
-}
-
-function spSetFb(msg,cls=''){const f=$('sp-fb');f.textContent=msg;f.className='sp-feedback'+(cls?' '+cls:'');}
-function spShakeRow(){const r=spMain();r.style.transform='translateX(-5px)';setTimeout(()=>r.style.transform='translateX(5px)',70);setTimeout(()=>r.style.transform='translateX(-3px)',140);setTimeout(()=>r.style.transform='translateX(0)',210);}
-function spGetVis(word,stage){
-  if(stage==='full')return word.split('').map(()=>true);
-  if(stage==='half')return word.split('').map((_,i)=>i%2===0);
-  return word.split('').map(()=>false);
-}
-function spRenderDots(){
-  $('sp-dots').innerHTML=STAGES.slice(0,-1).map((_,i)=>{
-    let c='dot';if(i<spSi)c+=' done';else if(i===spSi)c+=' active';
-    return`<div class="${c}"></div>`;
-  }).join('');
-}
-function spUpdateHeader(){
-  const t=Math.round(spWi/spWords.length*100);
-  $('sp-prog').style.width=t+'%';
-  $('sp-prog-lbl').textContent=`Word ${spWi+1} of ${spWords.length}`;
-  $('drill-topbar-prog').textContent=`Word ${spWi+1} of ${spWords.length}`;
-}
-function spRenderStage(){
-  if(spWi>=spWords.length){spSubmitCompletion();return;}
-  const{word,sentence}=spWords[spWi];
-  spPos=0;spMistakes=0;
-  $('sp-stage-lbl').textContent=STAGE_LABELS[spSi];
-  spSetFb('');spUpdateHeader();spRenderDots();
-  if(STAGES[spSi]==='sentence')spBuildSent(word,sentence);
-  else spBuildWord(word,STAGES[spSi]);
-  $('drill-inner').focus();
-}
-function spBuildWord(word,stage){
-  const vis=spGetVis(word,stage);
-  spMain().innerHTML='';
-  const r=document.createElement('div');r.className='letter-row';
-  word.split('').forEach((ch,i)=>{
-    const cell=document.createElement('div');cell.className='cell';
-    const top=document.createElement('div');top.className='cell-top';
-    if(i===spPos){const cur=document.createElement('div');cur.className='v-cur';top.appendChild(cur);}
-    const span=document.createElement('div');span.className='cell-char '+(vis[i]?'hint':'blank');span.id='lc'+i;span.textContent=vis[i]?ch:'_';
-    top.appendChild(span);
-    const ul=document.createElement('div');ul.className='cell-ul'+(i===spPos?' active':'');ul.id='lu'+i;
-    cell.appendChild(top);cell.appendChild(ul);r.appendChild(cell);
-  });
-  spMain().appendChild(r);
-}
-function spBuildSent(word,sentence){
-  const before=(sentence.split('___')[0]||''),after=(sentence.split('___')[1]||'');
-  const full=before+word+after;
-  spMain()._full=full;spMain()._ts=before.length;spMain()._te=before.length+word.length;
-  const CW=14,GAP=3,SW=8,MAX=390;
-  const tokens=[];let buf='',bufStart=0;
-  for(let i=0;i<full.length;i++){
-    if(full[i]===' '){if(buf){tokens.push({type:'word',chars:buf.split('').map((ch,k)=>({ch,gi:bufStart+k,isTarget:(bufStart+k)>=spMain()._ts&&(bufStart+k)<spMain()._te}))});buf='';}tokens.push({type:'space',gi:i});bufStart=i+1;}
-    else{if(!buf)bufStart=i;buf+=full[i];}
-  }
-  if(buf)tokens.push({type:'word',chars:buf.split('').map((ch,k)=>({ch,gi:bufStart+k,isTarget:(bufStart+k)>=spMain()._ts&&(bufStart+k)<spMain()._te}))});
-  const lines=[];let curLine=[],curW=0;
-  tokens.forEach(tok=>{
-    if(tok.type==='space'){if(curLine.length>0){curLine.push(tok);curW+=SW+GAP;}}
-    else{const w=tok.chars.length*(CW+GAP);if(curLine.length>0&&curW+w>MAX){if(curLine[curLine.length-1].type==='space')curLine.pop();lines.push(curLine);curLine=[];curW=0;}curLine.push(tok);curW+=w;}
-  });
-  if(curLine.length){if(curLine[curLine.length-1].type==='space')curLine.pop();lines.push(curLine);}
-  spMain().innerHTML='';
-  const block=document.createElement('div');block.className='sent-block';
-  lines.forEach(line=>{
-    const ld=document.createElement('div');ld.className='sent-line';
-    line.forEach(tok=>{
-      if(tok.type==='space'){const g=document.createElement('div');g.className='space-gap';ld.appendChild(g);}
-      else tok.chars.forEach(({ch,gi:g,isTarget})=>{
-        const sc=document.createElement('div');sc.className='sc';
-        if(g===spPos){const cur=document.createElement('div');cur.className='sv-cur';sc.appendChild(cur);}
-        const sp=document.createElement('div');sp.id='sc'+g;sp.className='sc-char '+(isTarget?'blank':'hint');sp.textContent=isTarget?'_':ch;
-        const ul=document.createElement('div');ul.id='su'+g;ul.className='sc-ul';if(g===spPos)ul.classList.add('active');
-        sc.appendChild(sp);sc.appendChild(ul);ld.appendChild(sc);
-      });
-    });
-    block.appendChild(ld);
-  });
-  spMain().appendChild(block);
-}
-function spMoveCurWord(word){
-  document.querySelectorAll('.v-cur').forEach(c=>c.remove());
-  document.querySelectorAll('.cell-ul').forEach(u=>u.classList.remove('active'));
-  if(spPos>=word.length)return;
-  const top=document.getElementById('lc'+spPos)?.parentElement;
-  if(top){const cur=document.createElement('div');cur.className='v-cur';top.insertBefore(cur,top.firstChild);}
-  const ul=document.getElementById('lu'+spPos);if(ul)ul.classList.add('active');
-}
-function spMoveCurSent(){
-  document.querySelectorAll('.sv-cur').forEach(c=>c.remove());
-  document.querySelectorAll('.sc-ul').forEach(u=>u.classList.remove('active'));
-  if(spPos>=spMain()._full.length)return;
-  const sc=document.getElementById('sc'+spPos)?.parentElement;
-  if(sc){const cur=document.createElement('div');cur.className='sv-cur';sc.insertBefore(cur,sc.firstChild);}
-  const ul=document.getElementById('su'+spPos);if(ul)ul.classList.add('active');
-}
-
-document.addEventListener('keydown',e=>{
-  const drillScreen = document.getElementById('drill');
-  if(!drillScreen || !drillScreen.classList.contains('active')) return;
-  if(spWi>=spWords.length)return;
-  const{word}=spWords[spWi];
-  const stage=STAGES[spSi];
-  if(stage==='sentence'){
-    const full=spMain()._full,total=full.length;
-    if(e.key==='Backspace'){e.preventDefault();if(spPos>0){spPos--;const sp=document.getElementById('sc'+spPos);const isT=spPos>=spMain()._ts&&spPos<spMain()._te;if(sp){sp.className='sc-char '+(isT?'blank':'hint');sp.textContent=isT?'_':full[spPos];}spMoveCurSent();spSetFb('');}return;}
-    if(e.key.length!==1||e.ctrlKey||e.metaKey||e.altKey)return;
-    e.preventDefault();if(spPos>=total)return;
-    const isT=spPos>=spMain()._ts&&spPos<spMain()._te;
-    const sp=document.getElementById('sc'+spPos);
-    if(e.key.toLowerCase()===full[spPos].toLowerCase()){
-      if(sp){sp.className='sc-char correct';sp.textContent=full[spPos];}
-      spPos++;spMistakes=0;spSetFb('');spMoveCurSent();
-
-    }else{
-      spMistakes++;
-      if(sp){const oc=sp.className;sp.className='sc-char wrong';sp.textContent=e.key;setTimeout(()=>{sp.className=oc;sp.textContent=isT?'_':full[spPos];},280);}
-
-    }
-    return;
-  }
-  const vis=spGetVis(word,stage);
-  if(e.key==='Backspace'){e.preventDefault();if(spPos>0){spPos--;const ch=document.getElementById('lc'+spPos);if(ch){ch.className='cell-char '+(vis[spPos]?'hint':'blank');ch.textContent=vis[spPos]?word[spPos]:'_';}spMoveCurWord(word);spSetFb('');}return;}
-  if(e.key.length!==1||e.ctrlKey||e.metaKey||e.altKey)return;
-  e.preventDefault();if(spPos>=word.length)return;
-  const ch=document.getElementById('lc'+spPos);
-  if(e.key.toLowerCase()===word[spPos].toLowerCase()){
-    if(ch){ch.className='cell-char correct';ch.textContent=word[spPos];}
-    spPos++;spMistakes=0;spSetFb('');spMoveCurWord(word);
-
-  }else{
-    spMistakes++;
-    if(ch){ch.className='cell-char wrong';ch.textContent=e.key;setTimeout(()=>{ch.className='cell-char '+(vis[spPos]?'hint':'blank');ch.textContent=vis[spPos]?word[spPos]:'_';},280);}
-
-  }
-
-});
-
-function spSubmitCompletion(){
-  const now=new Date();
-  $('sc-msg').textContent=`You drilled ${spWords.length} word${spWords.length!==1?'s':''} from your blog entries. Great work!`;
-  $('sc-sub').textContent=`Completed ${now.toLocaleDateString('en-GB')} at ${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
-  show('spell-complete');
-  fetch(SCRIPT_URL,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      action:'spellingDrill',
-      wordsCount:spWords.length,
-      words:spWords.map(w=>w.word).join(', '),
-      timestamp:now.toISOString(),
-      completed:true
-    })
-  }).catch(()=>{});
-}
-
 // Redraw chart on resize
 window.addEventListener('resize', () => {
   if (state.pastResults.length > 0 && document.getElementById('screen-results').classList.contains('active')) {
     drawResultsChart(state.pastResults);
   }
 });
+
+// ═══════════════════════════════════════════════════════
+//  SPELLING DRILL
+// ═══════════════════════════════════════════════════════
+const MAX_SPELL_WORDS = 5;
+const SP_STAGES = ['full','half','none','sentence'];
+const SP_LABELS = ['Study this word — type every letter','Some letters shown — type every letter','Spell it from memory','Type the full sentence'];
+let spellWordBank = [];
+let spWords = [], spWi = 0, spSi = 0, spPos = 0, spMistakes = 0;
+
+function spMain() { return document.getElementById('sp-main-row'); }
+function spSetFb(msg, cls) {
+  const f = document.getElementById('sp-fb');
+  f.textContent = msg;
+  f.className = 'sp-feedback' + (cls ? ' ' + cls : '');
+}
+function spShakeRow() {
+  const r = spMain();
+  r.style.transform = 'translateX(-5px)';
+  setTimeout(() => r.style.transform = 'translateX(5px)', 70);
+  setTimeout(() => r.style.transform = 'translateX(-3px)', 140);
+  setTimeout(() => r.style.transform = 'translateX(0)', 210);
+}
+function spGetVis(word, stage) {
+  if (stage === 'full') return word.split('').map(() => true);
+  if (stage === 'half') return word.split('').map((_, i) => i % 2 === 0);
+  return word.split('').map(() => false);
+}
+function spRenderDots() {
+  document.getElementById('sp-dots').innerHTML =
+    SP_STAGES.slice(0, -1).map((_, i) => {
+      let c = 'sp-dot';
+      if (i < spSi) c += ' done';
+      else if (i === spSi) c += ' active';
+      return '<div class="' + c + '"></div>';
+    }).join('');
+}
+function spUpdateHeader() {
+  const pct = Math.round(spWi / spWords.length * 100);
+  document.getElementById('sp-prog').style.width = pct + '%';
+  document.getElementById('sp-prog-lbl').textContent = 'Word ' + (spWi + 1) + ' of ' + spWords.length;
+  document.getElementById('sp-drill-prog').textContent = 'Word ' + (spWi + 1) + ' of ' + spWords.length;
+}
+function spBuildWord(word, stage) {
+  const vis = spGetVis(word, stage);
+  spMain().innerHTML = '';
+  const row = document.createElement('div');
+  row.className = 'letter-row';
+  word.split('').forEach((ch, i) => {
+    const cell = document.createElement('div'); cell.className = 'cell';
+    const top = document.createElement('div'); top.className = 'cell-top';
+    if (i === spPos) { const cur = document.createElement('div'); cur.className = 'v-cur'; top.appendChild(cur); }
+    const span = document.createElement('div');
+    span.className = 'cell-char ' + (vis[i] ? 'hint' : 'blank');
+    span.id = 'sp-lc' + i; span.textContent = vis[i] ? ch : '_';
+    top.appendChild(span);
+    const ul = document.createElement('div');
+    ul.className = 'cell-ul' + (i === spPos ? ' active' : ''); ul.id = 'sp-lu' + i;
+    cell.appendChild(top); cell.appendChild(ul); row.appendChild(cell);
+  });
+  spMain().appendChild(row);
+}
+function spBuildSent(word, sentence) {
+  const before = (sentence.split('___')[0] || ''), after = (sentence.split('___')[1] || '');
+  const full = before + word + after;
+  spMain()._full = full; spMain()._ts = before.length; spMain()._te = before.length + word.length;
+  const CW = 14, GAP = 3, SW = 8, MAX = 390;
+  const tokens = []; let buf = '', bufStart = 0;
+  for (let i = 0; i < full.length; i++) {
+    if (full[i] === ' ') {
+      if (buf) { tokens.push({ type: 'word', chars: buf.split('').map((ch, k) => ({ ch, gi: bufStart + k, isTarget: (bufStart + k) >= spMain()._ts && (bufStart + k) < spMain()._te })) }); buf = ''; }
+      tokens.push({ type: 'space', gi: i }); bufStart = i + 1;
+    } else { if (!buf) bufStart = i; buf += full[i]; }
+  }
+  if (buf) tokens.push({ type: 'word', chars: buf.split('').map((ch, k) => ({ ch, gi: bufStart + k, isTarget: (bufStart + k) >= spMain()._ts && (bufStart + k) < spMain()._te })) });
+  const lines = []; let curLine = [], curW = 0;
+  tokens.forEach(tok => {
+    if (tok.type === 'space') { if (curLine.length > 0) { curLine.push(tok); curW += SW + GAP; } }
+    else {
+      const w = tok.chars.length * (CW + GAP);
+      if (curLine.length > 0 && curW + w > MAX) { if (curLine[curLine.length - 1].type === 'space') curLine.pop(); lines.push(curLine); curLine = []; curW = 0; }
+      curLine.push(tok); curW += w;
+    }
+  });
+  if (curLine.length) { if (curLine[curLine.length - 1].type === 'space') curLine.pop(); lines.push(curLine); }
+  spMain().innerHTML = '';
+  const block = document.createElement('div'); block.className = 'sent-block';
+  lines.forEach(line => {
+    const ld = document.createElement('div'); ld.className = 'sent-line';
+    line.forEach(tok => {
+      if (tok.type === 'space') { const g = document.createElement('div'); g.className = 'space-gap'; ld.appendChild(g); }
+      else tok.chars.forEach(({ ch, gi: g, isTarget }) => {
+        const sc = document.createElement('div'); sc.className = 'sc';
+        if (g === spPos) { const cur = document.createElement('div'); cur.className = 'sv-cur'; sc.appendChild(cur); }
+        const sp = document.createElement('div'); sp.id = 'sp-sc' + g;
+        sp.className = 'sc-char ' + (isTarget ? 'blank' : 'hint'); sp.textContent = isTarget ? '_' : ch;
+        const ul = document.createElement('div'); ul.id = 'sp-su' + g; ul.className = 'sc-ul'; if (g === spPos) ul.classList.add('active');
+        sc.appendChild(sp); sc.appendChild(ul); ld.appendChild(sc);
+      });
+    });
+    block.appendChild(ld);
+  });
+  spMain().appendChild(block);
+}
+function spMoveCurWord(word) {
+  document.querySelectorAll('.v-cur').forEach(c => c.remove());
+  document.querySelectorAll('.cell-ul').forEach(u => u.classList.remove('active'));
+  if (spPos >= word.length) return;
+  const top = document.getElementById('sp-lc' + spPos) && document.getElementById('sp-lc' + spPos).parentElement;
+  if (top) { const cur = document.createElement('div'); cur.className = 'v-cur'; top.insertBefore(cur, top.firstChild); }
+  const ul = document.getElementById('sp-lu' + spPos); if (ul) ul.classList.add('active');
+}
+function spMoveCurSent() {
+  document.querySelectorAll('.sv-cur').forEach(c => c.remove());
+  document.querySelectorAll('.sc-ul').forEach(u => u.classList.remove('active'));
+  if (spPos >= spMain()._full.length) return;
+  const sc = document.getElementById('sp-sc' + spPos) && document.getElementById('sp-sc' + spPos).parentElement;
+  if (sc) { const cur = document.createElement('div'); cur.className = 'sv-cur'; sc.insertBefore(cur, sc.firstChild); }
+  const ul = document.getElementById('sp-su' + spPos); if (ul) ul.classList.add('active');
+}
+function spRenderStage() {
+  if (spWi >= spWords.length) { spSubmitCompletion(); return; }
+  const { word, sentence } = spWords[spWi];
+  spPos = 0; spMistakes = 0;
+  document.getElementById('sp-stage-lbl').textContent = SP_LABELS[spSi];
+  spSetFb(''); spUpdateHeader(); spRenderDots();
+  if (SP_STAGES[spSi] === 'sentence') spBuildSent(word, sentence);
+  else spBuildWord(word, SP_STAGES[spSi]);
+  // Focus the hidden capture input
+  const dc = document.getElementById('drill-capture');
+  if (dc) { dc.value = ''; setTimeout(() => dc.focus(), 50); }
+}
+
+// Keydown handler on the hidden drill-capture input
+document.addEventListener('DOMContentLoaded', function() {
+  const dc = document.getElementById('drill-capture');
+  if (!dc) return;
+  dc.addEventListener('keydown', function(e) {
+    if (spWi >= spWords.length) return;
+    const { word } = spWords[spWi];
+    const stage = SP_STAGES[spSi];
+    if (stage === 'sentence') {
+      const full = spMain()._full, total = full.length;
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        if (spPos > 0) { spPos--; const sp = document.getElementById('sp-sc' + spPos); const isT = spPos >= spMain()._ts && spPos < spMain()._te; if (sp) { sp.className = 'sc-char ' + (isT ? 'blank' : 'hint'); sp.textContent = isT ? '_' : full[spPos]; } spMoveCurSent(); spSetFb(''); }
+        return;
+      }
+      if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+      e.preventDefault(); if (spPos >= total) return;
+      const isT = spPos >= spMain()._ts && spPos < spMain()._te;
+      const sp = document.getElementById('sp-sc' + spPos);
+      if (e.key.toLowerCase() === full[spPos].toLowerCase()) {
+        if (sp) { sp.className = 'sc-char correct'; sp.textContent = full[spPos]; }
+        spPos++; spMistakes = 0; spSetFb(''); spMoveCurSent();
+        if (spPos >= total) { spSetFb('Perfect!', 'good'); setTimeout(() => { spSi = 0; spWi++; spRenderStage(); }, 900); }
+      } else {
+        spMistakes++;
+        if (sp) { const oc = sp.className; sp.className = 'sc-char wrong'; sp.textContent = e.key; setTimeout(() => { sp.className = oc; sp.textContent = isT ? '_' : full[spPos]; }, 280); }
+        spShakeRow();
+        if (spMistakes >= 3) spSetFb('Hint: "' + full[spPos] + '"', 'bad');
+      }
+      return;
+    }
+    const vis = spGetVis(word, stage);
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      if (spPos > 0) { spPos--; const ch = document.getElementById('sp-lc' + spPos); if (ch) { ch.className = 'cell-char ' + (vis[spPos] ? 'hint' : 'blank'); ch.textContent = vis[spPos] ? word[spPos] : '_'; } spMoveCurWord(word); spSetFb(''); }
+      return;
+    }
+    if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+    e.preventDefault(); if (spPos >= word.length) return;
+    const ch = document.getElementById('sp-lc' + spPos);
+    if (e.key.toLowerCase() === word[spPos].toLowerCase()) {
+      if (ch) { ch.className = 'cell-char correct'; ch.textContent = word[spPos]; }
+      spPos++; spMistakes = 0; spSetFb(''); spMoveCurWord(word);
+      if (spPos >= word.length) { spSetFb('Nice!', 'good'); setTimeout(() => { spSi++; spRenderStage(); }, 700); }
+    } else {
+      spMistakes++;
+      if (ch) { ch.className = 'cell-char wrong'; ch.textContent = e.key; setTimeout(() => { ch.className = 'cell-char ' + (vis[spPos] ? 'hint' : 'blank'); ch.textContent = vis[spPos] ? word[spPos] : '_'; }, 280); }
+      spShakeRow();
+      if (spMistakes >= 3) spSetFb('Hint: "' + word[spPos] + '"', 'bad');
+    }
+  });
+});
+
+function startSpellingFlow() {
+  const allWords = spellWordBank || [];
+  if (allWords.length === 0) {
+    document.getElementById('sp-no-words-msg').textContent =
+      'You don\'t have any spelling words yet. Check back after your blog entry has been marked.';
+    showScreen('sp-no-words'); return;
+  }
+  spWords = [...allWords].sort(() => Math.random() - .5).slice(0, MAX_SPELL_WORDS);
+  spWi = 0; spSi = 0; spPos = 0; spMistakes = 0;
+  document.getElementById('sp-drill-name').textContent = state.nameEng + ' · ' + state.className;
+  showScreen('sp-drill');
+  spRenderStage();
+}
+
+function spSubmitCompletion() {
+  const now = new Date();
+  document.getElementById('sp-complete-msg').textContent =
+    'You drilled ' + spWords.length + ' word' + (spWords.length !== 1 ? 's' : '') + ' from your blog entries. Great work!';
+  document.getElementById('sp-complete-sub').textContent =
+    'Completed ' + now.toLocaleDateString('en-GB') + ' at ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  showScreen('sp-complete');
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'spellingDrill',
+      studentNum: state.studentNumber,
+      studentName: state.nameEng,
+      class: state.className,
+      wordsCount: spWords.length,
+      words: spWords.map(w => w.word).join(', '),
+      timestamp: now.toISOString(),
+      completed: true
+    })
+  }).catch(() => {});
+}
+
 </script>
 </body>
 </html>
