@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.1</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.2</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -1132,11 +1132,14 @@ async function doLogin() {
     if (cb) cb.innerHTML = '<b>' + state.studentNumber + '</b> &nbsp;·&nbsp; ' + state.nameEng + ' &nbsp;·&nbsp; ' + state.className;
     const spBadge = document.getElementById('spell-badge');
     if (spBadge) {
-      if (spTotalWords === 0) {
+      if (spTotalWords === 0 && spellWordBank.length === 0) {
         spBadge.textContent = 'NO WORDS YET';
         spBadge.style.opacity = '0.5';
       } else {
-        spBadge.textContent = spCompletedCount + '/' + spTotalWords + ' done';
+        const remaining = spellWordBank.length;
+        const total = spTotalWords || spellWordBank.length;
+        const done = total - remaining;
+        spBadge.textContent = done + '/' + total + ' completed';
         spBadge.style.opacity = '1';
       }
     }
@@ -1469,6 +1472,7 @@ const capture = document.getElementById('capture');
 document.addEventListener('click', () => { if (document.getElementById('screen-test').classList.contains('active') && !state.finished) capture.focus(); });
 
 capture.addEventListener('input', () => {
+  if (document.getElementById('screen-sp-drill').classList.contains('active')) return;
   if (state.finished) return;
   const val = capture.value;
   if (!state.running && val.length > 0) {
@@ -1500,10 +1504,12 @@ capture.addEventListener('input', () => {
 });
 
 capture.addEventListener('keydown', e => {
+  if (document.getElementById('screen-sp-drill').classList.contains('active')) return;
   if (e.key === 'Shift') setShift(true);
   if (e.key === 'Tab')   e.preventDefault();
 });
 capture.addEventListener('keyup', e => {
+  if (document.getElementById('screen-sp-drill').classList.contains('active')) return;
   if (e.key === 'Shift') {
     const sample = state.paragraphs[state.paraIndex] ? state.paragraphs[state.paraIndex].text : '';
     if (state.typed.length < sample.length) {
