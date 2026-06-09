@@ -2171,11 +2171,6 @@ function spSubmitCompletion() {
 // ═══════════════════════════════════════════════════════
 //  SPELLING DRILL
 // ═══════════════════════════════════════════════════════
-const MAX_SPELL_WORDS = 5;
-const SP_STAGES = ['full','half','none','sentence'];
-const SP_LABELS = ['Study this word — type every letter','Some letters shown — type every letter','Spell it from memory','Type the full sentence'];
-let spellWordBank = [];
-let spWords = [], spWi = 0, spSi = 0, spPos = 0, spMistakes = 0;
 let spTotalWords = 0, spCompletedCount = 0, spRemainingWords = [], spSessionCompleted = [];
 let spTestMode = false;
 
