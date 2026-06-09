@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.7</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.9</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -1124,8 +1124,9 @@ async function doLogin() {
         spTotalWords     = spData.totalWords || spData.words.length;
         spCompletedCount = spData.completedCount || 0;
         spRemainingWords = spData.words || [];
+        spAllCompleted = []; // rebuilt as student completes words this session
       } else {
-        spellWordBank = []; spTotalWords = 0; spCompletedCount = 0; spRemainingWords = [];
+        spellWordBank = []; spTotalWords = 0; spCompletedCount = 0; spRemainingWords = []; spAllCompleted = [];
       }
     } catch(e) { spellWordBank = []; }
 
@@ -1135,14 +1136,11 @@ async function doLogin() {
     if (cb) cb.innerHTML = '<b>' + state.studentNumber + '</b> &nbsp;·&nbsp; ' + state.nameEng + ' &nbsp;·&nbsp; ' + state.className;
     const spBadge = document.getElementById('spell-badge');
     if (spBadge) {
-      if (spTotalWords === 0 && spellWordBank.length === 0) {
+      if (spTotalWords === 0) {
         spBadge.textContent = 'NO WORDS YET';
         spBadge.style.opacity = '0.5';
       } else {
-        const remaining = spellWordBank.length;
-        const total = spTotalWords || spellWordBank.length;
-        const done = total - remaining;
-        spBadge.textContent = done + '/' + total + ' completed';
+        spBadge.textContent = spCompletedCount + '/' + spTotalWords + ' completed';
         spBadge.style.opacity = '1';
       }
     }
@@ -2113,7 +2111,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (e.key.toLowerCase() === full[spPos].toLowerCase()) {
         if (sp) { sp.className = 'sc-char correct'; sp.textContent = full[spPos]; }
         spPos++; spMistakes = 0; spSetFb(''); spMoveCurSent();
-        if (spPos >= total) { spSetFb('Perfect!', 'good'); spSessionCompleted.push(spWords[spWi].word); setTimeout(() => { spSi = 0; spWi++; spRenderStage(); }, 900); }
+        if (spPos >= total) { spSetFb('Perfect!', 'good'); spSessionCompleted.push(spWords[spWi].word); if (!spAllCompleted.find(w => w.word === spWords[spWi].word)) spAllCompleted.push(spWords[spWi]); setTimeout(() => { spSi = spTestMode ? 3 : 0; spWi++; spRenderStage(); }, 900); }
       } else {
         spMistakes++;
         if (sp) { const oc = sp.className; sp.className = 'sc-char wrong'; sp.textContent = e.key; setTimeout(() => { sp.className = oc; sp.textContent = isT ? '_' : full[spPos]; }, 280); }
@@ -2146,24 +2144,97 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-function startSpellingFlow() {
-  const allWords = spellWordBank || [];
-  if (allWords.length === 0) {
+function startSpellingFlow(testMode) {
+  spTestMode = testMode || false;
+  // If all words done, show completion screen directly
+  if (spTotalWords > 0 && spCompletedCount >= spTotalWords && spRemainingWords.length === 0) {
+    spShowEndCard(); return;
+  }
+  // If no remaining words pool, seed from bank
+  if (!spRemainingWords || spRemainingWords.length === 0) {
+    spRemainingWords = [...(spellWordBank || [])];
+  }
+  if (spRemainingWords.length === 0) {
     document.getElementById('sp-no-words-msg').textContent =
       'You don\'t have any spelling words yet. Check back after your blog entry has been marked.';
     showScreen('sp-no-words'); return;
   }
-  spWords = [...allWords].sort(() => Math.random() - .5).slice(0, MAX_SPELL_WORDS);
-  spWi = 0; spSi = 0; spPos = 0; spMistakes = 0;
+  const shuffled = [...spRemainingWords].sort(() => Math.random() - .5);
+  spWords = shuffled.slice(0, MAX_SPELL_WORDS);
+  const chosenKeys = new Set(spWords.map(w => w.word.toLowerCase()));
+  spRemainingWords = spRemainingWords.filter(w => !chosenKeys.has(w.word.toLowerCase()));
+  spSessionCompleted = [];
+  spLocked = false;
+  spWi = 0; spSi = spTestMode ? 3 : 0; spPos = 0; spMistakes = 0;
   document.getElementById('sp-drill-name').textContent = state.nameEng + ' · ' + state.className;
   showScreen('sp-drill');
   spRenderStage();
 }
 
+function spShowEndCard() {
+  const titleEl   = document.getElementById('sp-complete-title');
+  const msgEl     = document.getElementById('sp-complete-msg');
+  const subEl     = document.getElementById('sp-complete-sub');
+  const actionsEl = document.getElementById('sp-complete-actions');
+  actionsEl.innerHTML = '';
+  subEl.textContent = '';
+
+  const isAllDone = spCompletedCount >= spTotalWords && spTotalWords > 0;
+  const remaining = spRemainingWords.length;
+
+  if (isAllDone) {
+    titleEl.textContent = 'All words complete!';
+    msgEl.innerHTML = "You've drilled all <b style='color:var(--accent)'>" + spTotalWords + " words</b> in your practice bank.";
+
+    const resetBtn = document.createElement('button');
+    resetBtn.className = 'btn btn-primary'; resetBtn.style.width = '100%';
+    resetBtn.textContent = 'Reset & start over';
+    resetBtn.onclick = () => {
+      spCompletedCount = 0;
+      spAllCompleted = [];
+      spRemainingWords = [...(spellWordBank || [])];
+      // Tell server to reset progress
+      fetch(SCRIPT_URL + '?' + new URLSearchParams({ payload: JSON.stringify({
+        action: 'resetSpellProgress',
+        studentNumber: state.studentNumber
+      }) }).toString()).catch(() => {});
+      startSpellingFlow(false);
+    };
+    actionsEl.appendChild(resetBtn);
+  } else {
+    titleEl.textContent = 'Batch complete!';
+    msgEl.innerHTML = 'You still have <b style="color:var(--accent)">' + remaining + ' word' + (remaining !== 1 ? 's' : '') + '</b> left in your practice bank.';
+
+    const contBtn = document.createElement('button');
+    contBtn.className = 'btn btn-primary'; contBtn.style.width = '100%';
+    contBtn.textContent = 'Continue drilling (' + remaining + ' left)';
+    contBtn.onclick = () => startSpellingFlow(false);
+    actionsEl.appendChild(contBtn);
+  }
+
+  const testBtn = document.createElement('button');
+  testBtn.className = 'btn btn-secondary'; testBtn.style.width = '100%';
+  testBtn.textContent = 'Test mode — sentence only';
+  testBtn.onclick = () => {
+    const testPool = spAllCompleted.length > 0 ? spAllCompleted : [...(spellWordBank || [])];
+    if (testPool.length === 0) { alert('No words to test yet!'); return; }
+    spRemainingWords = [...testPool];
+    startSpellingFlow(true);
+  };
+  actionsEl.appendChild(testBtn);
+
+  const exitBtn = document.createElement('button');
+  exitBtn.className = 'back-act-btn'; exitBtn.style.width = '100%';
+  exitBtn.textContent = 'Exit to activities';
+  exitBtn.onclick = () => showScreen('chooser');
+  actionsEl.appendChild(exitBtn);
+
+  showScreen('sp-complete');
+}
+
 function spSubmitCompletion() {
   const now = new Date();
   const batchCount = spSessionCompleted.length;
-  const remaining  = spRemainingWords.length;
   spCompletedCount += batchCount;
 
   // Mark completed words in sheet
@@ -2188,48 +2259,22 @@ function spSubmitCompletion() {
     completed: true
   }) }).toString()).catch(() => {});
 
-  const timeStr = now.toLocaleDateString('en-GB') + ' at ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-  const titleEl   = document.getElementById('sp-complete-title');
-  const msgEl     = document.getElementById('sp-complete-msg');
-  const subEl     = document.getElementById('sp-complete-sub');
-  const actionsEl = document.getElementById('sp-complete-actions');
-  actionsEl.innerHTML = '';
-
-  if (spCompletedCount >= spTotalWords && spTotalWords > 0) {
-    titleEl.textContent = 'All words complete!';
-    msgEl.textContent = "You've drilled every word in your practice bank. Great work! The bank has been reset — you'll start fresh next time.";
-    subEl.textContent = timeStr;
-    spellWordBank = []; spRemainingWords = []; spCompletedCount = 0; spTotalWords = 0;
-  } else if (remaining > 0) {
-    titleEl.textContent = 'Batch complete!';
-    msgEl.innerHTML = 'Great work! You still have <b style="color:var(--accent)">' + remaining + ' word' + (remaining !== 1 ? 's' : '') + '</b> in your practice bank.';
-    subEl.textContent = timeStr;
-
-    const contBtn = document.createElement('button');
-    contBtn.className = 'btn btn-primary'; contBtn.style.width = '100%';
-    contBtn.textContent = 'Continue drilling (' + remaining + ' left)';
-    contBtn.onclick = () => startSpellingFlow(false);
-    actionsEl.appendChild(contBtn);
-
-    const testBtn = document.createElement('button');
-    testBtn.className = 'btn btn-secondary'; testBtn.style.width = '100%';
-    testBtn.textContent = 'Test mode — sentence only';
-    testBtn.onclick = () => startSpellingFlow(true);
-    actionsEl.appendChild(testBtn);
-  } else {
-    titleEl.textContent = 'Batch complete!';
-    msgEl.textContent = 'You drilled ' + batchCount + ' word' + (batchCount !== 1 ? 's' : '') + '. Great work!';
-    subEl.textContent = timeStr;
+  // Update badge immediately
+  const spBadge = document.getElementById('spell-badge');
+  if (spBadge && spTotalWords > 0) {
+    const done = spCompletedCount;
+    const total = spTotalWords;
+    spBadge.textContent = done + '/' + total + ' completed';
   }
 
-  showScreen('sp-complete');
-}
-// ═══════════════════════════════════════════════════════
+  spShowEndCard();
+}// ═══════════════════════════════════════════════════════
 //  SPELLING DRILL
 // ═══════════════════════════════════════════════════════
 let spTotalWords = 0, spCompletedCount = 0, spRemainingWords = [], spSessionCompleted = [];
 let spTestMode = false;
 let spLocked = false; // blocks input during error flash
+let spAllCompleted = []; // completed word objects available for test modeput during error flash
 
 function spMain() { return document.getElementById('sp-main-row'); }
 function spSetFb(msg, cls) {
