@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.2</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.3</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2093,8 +2093,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   dc.addEventListener('keydown', function(e) {
     if (spWi >= spWords.length) return;
-    // Always clear the input value to prevent accumulation
-    setTimeout(() => { dc.value = ''; }, 0);
     const { word } = spWords[spWi];
     const stage = SP_STAGES[spSi];
     if (stage === 'sentence') {
@@ -2309,66 +2307,7 @@ function spRenderStage() {
   if (dc) { dc.value = ''; setTimeout(() => dc.focus(), 50); }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  const dc = document.getElementById('drill-capture');
-  if (!dc) return;
-  // Prevent input event from bubbling (typing check capture handler must not see these)
-  dc.addEventListener('input', function(e) { e.stopPropagation(); dc.value = ''; });
 
-  dc.addEventListener('keydown', function(e) {
-    if (spWi >= spWords.length) return;
-    // Always clear the input value to prevent accumulation
-    setTimeout(() => { dc.value = ''; }, 0);
-    const { word } = spWords[spWi];
-    const stage = SP_STAGES[spSi];
-    if (stage === 'sentence') {
-      const full = spMain()._full, total = full.length;
-      if (e.key === 'Backspace') {
-        e.preventDefault();
-        if (spPos > 0) { spPos--; const sp = document.getElementById('sp-sc' + spPos); const isT = spPos >= spMain()._ts && spPos < spMain()._te; if (sp) { sp.className = 'sc-char ' + (isT ? 'blank' : 'hint'); sp.textContent = isT ? '_' : full[spPos]; } spMoveCurSent(); spSetFb(''); }
-        return;
-      }
-      if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
-      e.preventDefault(); if (spPos >= total) return;
-      const isT = spPos >= spMain()._ts && spPos < spMain()._te;
-      const sp = document.getElementById('sp-sc' + spPos);
-      if (e.key.toLowerCase() === full[spPos].toLowerCase()) {
-        if (sp) { sp.className = 'sc-char correct'; sp.textContent = full[spPos]; }
-        spPos++; spMistakes = 0; spSetFb(''); spMoveCurSent();
-        if (spPos >= total) {
-          spSetFb('Perfect!', 'good');
-          spSessionCompleted.push(spWords[spWi].word);
-          setTimeout(() => { spSi = 0; spWi++; spRenderStage(); }, 900);
-        }
-      } else {
-        spMistakes++;
-        if (sp) { const oc = sp.className; sp.className = 'sc-char wrong'; sp.textContent = e.key; setTimeout(() => { sp.className = oc; sp.textContent = isT ? '_' : full[spPos]; }, 280); }
-        spShakeRow();
-        if (spMistakes >= 3) spSetFb('Hint: "' + full[spPos] + '"', 'bad');
-      }
-      return;
-    }
-    const vis = spGetVis(word, stage);
-    if (e.key === 'Backspace') {
-      e.preventDefault();
-      if (spPos > 0) { spPos--; const ch = document.getElementById('sp-lc' + spPos); if (ch) { ch.className = 'cell-char ' + (vis[spPos] ? 'hint' : 'blank'); ch.textContent = vis[spPos] ? word[spPos] : '_'; } spMoveCurWord(word); spSetFb(''); }
-      return;
-    }
-    if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
-    e.preventDefault(); if (spPos >= word.length) return;
-    const ch = document.getElementById('sp-lc' + spPos);
-    if (e.key.toLowerCase() === word[spPos].toLowerCase()) {
-      if (ch) { ch.className = 'cell-char correct'; ch.textContent = word[spPos]; }
-      spPos++; spMistakes = 0; spSetFb(''); spMoveCurWord(word);
-      if (spPos >= word.length) { spSetFb('Nice!', 'good'); setTimeout(() => { spSi++; spRenderStage(); }, 700); }
-    } else {
-      spMistakes++;
-      if (ch) { ch.className = 'cell-char wrong'; ch.textContent = e.key; setTimeout(() => { ch.className = 'cell-char ' + (vis[spPos] ? 'hint' : 'blank'); ch.textContent = vis[spPos] ? word[spPos] : '_'; }, 280); }
-      spShakeRow();
-      if (spMistakes >= 3) spSetFb('Hint: "' + word[spPos] + '"', 'bad');
-    }
-  });
-});
 
 function startSpellingFlow(testMode) {
   spTestMode = testMode || false;
