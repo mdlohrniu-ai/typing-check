@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.5</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.7</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -784,10 +784,13 @@ tr:hover td { background: var(--surface2); }
 <!-- ═══ SPELL COMPLETE ═══ -->
 <div class="screen" id="screen-sp-complete">
   <div class="top-bar"><div class="logo">// typing.skills</div></div>
-  <h2 style="font-family:'JetBrains Mono',monospace;color:var(--correct);margin-bottom:1rem">Drill complete!</h2>
-  <p id="sp-complete-msg" style="color:var(--text-muted)"></p>
-  <p id="sp-complete-sub" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text-muted);margin-top:.5rem"></p>
-  <button class="back-act-btn" onclick="showScreen('chooser')">&#8592; Back to activities</button>
+  <div style="max-width:460px;width:100%;display:flex;flex-direction:column;align-items:center;gap:1.25rem;text-align:center;padding-top:2rem">
+    <h2 style="font-family:'JetBrains Mono',monospace;color:var(--correct)" id="sp-complete-title">Batch complete!</h2>
+    <p id="sp-complete-msg" style="color:var(--text-muted);line-height:1.6"></p>
+    <p id="sp-complete-sub" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text-muted)"></p>
+    <div id="sp-complete-actions" style="display:flex;flex-direction:column;gap:.75rem;width:100%"></div>
+    <button class="back-act-btn" onclick="showScreen('chooser')">&#8592; Back to activities</button>
+  </div>
 </div>
 
 
@@ -2110,7 +2113,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (e.key.toLowerCase() === full[spPos].toLowerCase()) {
         if (sp) { sp.className = 'sc-char correct'; sp.textContent = full[spPos]; }
         spPos++; spMistakes = 0; spSetFb(''); spMoveCurSent();
-        if (spPos >= total) { spSetFb('Perfect!', 'good'); setTimeout(() => { spSi = 0; spWi++; spRenderStage(); }, 900); }
+        if (spPos >= total) { spSetFb('Perfect!', 'good'); spSessionCompleted.push(spWords[spWi].word); setTimeout(() => { spSi = 0; spWi++; spRenderStage(); }, 900); }
       } else {
         spMistakes++;
         if (sp) { const oc = sp.className; sp.className = 'sc-char wrong'; sp.textContent = e.key; setTimeout(() => { sp.className = oc; sp.textContent = isT ? '_' : full[spPos]; }, 280); }
@@ -2159,27 +2162,68 @@ function startSpellingFlow() {
 
 function spSubmitCompletion() {
   const now = new Date();
-  document.getElementById('sp-complete-msg').textContent =
-    'You drilled ' + spWords.length + ' word' + (spWords.length !== 1 ? 's' : '') + ' from your blog entries. Great work!';
-  document.getElementById('sp-complete-sub').textContent =
-    'Completed ' + now.toLocaleDateString('en-GB') + ' at ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-  showScreen('sp-complete');
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      action: 'spellingDrill',
-      studentNum: state.studentNumber,
-      studentName: state.nameEng,
-      class: state.className,
-      wordsCount: spWords.length,
-      words: spWords.map(w => w.word).join(', '),
-      timestamp: now.toISOString(),
-      completed: true
-    })
-  }).catch(() => {});
-}
+  const batchCount = spSessionCompleted.length;
+  const remaining  = spRemainingWords.length;
+  spCompletedCount += batchCount;
 
+  // Mark completed words in sheet
+  if (spSessionCompleted.length > 0) {
+    fetch(SCRIPT_URL + '?' + new URLSearchParams({ payload: JSON.stringify({
+      action: 'markSpellWords',
+      studentNumber: state.studentNumber,
+      studentName: state.nameEng,
+      words: spSessionCompleted
+    }) }).toString()).catch(() => {});
+  }
+
+  // Log session
+  fetch(SCRIPT_URL + '?' + new URLSearchParams({ payload: JSON.stringify({
+    action: 'spellingDrill',
+    studentNum: state.studentNumber,
+    studentName: state.nameEng,
+    class: state.className,
+    wordsCount: batchCount,
+    words: spSessionCompleted.join(', '),
+    timestamp: now.toISOString(),
+    completed: true
+  }) }).toString()).catch(() => {});
+
+  const timeStr = now.toLocaleDateString('en-GB') + ' at ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const titleEl   = document.getElementById('sp-complete-title');
+  const msgEl     = document.getElementById('sp-complete-msg');
+  const subEl     = document.getElementById('sp-complete-sub');
+  const actionsEl = document.getElementById('sp-complete-actions');
+  actionsEl.innerHTML = '';
+
+  if (spCompletedCount >= spTotalWords && spTotalWords > 0) {
+    titleEl.textContent = 'All words complete!';
+    msgEl.textContent = "You've drilled every word in your practice bank. Great work! The bank has been reset — you'll start fresh next time.";
+    subEl.textContent = timeStr;
+    spellWordBank = []; spRemainingWords = []; spCompletedCount = 0; spTotalWords = 0;
+  } else if (remaining > 0) {
+    titleEl.textContent = 'Batch complete!';
+    msgEl.innerHTML = 'Great work! You still have <b style="color:var(--accent)">' + remaining + ' word' + (remaining !== 1 ? 's' : '') + '</b> in your practice bank.';
+    subEl.textContent = timeStr;
+
+    const contBtn = document.createElement('button');
+    contBtn.className = 'btn btn-primary'; contBtn.style.width = '100%';
+    contBtn.textContent = 'Continue drilling (' + remaining + ' left)';
+    contBtn.onclick = () => startSpellingFlow(false);
+    actionsEl.appendChild(contBtn);
+
+    const testBtn = document.createElement('button');
+    testBtn.className = 'btn btn-secondary'; testBtn.style.width = '100%';
+    testBtn.textContent = 'Test mode — sentence only';
+    testBtn.onclick = () => startSpellingFlow(true);
+    actionsEl.appendChild(testBtn);
+  } else {
+    titleEl.textContent = 'Batch complete!';
+    msgEl.textContent = 'You drilled ' + batchCount + ' word' + (batchCount !== 1 ? 's' : '') + '. Great work!';
+    subEl.textContent = timeStr;
+  }
+
+  showScreen('sp-complete');
+}
 // ═══════════════════════════════════════════════════════
 //  SPELLING DRILL
 // ═══════════════════════════════════════════════════════
