@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.3</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.4</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2092,6 +2092,7 @@ document.addEventListener('DOMContentLoaded', function() {
   dc.addEventListener('input', function(e) { e.stopPropagation(); dc.value = ''; });
 
   dc.addEventListener('keydown', function(e) {
+    if (spLocked) return;
     if (spWi >= spWords.length) return;
     const { word } = spWords[spWi];
     const stage = SP_STAGES[spSi];
@@ -2114,6 +2115,7 @@ document.addEventListener('DOMContentLoaded', function() {
         spMistakes++;
         if (sp) { const oc = sp.className; sp.className = 'sc-char wrong'; sp.textContent = e.key; setTimeout(() => { sp.className = oc; sp.textContent = isT ? '_' : full[spPos]; }, 280); }
         spShakeRow();
+        spLocked = true; setTimeout(() => { spLocked = false; }, 320);
         if (spMistakes >= 3) spSetFb('Hint: "' + full[spPos] + '"', 'bad');
       }
       return;
@@ -2135,6 +2137,7 @@ document.addEventListener('DOMContentLoaded', function() {
       spMistakes++;
       if (ch) { ch.className = 'cell-char wrong'; ch.textContent = e.key; setTimeout(() => { ch.className = 'cell-char ' + (vis[spPos] ? 'hint' : 'blank'); ch.textContent = vis[spPos] ? word[spPos] : '_'; }, 280); }
       spShakeRow();
+      spLocked = true; setTimeout(() => { spLocked = false; }, 320);
       if (spMistakes >= 3) spSetFb('Hint: "' + word[spPos] + '"', 'bad');
     }
   });
@@ -2182,6 +2185,7 @@ function spSubmitCompletion() {
 // ═══════════════════════════════════════════════════════
 let spTotalWords = 0, spCompletedCount = 0, spRemainingWords = [], spSessionCompleted = [];
 let spTestMode = false;
+let spLocked = false; // blocks input during error flash
 
 function spMain() { return document.getElementById('sp-main-row'); }
 function spSetFb(msg, cls) {
@@ -2324,7 +2328,7 @@ function startSpellingFlow(testMode) {
   const chosenKeys = new Set(spWords.map(w => w.word.toLowerCase()));
   spRemainingWords = spRemainingWords.filter(w => !chosenKeys.has(w.word.toLowerCase()));
   spSessionCompleted = [];
-  spWi = 0; spSi = spTestMode ? 3 : 0; spPos = 0; spMistakes = 0;
+  spWi = 0; spSi = spTestMode ? 3 : 0; spPos = 0; spMistakes = 0; spLocked = false;
   // Clear capture input to prevent stale keypresses
   const dcEl = document.getElementById('drill-capture');
   if (dcEl) { dcEl.value = ''; dcEl.blur(); }
