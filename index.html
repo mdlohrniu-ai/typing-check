@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.9</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.0</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2108,7 +2108,7 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault(); if (spPos >= total) return;
       const isT = spPos >= spMain()._ts && spPos < spMain()._te;
       const sp = document.getElementById('sp-sc' + spPos);
-      if (e.key.toLowerCase() === full[spPos].toLowerCase()) {
+      const expChar = full[spPos]; const expLc = expChar === expChar.toLowerCase() && expChar !== expChar.toUpperCase(); if (expLc ? e.key.toLowerCase() === expChar.toLowerCase() : e.key === expChar) {
         if (sp) { sp.className = 'sc-char correct'; sp.textContent = full[spPos]; }
         spPos++; spMistakes = 0; spSetFb(''); spMoveCurSent();
         if (spPos >= total) { spSetFb('Perfect!', 'good'); spSessionCompleted.push(spWords[spWi].word); if (!spAllCompleted.find(w => w.word === spWords[spWi].word)) spAllCompleted.push(spWords[spWi]); setTimeout(() => { spSi = spTestMode ? 3 : 0; spWi++; spRenderStage(); }, 900); }
@@ -2130,7 +2130,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
     e.preventDefault(); if (spPos >= word.length) return;
     const ch = document.getElementById('sp-lc' + spPos);
-    if (e.key.toLowerCase() === word[spPos].toLowerCase()) {
+    const expected = word[spPos]; const lc = expected === expected.toLowerCase(); if (lc ? e.key.toLowerCase() === expected.toLowerCase() : e.key === expected) {
       if (ch) { ch.className = 'cell-char correct'; ch.textContent = word[spPos]; }
       spPos++; spMistakes = 0; spSetFb(''); spMoveCurWord(word);
       if (spPos >= word.length) { spSetFb('Nice!', 'good'); setTimeout(() => { spSi++; spRenderStage(); }, 700); }
@@ -2144,21 +2144,27 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-function startSpellingFlow(testMode) {
+function startSpellingFlow(testMode, wordPool) {
   spTestMode = testMode || false;
-  // If all words done, show completion screen directly
-  if (spTotalWords > 0 && spCompletedCount >= spTotalWords && spRemainingWords.length === 0) {
+
+  // If all words done and not test mode, show end card
+  if (!spTestMode && spTotalWords > 0 && spCompletedCount >= spTotalWords && spRemainingWords.length === 0) {
     spShowEndCard(); return;
   }
-  // If no remaining words pool, seed from bank
-  if (!spRemainingWords || spRemainingWords.length === 0) {
+
+  // Use provided pool (for test mode), otherwise use remaining or seed from bank
+  if (wordPool) {
+    spRemainingWords = [...wordPool];
+  } else if (!spRemainingWords || spRemainingWords.length === 0) {
     spRemainingWords = [...(spellWordBank || [])];
   }
+
   if (spRemainingWords.length === 0) {
     document.getElementById('sp-no-words-msg').textContent =
       'You don\'t have any spelling words yet. Check back after your blog entry has been marked.';
     showScreen('sp-no-words'); return;
   }
+
   const shuffled = [...spRemainingWords].sort(() => Math.random() - .5);
   spWords = shuffled.slice(0, MAX_SPELL_WORDS);
   const chosenKeys = new Set(spWords.map(w => w.word.toLowerCase()));
@@ -2216,12 +2222,41 @@ function spShowEndCard() {
   testBtn.className = 'btn btn-secondary'; testBtn.style.width = '100%';
   testBtn.textContent = 'Test mode — sentence only';
   testBtn.onclick = () => {
-    const testPool = spAllCompleted.length > 0 ? spAllCompleted : [...(spellWordBank || [])];
-    if (testPool.length === 0) { alert('No words to test yet!'); return; }
-    spRemainingWords = [...testPool];
-    startSpellingFlow(true);
+    const testPool = spAllCompleted.length > 0 ? [...spAllCompleted] : null;
+    if (!testPool || testPool.length === 0) { alert('Complete at least one word first to use test mode!'); return; }
+    startSpellingFlow(true, testPool);
   };
   actionsEl.appendChild(testBtn);
+
+  const exitBtn = document.createElement('button');
+  exitBtn.className = 'back-act-btn'; exitBtn.style.width = '100%';
+  exitBtn.textContent = 'Exit to activities';
+  exitBtn.onclick = () => showScreen('chooser');
+  actionsEl.appendChild(exitBtn);
+
+  showScreen('sp-complete');
+}
+
+function spShowTestEndCard() {
+  const titleEl   = document.getElementById('sp-complete-title');
+  const msgEl     = document.getElementById('sp-complete-msg');
+  const subEl     = document.getElementById('sp-complete-sub');
+  const actionsEl = document.getElementById('sp-complete-actions');
+  actionsEl.innerHTML = '';
+  subEl.textContent = '';
+
+  titleEl.textContent = 'Test complete!';
+  msgEl.innerHTML = 'You tested <b style="color:var(--accent)">' + spSessionCompleted.length + ' sentence' + (spSessionCompleted.length !== 1 ? 's' : '') + '</b> from your completed words.';
+
+  const tryAgainBtn = document.createElement('button');
+  tryAgainBtn.className = 'btn btn-primary'; tryAgainBtn.style.width = '100%';
+  tryAgainBtn.textContent = 'Try again — more sentences';
+  tryAgainBtn.onclick = () => {
+    const testPool = spAllCompleted.length > 0 ? [...spAllCompleted] : null;
+    if (!testPool || testPool.length === 0) { showScreen('chooser'); return; }
+    startSpellingFlow(true, testPool);
+  };
+  actionsEl.appendChild(tryAgainBtn);
 
   const exitBtn = document.createElement('button');
   exitBtn.className = 'back-act-btn'; exitBtn.style.width = '100%';
@@ -2267,7 +2302,11 @@ function spSubmitCompletion() {
     spBadge.textContent = done + '/' + total + ' completed';
   }
 
-  spShowEndCard();
+  if (spTestMode) {
+    spShowTestEndCard();
+  } else {
+    spShowEndCard();
+  }
 }// ═══════════════════════════════════════════════════════
 //  SPELLING DRILL
 // ═══════════════════════════════════════════════════════
