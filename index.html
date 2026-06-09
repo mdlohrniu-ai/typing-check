@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v2.7</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v2.8</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -721,7 +721,7 @@ tr:hover td { background: var(--surface2); }
 
 
 <!-- ═══ CHOOSER ═══ -->
-<div class="screen" id="screen-chooser">
+<div class="screen" id="chooser">
   <div class="top-bar" style="max-width:960px;margin:0 auto;width:100%;padding:0">
     <div class="logo">// typing.skills</div>
     <div class="student-badge" id="chooser-badge"></div>
@@ -752,7 +752,7 @@ tr:hover td { background: var(--surface2); }
 </div>
 
 <!-- ═══ NO WORDS ═══ -->
-<div class="screen" id="screen-sp-no-words">
+<div class="screen" id="sp-no-words">
   <div class="top-bar"><div class="logo">// typing.skills</div></div>
   <h2 style="font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:1rem">No spelling words yet</h2>
   <p id="sp-no-words-msg" style="color:var(--text-muted);max-width:400px;text-align:center;line-height:1.6"></p>
@@ -760,10 +760,11 @@ tr:hover td { background: var(--surface2); }
 </div>
 
 <!-- ═══ SPELLING DRILL ═══ -->
-<div class="screen" id="screen-sp-drill">
+<div class="screen" id="sp-drill">
   <div class="drill-topbar">
     <span class="drill-topbar-name" id="sp-drill-name"></span>
     <span class="drill-topbar-prog" id="sp-drill-prog"></span>
+    <button onclick="showScreen('chooser')" style="background:transparent;border:1px solid #2e3150;border-radius:6px;padding:4px 12px;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#5a5f7a;cursor:pointer">&#8592; Exit</button>
   </div>
   <input id="drill-capture" style="position:fixed;opacity:0;pointer-events:none;top:0;left:0;width:1px;height:1px;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
   <div class="drill-body">
@@ -781,7 +782,7 @@ tr:hover td { background: var(--surface2); }
 </div>
 
 <!-- ═══ SPELL COMPLETE ═══ -->
-<div class="screen" id="screen-sp-complete">
+<div class="screen" id="sp-complete">
   <div class="top-bar"><div class="logo">// typing.skills</div></div>
   <h2 style="font-family:'JetBrains Mono',monospace;color:var(--correct);margin-bottom:1rem">Drill complete!</h2>
   <p id="sp-complete-msg" style="color:var(--text-muted)"></p>
@@ -1115,7 +1116,14 @@ async function doLogin() {
     // Fetch spelling words
     try {
       const spData = await apiGet({ action: 'getSpellWords', studentNumber: state.studentNumber });
-      spellWordBank = spData.ok ? spData.words : [];
+      if (spData.ok) {
+        spellWordBank    = spData.words || [];
+        spTotalWords     = spData.totalWords || spData.words.length;
+        spCompletedCount = spData.completedCount || 0;
+        spRemainingWords = spData.words || [];
+      } else {
+        spellWordBank = []; spTotalWords = 0; spCompletedCount = 0; spRemainingWords = [];
+      }
     } catch(e) { spellWordBank = []; }
 
     // Update chooser badge and greeting
@@ -1124,12 +1132,11 @@ async function doLogin() {
     if (cb) cb.innerHTML = '<b>' + state.studentNumber + '</b> &nbsp;·&nbsp; ' + state.nameEng + ' &nbsp;·&nbsp; ' + state.className;
     const spBadge = document.getElementById('spell-badge');
     if (spBadge) {
-      const n = Math.min(spellWordBank.length, MAX_SPELL_WORDS);
-      if (spellWordBank.length === 0) {
+      if (spTotalWords === 0) {
         spBadge.textContent = 'NO WORDS YET';
         spBadge.style.opacity = '0.5';
       } else {
-        spBadge.textContent = n + ' WORD' + (n !== 1 ? 'S' : '');
+        spBadge.textContent = spCompletedCount + '/' + spTotalWords + ' done';
         spBadge.style.opacity = '1';
       }
     }
@@ -1808,7 +1815,7 @@ function drawResultsChart(sessions) {
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
 
-  const PAD = { top: 24, right: 80, bottom: 56, left: 50 };
+  const PAD = { top: 24, right: 24, bottom: 56, left: 50 };
   const cw  = W - PAD.left - PAD.right;
   const ch  = H - PAD.top  - PAD.bottom;
 
@@ -2145,19 +2152,295 @@ function spSubmitCompletion() {
   document.getElementById('sp-complete-sub').textContent =
     'Completed ' + now.toLocaleDateString('en-GB') + ' at ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   showScreen('sp-complete');
-  // Use GET with encoded payload to avoid CORS issues (same as typing check)
-  const spPayload = {
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'spellingDrill',
+      studentNum: state.studentNumber,
+      studentName: state.nameEng,
+      class: state.className,
+      wordsCount: spWords.length,
+      words: spWords.map(w => w.word).join(', '),
+      timestamp: now.toISOString(),
+      completed: true
+    })
+  }).catch(() => {});
+}
+
+// ═══════════════════════════════════════════════════════
+//  SPELLING DRILL
+// ═══════════════════════════════════════════════════════
+const MAX_SPELL_WORDS = 5;
+const SP_STAGES = ['full','half','none','sentence'];
+const SP_LABELS = ['Study this word — type every letter','Some letters shown — type every letter','Spell it from memory','Type the full sentence'];
+let spellWordBank = [];
+let spWords = [], spWi = 0, spSi = 0, spPos = 0, spMistakes = 0;
+let spTotalWords = 0, spCompletedCount = 0, spRemainingWords = [], spSessionCompleted = [];
+let spTestMode = false;
+
+function spMain() { return document.getElementById('sp-main-row'); }
+function spSetFb(msg, cls) {
+  const f = document.getElementById('sp-fb');
+  f.textContent = msg;
+  f.className = 'sp-feedback' + (cls ? ' ' + cls : '');
+}
+function spShakeRow() {
+  const r = spMain();
+  r.style.transform = 'translateX(-5px)';
+  setTimeout(() => r.style.transform = 'translateX(5px)', 70);
+  setTimeout(() => r.style.transform = 'translateX(-3px)', 140);
+  setTimeout(() => r.style.transform = 'translateX(0)', 210);
+}
+function spGetVis(word, stage) {
+  if (stage === 'full') return word.split('').map(() => true);
+  if (stage === 'half') return word.split('').map((_, i) => i % 2 === 0);
+  return word.split('').map(() => false);
+}
+function spRenderDots() {
+  document.getElementById('sp-dots').innerHTML =
+    SP_STAGES.slice(0, -1).map((_, i) => {
+      let c = 'sp-dot';
+      if (i < spSi) c += ' done';
+      else if (i === spSi) c += ' active';
+      return '<div class="' + c + '"></div>';
+    }).join('');
+}
+function spUpdateHeader() {
+  const pct = Math.round(spWi / spWords.length * 100);
+  document.getElementById('sp-prog').style.width = pct + '%';
+  document.getElementById('sp-prog-lbl').textContent = 'Word ' + (spWi + 1) + ' of ' + spWords.length;
+  document.getElementById('sp-drill-prog').textContent = 'Word ' + (spWi + 1) + ' of ' + spWords.length;
+}
+function spBuildWord(word, stage) {
+  const vis = spGetVis(word, stage);
+  spMain().innerHTML = '';
+  const row = document.createElement('div');
+  row.className = 'letter-row';
+  word.split('').forEach((ch, i) => {
+    const cell = document.createElement('div'); cell.className = 'cell';
+    const top = document.createElement('div'); top.className = 'cell-top';
+    if (i === spPos) { const cur = document.createElement('div'); cur.className = 'v-cur'; top.appendChild(cur); }
+    const span = document.createElement('div');
+    span.className = 'cell-char ' + (vis[i] ? 'hint' : 'blank');
+    span.id = 'sp-lc' + i; span.textContent = vis[i] ? ch : '_';
+    top.appendChild(span);
+    const ul = document.createElement('div');
+    ul.className = 'cell-ul' + (i === spPos ? ' active' : ''); ul.id = 'sp-lu' + i;
+    cell.appendChild(top); cell.appendChild(ul); row.appendChild(cell);
+  });
+  spMain().appendChild(row);
+}
+function spBuildSent(word, sentence) {
+  const before = (sentence.split('___')[0] || ''), after = (sentence.split('___')[1] || '');
+  const full = before + word + after;
+  spMain()._full = full; spMain()._ts = before.length; spMain()._te = before.length + word.length;
+  const CW = 14, GAP = 3, SW = 8, MAX = 390;
+  const tokens = []; let buf = '', bufStart = 0;
+  for (let i = 0; i < full.length; i++) {
+    if (full[i] === ' ') {
+      if (buf) { tokens.push({ type: 'word', chars: buf.split('').map((ch, k) => ({ ch, gi: bufStart + k, isTarget: (bufStart + k) >= spMain()._ts && (bufStart + k) < spMain()._te })) }); buf = ''; }
+      tokens.push({ type: 'space', gi: i }); bufStart = i + 1;
+    } else { if (!buf) bufStart = i; buf += full[i]; }
+  }
+  if (buf) tokens.push({ type: 'word', chars: buf.split('').map((ch, k) => ({ ch, gi: bufStart + k, isTarget: (bufStart + k) >= spMain()._ts && (bufStart + k) < spMain()._te })) });
+  const lines = []; let curLine = [], curW = 0;
+  tokens.forEach(tok => {
+    if (tok.type === 'space') { if (curLine.length > 0) { curLine.push(tok); curW += SW + GAP; } }
+    else {
+      const w = tok.chars.length * (CW + GAP);
+      if (curLine.length > 0 && curW + w > MAX) { if (curLine[curLine.length - 1].type === 'space') curLine.pop(); lines.push(curLine); curLine = []; curW = 0; }
+      curLine.push(tok); curW += w;
+    }
+  });
+  if (curLine.length) { if (curLine[curLine.length - 1].type === 'space') curLine.pop(); lines.push(curLine); }
+  spMain().innerHTML = '';
+  const block = document.createElement('div'); block.className = 'sent-block';
+  lines.forEach(line => {
+    const ld = document.createElement('div'); ld.className = 'sent-line';
+    line.forEach(tok => {
+      if (tok.type === 'space') { const g = document.createElement('div'); g.className = 'space-gap'; ld.appendChild(g); }
+      else tok.chars.forEach(({ ch, gi: g, isTarget }) => {
+        const sc = document.createElement('div'); sc.className = 'sc';
+        if (g === spPos) { const cur = document.createElement('div'); cur.className = 'sv-cur'; sc.appendChild(cur); }
+        const sp = document.createElement('div'); sp.id = 'sp-sc' + g;
+        sp.className = 'sc-char ' + (isTarget ? 'blank' : 'hint'); sp.textContent = isTarget ? '_' : ch;
+        const ul = document.createElement('div'); ul.id = 'sp-su' + g; ul.className = 'sc-ul'; if (g === spPos) ul.classList.add('active');
+        sc.appendChild(sp); sc.appendChild(ul); ld.appendChild(sc);
+      });
+    });
+    block.appendChild(ld);
+  });
+  spMain().appendChild(block);
+}
+function spMoveCurWord(word) {
+  document.querySelectorAll('.v-cur').forEach(c => c.remove());
+  document.querySelectorAll('.cell-ul').forEach(u => u.classList.remove('active'));
+  if (spPos >= word.length) return;
+  const lc = document.getElementById('sp-lc' + spPos);
+  const top = lc && lc.parentElement;
+  if (top) { const cur = document.createElement('div'); cur.className = 'v-cur'; top.insertBefore(cur, top.firstChild); }
+  const ul = document.getElementById('sp-lu' + spPos); if (ul) ul.classList.add('active');
+}
+function spMoveCurSent() {
+  document.querySelectorAll('.sv-cur').forEach(c => c.remove());
+  document.querySelectorAll('.sc-ul').forEach(u => u.classList.remove('active'));
+  if (spPos >= spMain()._full.length) return;
+  const sc = document.getElementById('sp-sc' + spPos);
+  const el = sc && sc.parentElement;
+  if (el) { const cur = document.createElement('div'); cur.className = 'sv-cur'; el.insertBefore(cur, el.firstChild); }
+  const ul = document.getElementById('sp-su' + spPos); if (ul) ul.classList.add('active');
+}
+function spRenderStage() {
+  if (spWi >= spWords.length) { spSubmitCompletion(); return; }
+  const { word, sentence } = spWords[spWi];
+  spPos = 0; spMistakes = 0;
+  document.getElementById('sp-stage-lbl').textContent = SP_LABELS[spSi];
+  spSetFb(''); spUpdateHeader(); spRenderDots();
+  if (SP_STAGES[spSi] === 'sentence') spBuildSent(word, sentence);
+  else spBuildWord(word, SP_STAGES[spSi]);
+  const dc = document.getElementById('drill-capture');
+  if (dc) { dc.value = ''; setTimeout(() => dc.focus(), 50); }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const dc = document.getElementById('drill-capture');
+  if (!dc) return;
+  dc.addEventListener('keydown', function(e) {
+    if (spWi >= spWords.length) return;
+    const { word } = spWords[spWi];
+    const stage = SP_STAGES[spSi];
+    if (stage === 'sentence') {
+      const full = spMain()._full, total = full.length;
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        if (spPos > 0) { spPos--; const sp = document.getElementById('sp-sc' + spPos); const isT = spPos >= spMain()._ts && spPos < spMain()._te; if (sp) { sp.className = 'sc-char ' + (isT ? 'blank' : 'hint'); sp.textContent = isT ? '_' : full[spPos]; } spMoveCurSent(); spSetFb(''); }
+        return;
+      }
+      if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+      e.preventDefault(); if (spPos >= total) return;
+      const isT = spPos >= spMain()._ts && spPos < spMain()._te;
+      const sp = document.getElementById('sp-sc' + spPos);
+      if (e.key.toLowerCase() === full[spPos].toLowerCase()) {
+        if (sp) { sp.className = 'sc-char correct'; sp.textContent = full[spPos]; }
+        spPos++; spMistakes = 0; spSetFb(''); spMoveCurSent();
+        if (spPos >= total) {
+          spSetFb('Perfect!', 'good');
+          spSessionCompleted.push(spWords[spWi].word);
+          setTimeout(() => { spSi = 0; spWi++; spRenderStage(); }, 900);
+        }
+      } else {
+        spMistakes++;
+        if (sp) { const oc = sp.className; sp.className = 'sc-char wrong'; sp.textContent = e.key; setTimeout(() => { sp.className = oc; sp.textContent = isT ? '_' : full[spPos]; }, 280); }
+        spShakeRow();
+        if (spMistakes >= 3) spSetFb('Hint: "' + full[spPos] + '"', 'bad');
+      }
+      return;
+    }
+    const vis = spGetVis(word, stage);
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      if (spPos > 0) { spPos--; const ch = document.getElementById('sp-lc' + spPos); if (ch) { ch.className = 'cell-char ' + (vis[spPos] ? 'hint' : 'blank'); ch.textContent = vis[spPos] ? word[spPos] : '_'; } spMoveCurWord(word); spSetFb(''); }
+      return;
+    }
+    if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+    e.preventDefault(); if (spPos >= word.length) return;
+    const ch = document.getElementById('sp-lc' + spPos);
+    if (e.key.toLowerCase() === word[spPos].toLowerCase()) {
+      if (ch) { ch.className = 'cell-char correct'; ch.textContent = word[spPos]; }
+      spPos++; spMistakes = 0; spSetFb(''); spMoveCurWord(word);
+      if (spPos >= word.length) { spSetFb('Nice!', 'good'); setTimeout(() => { spSi++; spRenderStage(); }, 700); }
+    } else {
+      spMistakes++;
+      if (ch) { ch.className = 'cell-char wrong'; ch.textContent = e.key; setTimeout(() => { ch.className = 'cell-char ' + (vis[spPos] ? 'hint' : 'blank'); ch.textContent = vis[spPos] ? word[spPos] : '_'; }, 280); }
+      spShakeRow();
+      if (spMistakes >= 3) spSetFb('Hint: "' + word[spPos] + '"', 'bad');
+    }
+  });
+});
+
+function startSpellingFlow(testMode) {
+  spTestMode = testMode || false;
+  if (!spRemainingWords || spRemainingWords.length === 0) {
+    spRemainingWords = [...(spellWordBank || [])];
+  }
+  if (spRemainingWords.length === 0) {
+    document.getElementById('sp-no-words-msg').textContent =
+      'You don\'t have any spelling words yet. Check back after your blog entry has been marked.';
+    showScreen('screen-sp-no-words'); return;
+  }
+  const shuffled = [...spRemainingWords].sort(() => Math.random() - .5);
+  spWords = shuffled.slice(0, MAX_SPELL_WORDS);
+  const chosenKeys = new Set(spWords.map(w => w.word.toLowerCase()));
+  spRemainingWords = spRemainingWords.filter(w => !chosenKeys.has(w.word.toLowerCase()));
+  spSessionCompleted = [];
+  spWi = 0; spSi = spTestMode ? 3 : 0; spPos = 0; spMistakes = 0;
+  document.getElementById('sp-drill-name').textContent = state.nameEng + ' · ' + state.className;
+  showScreen('screen-sp-drill');
+  spRenderStage();
+}
+
+function spSubmitCompletion() {
+  const now = new Date();
+  const batchCount = spSessionCompleted.length;
+  const remaining  = spRemainingWords.length;
+  spCompletedCount += batchCount;
+
+  if (spSessionCompleted.length > 0) {
+    fetch(SCRIPT_URL + '?' + new URLSearchParams({ payload: JSON.stringify({
+      action: 'markSpellWords',
+      studentNumber: state.studentNumber,
+      studentName: state.nameEng,
+      words: spSessionCompleted
+    }) }).toString()).catch(() => {});
+  }
+
+  fetch(SCRIPT_URL + '?' + new URLSearchParams({ payload: JSON.stringify({
     action: 'spellingDrill',
     studentNum: state.studentNumber,
     studentName: state.nameEng,
     class: state.className,
-    wordsCount: spWords.length,
-    words: spWords.map(w => w.word).join(', '),
+    wordsCount: batchCount,
+    words: spSessionCompleted.join(', '),
     timestamp: now.toISOString(),
     completed: true
-  };
-  fetch(SCRIPT_URL + '?' + new URLSearchParams({ payload: JSON.stringify(spPayload) }).toString())
-    .catch(() => {});
+  }) }).toString()).catch(() => {});
+
+  const timeStr = now.toLocaleDateString('en-GB') + ' at ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const titleEl   = document.getElementById('sp-complete-title');
+  const msgEl     = document.getElementById('sp-complete-msg');
+  const subEl     = document.getElementById('sp-complete-sub');
+  const actionsEl = document.getElementById('sp-complete-actions');
+  actionsEl.innerHTML = '';
+
+  if (spCompletedCount >= spTotalWords && spTotalWords > 0) {
+    titleEl.textContent = 'All words complete!';
+    msgEl.textContent = "You've drilled every word in your practice bank. Great work! The bank has been reset — you'll start fresh next time.";
+    subEl.textContent = timeStr;
+    spellWordBank = []; spRemainingWords = []; spCompletedCount = 0; spTotalWords = 0;
+  } else if (remaining > 0) {
+    titleEl.textContent = 'Batch complete!';
+    msgEl.innerHTML = 'Great work! You still have <b style="color:var(--accent)">' + remaining + ' word' + (remaining !== 1 ? 's' : '') + '</b> in your practice bank.';
+    subEl.textContent = timeStr;
+
+    const contBtn = document.createElement('button');
+    contBtn.className = 'btn btn-primary'; contBtn.style.width = '100%';
+    contBtn.textContent = 'Continue drilling (' + remaining + ' left)';
+    contBtn.onclick = () => startSpellingFlow(false);
+    actionsEl.appendChild(contBtn);
+
+    const testBtn = document.createElement('button');
+    testBtn.className = 'btn btn-secondary'; testBtn.style.width = '100%';
+    testBtn.textContent = 'Test mode — sentence only';
+    testBtn.onclick = () => startSpellingFlow(true);
+    actionsEl.appendChild(testBtn);
+  } else {
+    titleEl.textContent = 'Batch complete!';
+    msgEl.textContent = 'You drilled ' + batchCount + ' word' + (batchCount !== 1 ? 's' : '') + '. Great work!';
+    subEl.textContent = timeStr;
+  }
+
+  showScreen('screen-sp-complete');
 }
 
 </script>
