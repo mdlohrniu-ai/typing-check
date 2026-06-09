@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v2.9</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.0</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -760,7 +760,7 @@ tr:hover td { background: var(--surface2); }
 </div>
 
 <!-- ═══ SPELLING DRILL ═══ -->
-<div class="screen" id="sp-drill">
+<div class="screen" id="screen-sp-drill">
   <div class="drill-topbar">
     <span class="drill-topbar-name" id="sp-drill-name"></span>
     <span class="drill-topbar-prog" id="sp-drill-prog"></span>
@@ -782,7 +782,7 @@ tr:hover td { background: var(--surface2); }
 </div>
 
 <!-- ═══ SPELL COMPLETE ═══ -->
-<div class="screen" id="sp-complete">
+<div class="screen" id="screen-sp-complete">
   <div class="top-bar"><div class="logo">// typing.skills</div></div>
   <h2 style="font-family:'JetBrains Mono',monospace;color:var(--correct);margin-bottom:1rem">Drill complete!</h2>
   <p id="sp-complete-msg" style="color:var(--text-muted)"></p>
@@ -2362,7 +2362,7 @@ function startSpellingFlow(testMode) {
   if (spRemainingWords.length === 0) {
     document.getElementById('sp-no-words-msg').textContent =
       'You don\'t have any spelling words yet. Check back after your blog entry has been marked.';
-    showScreen('screen-sp-no-words'); return;
+    showScreen('sp-no-words'); return;
   }
   const shuffled = [...spRemainingWords].sort(() => Math.random() - .5);
   spWords = shuffled.slice(0, MAX_SPELL_WORDS);
@@ -2371,7 +2371,7 @@ function startSpellingFlow(testMode) {
   spSessionCompleted = [];
   spWi = 0; spSi = spTestMode ? 3 : 0; spPos = 0; spMistakes = 0;
   document.getElementById('sp-drill-name').textContent = state.nameEng + ' · ' + state.className;
-  showScreen('screen-sp-drill');
+  showScreen('sp-drill');
   spRenderStage();
 }
 
@@ -2435,7 +2435,7 @@ function spSubmitCompletion() {
     subEl.textContent = timeStr;
   }
 
-  showScreen('screen-sp-complete');
+  showScreen('sp-complete');
 }
 
 </script>
