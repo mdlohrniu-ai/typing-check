@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.0</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v3.1</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2082,8 +2082,13 @@ function spRenderStage() {
 document.addEventListener('DOMContentLoaded', function() {
   const dc = document.getElementById('drill-capture');
   if (!dc) return;
+  // Prevent input event from bubbling (typing check capture handler must not see these)
+  dc.addEventListener('input', function(e) { e.stopPropagation(); dc.value = ''; });
+
   dc.addEventListener('keydown', function(e) {
     if (spWi >= spWords.length) return;
+    // Always clear the input value to prevent accumulation
+    setTimeout(() => { dc.value = ''; }, 0);
     const { word } = spWords[spWi];
     const stage = SP_STAGES[spSi];
     if (stage === 'sentence') {
@@ -2301,8 +2306,13 @@ function spRenderStage() {
 document.addEventListener('DOMContentLoaded', function() {
   const dc = document.getElementById('drill-capture');
   if (!dc) return;
+  // Prevent input event from bubbling (typing check capture handler must not see these)
+  dc.addEventListener('input', function(e) { e.stopPropagation(); dc.value = ''; });
+
   dc.addEventListener('keydown', function(e) {
     if (spWi >= spWords.length) return;
+    // Always clear the input value to prevent accumulation
+    setTimeout(() => { dc.value = ''; }, 0);
     const { word } = spWords[spWi];
     const stage = SP_STAGES[spSi];
     if (stage === 'sentence') {
@@ -2370,6 +2380,9 @@ function startSpellingFlow(testMode) {
   spRemainingWords = spRemainingWords.filter(w => !chosenKeys.has(w.word.toLowerCase()));
   spSessionCompleted = [];
   spWi = 0; spSi = spTestMode ? 3 : 0; spPos = 0; spMistakes = 0;
+  // Clear capture input to prevent stale keypresses
+  const dcEl = document.getElementById('drill-capture');
+  if (dcEl) { dcEl.value = ''; dcEl.blur(); }
   document.getElementById('sp-drill-name').textContent = state.nameEng + ' · ' + state.className;
   showScreen('sp-drill');
   spRenderStage();
