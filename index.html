@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.3</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.4</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -790,7 +790,7 @@ tr:hover td { background: var(--surface2); }
     <p id="sp-complete-msg" style="color:var(--text-muted);line-height:1.6"></p>
     <p id="sp-complete-sub" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text-muted)"></p>
     <div id="sp-complete-actions" style="display:flex;flex-direction:column;gap:.75rem;width:100%"></div>
-    <button class="back-act-btn" onclick="showScreen('chooser')">&#8592; Back to activities</button>
+    
   <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#3a3f5a;max-width:600px;text-align:center;line-height:1.6;padding:0 1rem;margin-top:1rem">*Practice words are taken from your blog entries. They have been corrected to the proper spelling of the word. Sentences are also taken from your blog entries. There may be spelling and grammar errors remaining that were not automatically corrected.</p>
   </div>
 </div>
@@ -1124,9 +1124,10 @@ async function doLogin() {
       if (spData.ok) {
         spellWordBank    = spData.words || [];
         spTotalWords     = spData.totalWords || spData.words.length;
-        spCompletedCount = spData.completedCount || 0;
-        spRemainingWords = spData.words || [];
-        spAllCompleted = []; // rebuilt as student completes words this session
+        // completedCount = total minus remaining — reliable across logins
+        spCompletedCount = Math.max(0, spTotalWords - spellWordBank.length);
+        spRemainingWords = [...spellWordBank];
+        spAllCompleted   = []; // rebuilt as student drills this session
       } else {
         spellWordBank = []; spTotalWords = 0; spCompletedCount = 0; spRemainingWords = []; spAllCompleted = [];
       }
