@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v5.1</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v5.2</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2266,6 +2266,8 @@ function spShowEndCard() {
     resetBtn.className = 'btn btn-primary'; resetBtn.style.width = '100%';
     resetBtn.textContent = 'Reset & start over';
     resetBtn.onclick = async () => {
+      resetBtn.disabled = true;
+      showLoading(true, 'Resetting your word bank...');
       await fetch(SCRIPT_URL + '?' + new URLSearchParams({ payload: JSON.stringify({
         action: 'resetSpellProgress',
         studentNumber: state.studentNumber
@@ -2273,13 +2275,14 @@ function spShowEndCard() {
       try {
         const rd = await apiGet({ action: 'getSpellWords', studentNumber: state.studentNumber });
         if (rd.ok) {
-          spellWordBank = rd.words || [];
-          spTotalWords  = rd.totalWords || rd.words.length;
+          spellWordBank    = rd.words || [];
+          spTotalWords     = rd.totalWords || rd.words.length;
           spRemainingWords = [...spellWordBank];
         }
       } catch(e) {}
       spCompletedCount = 0;
       spAllCompleted = [];
+      showLoading(false);
       startSpellingFlow(false);
     };
     actionsEl.appendChild(resetBtn);
