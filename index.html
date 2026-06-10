@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.6</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.7</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2157,34 +2157,31 @@ document.addEventListener('DOMContentLoaded', function() {
 function startSpellingFlow(testMode, wordPool) {
   spTestMode = testMode || false;
 
-  // Test mode — use provided pool only
-  if (spTestMode && wordPool) {
-    spRemainingWords = [...wordPool];
-  } else if (!spTestMode) {
-    // Normal drill mode
-
-    // If all words are completed, show end card instead of starting drill
+  // ── Always check completion first (normal drill mode only) ──
+  if (!spTestMode) {
     if (spTotalWords > 0 && spCompletedCount >= spTotalWords) {
       spShowEndCard(); return;
     }
-
-    // If no remaining pool, seed from full bank minus already-completed words
-    // spellWordBank already has completed words filtered out (from getSpellWords on login)
-    // After a batch, spRemainingWords tracks what's left
+    // Seed remaining pool if empty
     if (!spRemainingWords || spRemainingWords.length === 0) {
-      // Re-seed from spellWordBank (remaining words from server)
       spRemainingWords = [...(spellWordBank || [])];
+    }
+    // If still empty after seeding, check again
+    if (spRemainingWords.length === 0) {
+      if (spTotalWords > 0) { spShowEndCard(); return; }
+      document.getElementById('sp-no-words-msg').textContent =
+        'You don\'t have any spelling words yet. Check back after your blog entry has been marked.';
+      showScreen('sp-no-words'); return;
     }
   }
 
-  if (spRemainingWords.length === 0) {
-    // Nothing left to drill - check if it's because all are done
-    if (spTotalWords > 0) {
-      spShowEndCard(); return;
+  // ── Test mode — use provided pool only ──
+  if (spTestMode) {
+    if (!wordPool || wordPool.length === 0) {
+      alert('Complete at least one word first to use test mode!'); return;
     }
-    document.getElementById('sp-no-words-msg').textContent =
-      'You don\'t have any spelling words yet. Check back after your blog entry has been marked.';
-    showScreen('sp-no-words'); return;
+    spRemainingWords = [...wordPool];
+    if (spRemainingWords.length === 0) return;
   }
 
   const shuffled = [...spRemainingWords].sort(() => Math.random() - .5);
