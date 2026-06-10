@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v5.0</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v5.1</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2160,7 +2160,6 @@ function startSpellingFlow(testMode, wordPool) {
   // ── Always check completion first (normal drill mode only) ──
   if (!spTestMode) {
     if (spTotalWords > 0 && spCompletedCount >= spTotalWords) {
-      alert('DEBUG: All done! Showing end card. count=' + spCompletedCount + ' total=' + spTotalWords);
       spShowEndCard(); return;
     }
     // Seed remaining pool if empty
@@ -2249,6 +2248,12 @@ function spShowEndCard() {
   const actionsEl = document.getElementById('sp-complete-actions');
   actionsEl.innerHTML = '';
   subEl.textContent = '';
+
+  // If re-entering after all words done, spAllCompleted may be empty
+  // Seed it from spellWordBank (all words in bank have been completed)
+  if (spAllCompleted.length === 0 && spellWordBank.length > 0) {
+    spAllCompleted = [...spellWordBank];
+  }
 
   const isAllDone = spCompletedCount >= spTotalWords && spTotalWords > 0;
   const remaining = spRemainingWords.length;
