@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.5</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.6</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2231,10 +2231,9 @@ function spSubmitCompletion() {
     completed: true
   }) }).toString()).catch(() => {});
 
-  // Clear remaining pool if all done, so re-entry shows end card
+  // Clear remaining pool so re-entry shows end card, keep spellWordBank for reset
   if (spCompletedCount >= spTotalWords && spTotalWords > 0) {
     spRemainingWords = [];
-    spellWordBank = [];
   }
 
   const spBadge = document.getElementById('spell-badge');
@@ -2263,15 +2262,21 @@ function spShowEndCard() {
     const resetBtn = document.createElement('button');
     resetBtn.className = 'btn btn-primary'; resetBtn.style.width = '100%';
     resetBtn.textContent = 'Reset & start over';
-    resetBtn.onclick = () => {
-      spCompletedCount = 0;
-      spAllCompleted = [];
-      spRemainingWords = [...(spellWordBank || [])];
-      // Tell server to reset progress
-      fetch(SCRIPT_URL + '?' + new URLSearchParams({ payload: JSON.stringify({
+    resetBtn.onclick = async () => {
+      await fetch(SCRIPT_URL + '?' + new URLSearchParams({ payload: JSON.stringify({
         action: 'resetSpellProgress',
         studentNumber: state.studentNumber
       }) }).toString()).catch(() => {});
+      try {
+        const rd = await apiGet({ action: 'getSpellWords', studentNumber: state.studentNumber });
+        if (rd.ok) {
+          spellWordBank = rd.words || [];
+          spTotalWords  = rd.totalWords || rd.words.length;
+          spRemainingWords = [...spellWordBank];
+        }
+      } catch(e) {}
+      spCompletedCount = 0;
+      spAllCompleted = [];
       startSpellingFlow(false);
     };
     actionsEl.appendChild(resetBtn);
