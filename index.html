@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.2</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.3</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2149,19 +2149,31 @@ document.addEventListener('DOMContentLoaded', function() {
 function startSpellingFlow(testMode, wordPool) {
   spTestMode = testMode || false;
 
-  // If all words done and not test mode, show end card
-  if (!spTestMode && spTotalWords > 0 && spCompletedCount >= spTotalWords && spRemainingWords.length === 0) {
-    spShowEndCard(); return;
-  }
-
-  // Use provided pool (for test mode), otherwise use remaining or seed from bank
-  if (wordPool) {
+  // Test mode — use provided pool only
+  if (spTestMode && wordPool) {
     spRemainingWords = [...wordPool];
-  } else if (!spRemainingWords || spRemainingWords.length === 0) {
-    spRemainingWords = [...(spellWordBank || [])];
+  } else if (!spTestMode) {
+    // Normal drill mode
+
+    // If all words are completed, show end card instead of starting drill
+    if (spTotalWords > 0 && spCompletedCount >= spTotalWords) {
+      spShowEndCard(); return;
+    }
+
+    // If no remaining pool, seed from full bank minus already-completed words
+    // spellWordBank already has completed words filtered out (from getSpellWords on login)
+    // After a batch, spRemainingWords tracks what's left
+    if (!spRemainingWords || spRemainingWords.length === 0) {
+      // Re-seed from spellWordBank (remaining words from server)
+      spRemainingWords = [...(spellWordBank || [])];
+    }
   }
 
   if (spRemainingWords.length === 0) {
+    // Nothing left to drill - check if it's because all are done
+    if (spTotalWords > 0) {
+      spShowEndCard(); return;
+    }
     document.getElementById('sp-no-words-msg').textContent =
       'You don\'t have any spelling words yet. Check back after your blog entry has been marked.';
     showScreen('sp-no-words'); return;
