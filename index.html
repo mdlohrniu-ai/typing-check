@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.9</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v5.0</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2159,8 +2159,8 @@ function startSpellingFlow(testMode, wordPool) {
 
   // ── Always check completion first (normal drill mode only) ──
   if (!spTestMode) {
-    alert('DEBUG: spCompletedCount=' + spCompletedCount + ' spTotalWords=' + spTotalWords + ' spRemainingWords=' + spRemainingWords.length + ' spellWordBank=' + spellWordBank.length);
     if (spTotalWords > 0 && spCompletedCount >= spTotalWords) {
+      alert('DEBUG: All done! Showing end card. count=' + spCompletedCount + ' total=' + spTotalWords);
       spShowEndCard(); return;
     }
     // Seed remaining pool if empty
