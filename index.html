@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.8</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.9</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -2472,29 +2472,7 @@ function spRenderStage() {
 
 
 
-function startSpellingFlow(testMode) {
-  spTestMode = testMode || false;
-  if (!spRemainingWords || spRemainingWords.length === 0) {
-    spRemainingWords = [...(spellWordBank || [])];
-  }
-  if (spRemainingWords.length === 0) {
-    document.getElementById('sp-no-words-msg').textContent =
-      'You don\'t have any spelling words yet. Check back after your blog entry has been marked.';
-    showScreen('sp-no-words'); return;
-  }
-  const shuffled = [...spRemainingWords].sort(() => Math.random() - .5);
-  spWords = shuffled.slice(0, MAX_SPELL_WORDS);
-  const chosenKeys = new Set(spWords.map(w => w.word.toLowerCase()));
-  spRemainingWords = spRemainingWords.filter(w => !chosenKeys.has(w.word.toLowerCase()));
-  spSessionCompleted = [];
-  spWi = 0; spSi = spTestMode ? 3 : 0; spPos = 0; spMistakes = 0; spLocked = false;
-  // Clear capture input to prevent stale keypresses
-  const dcEl = document.getElementById('drill-capture');
-  if (dcEl) { dcEl.value = ''; dcEl.blur(); }
-  document.getElementById('sp-drill-name').textContent = state.nameEng + ' · ' + state.className;
-  showScreen('sp-drill');
-  spRenderStage();
-}
+
 
 
 
