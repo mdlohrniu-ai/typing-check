@@ -705,7 +705,7 @@ tr:hover td { background: var(--surface2); }
   <div class="login-box">
     <div>
       <div class="login-logo">// typing.skills</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.4</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;margin-top:4px">v4.5</div>
     </div>
     <div class="login-title">Enter your student number to begin</div>
     <div class="login-form">
@@ -1124,10 +1124,17 @@ async function doLogin() {
       if (spData.ok) {
         spellWordBank    = spData.words || [];
         spTotalWords     = spData.totalWords || spData.words.length;
-        // completedCount = total minus remaining — reliable across logins
-        spCompletedCount = Math.max(0, spTotalWords - spellWordBank.length);
-        spRemainingWords = [...spellWordBank];
-        spAllCompleted   = []; // rebuilt as student drills this session
+        spAllCompleted   = [];
+        if (spData.wasReset) {
+          // Server auto-reset because all words were done
+          // Treat as all-complete so end card shows on re-entry
+          spCompletedCount = spTotalWords;
+          spRemainingWords = [];
+        } else {
+          // completedCount = total minus remaining — reliable across logins
+          spCompletedCount = Math.max(0, spTotalWords - spellWordBank.length);
+          spRemainingWords = [...spellWordBank];
+        }
       } else {
         spellWordBank = []; spTotalWords = 0; spCompletedCount = 0; spRemainingWords = []; spAllCompleted = [];
       }
@@ -2223,6 +2230,12 @@ function spSubmitCompletion() {
     timestamp: now.toISOString(),
     completed: true
   }) }).toString()).catch(() => {});
+
+  // Clear remaining pool if all done, so re-entry shows end card
+  if (spCompletedCount >= spTotalWords && spTotalWords > 0) {
+    spRemainingWords = [];
+    spellWordBank = [];
+  }
 
   const spBadge = document.getElementById('spell-badge');
   if (spBadge && spTotalWords > 0) {
