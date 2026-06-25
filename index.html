@@ -2483,12 +2483,18 @@ function spRenderStage() {
   if (dc) { dc.value = ''; setTimeout(() => dc.focus(), 50); }
 }
 
-
-
-
-
-
-
+// ── AUTO-LOGIN FROM DASHBOARD ──────────────────────────────────────────────
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const autoStudent = params.get('student');
+  if (autoStudent) {
+    const input = document.getElementById('student-input');
+    if (input) {
+      input.value = autoStudent;
+      doLogin();
+    }
+  }
+})();
 </script>
 </body>
 </html>
